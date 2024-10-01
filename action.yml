@@ -1,7 +1,7 @@
 # Make sure to change the action name here (must be unique).
 # Update the rest as needed.
-name: 'gemini-tutor'
-description: 'Gemini Tutor for Github Classroom Assignments'
+name: 'gemini-python-tutor'
+description: 'Gemini Python Tutor for Github Classroom Assignments'
 branding: # Look at documentation for branding options/requirements. These are my favorites.
   icon: 'book-open'
   color: 'green'
@@ -10,11 +10,17 @@ inputs:
     description: 'Comma-separeted list of json report file paths'
     required: false
     default: 'report.json'
+  python-code-path:
+    description: 'python code path'
+    required: false
+    default: 'exercise.py'
+  readme-path:
+    description: 'assignment instructions path'
+    required: false
+    default: 'README.md'
 outputs:
-  output-one:
-    description: 'Description of output-one'
-  output-two:
-    description: 'Description of output-two'	
+  feedback:
+    description: 'Feedback from the tutor'
 runs:
   using: 'docker'
   image: 'Dockerfile'
