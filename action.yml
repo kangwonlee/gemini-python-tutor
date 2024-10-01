@@ -8,10 +8,10 @@ branding: # Look at documentation for branding options/requirements. These are m
 inputs:
   report-files:  
     description: 'Comma-separeted list of json report file paths'
-    required: false
+    required: true
     default: 'report.json'
-  python-code-path:
-    description: 'python code path'
+  student-files:
+    description: 'Comma-separated list of student's Python file paths or a glob pattern'
     required: false
     default: 'exercise.py'
   readme-path:

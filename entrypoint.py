@@ -6,8 +6,24 @@
 # such as debian, etc, so the above line will work fine
 # if you use pyaction:4.0.0 or higher as your base docker image.
 
-import sys
+
 import os
+import sys
+
+
+import ai_tutor
+
+
+def main():
+    report_files_str = os.getenv('INPUT_REPORT-FILES')
+    report_files = report_files_str.split(',')
+
+    student_files_str = os.getenv('INPUT_STUDENT-FILES')
+
+    readme_file_str = os.getenv('INPUT_README-PATH')
+
+    feedback = ai_tutor.gemini_qna(report_files)
+
 
 if __name__ == "__main__" :
     # Rename these variables to something meaningful
