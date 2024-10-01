@@ -6,7 +6,7 @@
 # such as debian, etc, so the above line will work fine
 # if you use pyaction:4.0.0 or higher as your base docker image.
 
-
+import logging
 import os
 import pathlib
 from typing import Tuple
@@ -15,7 +15,10 @@ from typing import Tuple
 import ai_tutor
 
 
-def main():
+logging.basicConfig(level=logging.INFO)
+
+
+def main() -> None:
     # Check if the API key is available
     ai_tutor.test_API_key()
 
@@ -27,6 +30,7 @@ def main():
 
     readme_file_str = os.getenv('INPUT_README-PATH')
     readme_file = pathlib.Path(readme_file_str)
+    assert readme_file.exists(), 'No README file'
 
     feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file)
 
@@ -34,12 +38,32 @@ def main():
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
-    return tuple(
-        map(
-            pathlib.Path,
-            report_files_str.split(',')
-        )
+    """
+    Converts a comma-separated string of file paths to a tuple of pathlib.Path objects.
+
+    Args:
+        paths_str: Comma-separated string of file paths.
+
+    Returns:
+        A tuple of pathlib.Path objects.
+    """
+
+    gen = map(
+        pathlib.Path,
+        report_files_str.split(',')
     )
+
+    result_list = []
+
+    for path in gen:
+        if path.exists():
+            result_list.append(path)
+        else:
+            logging.warning(f'{path} does not exist')
+
+    assert result_list, 'No valid paths found'
+
+    return tuple(result_list)
 
 
 if __name__ == "__main__" :
