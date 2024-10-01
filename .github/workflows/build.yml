@@ -36,6 +36,8 @@ jobs:
       with:
         input-one: something
         input-two: true
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
     - name: Output the outputs of the integration test of the action
       run: |
