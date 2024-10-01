@@ -9,7 +9,12 @@
 import logging
 import os
 import pathlib
+import sys
+
 from typing import Tuple
+
+
+sys.path.insert(0, pathlib.Path(__file__).parent.resolve())
 
 
 import ai_tutor
