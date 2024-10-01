@@ -6,7 +6,7 @@ branding: # Look at documentation for branding options/requirements. These are m
   icon: 'book-open'
   color: 'green'
 inputs:
-  report-files:  
+  report-files:
     description: 'Comma-separeted list of json report file paths'
     required: true
     default: 'report.json'
