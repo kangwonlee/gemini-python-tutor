@@ -11,7 +11,7 @@ Provide AI-powered feedback on Python code assignments using Google's Gemini lan
   - name: Gemini Python Tutor
     uses: kangwonlee/gemini_python_tutor@v1
     with:
-      # JSON files by pytest-json-reporter generates
+      # JSON files by pytest-json-report plugin
       report-files: report0.json, report1.json
       # python file including the student's code
       student-files: exercies.py
