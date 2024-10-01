@@ -12,7 +12,7 @@ import pathlib
 from typing import Tuple
 
 
-from . import ai_tutor
+import ai_tutor
 
 
 logging.basicConfig(level=logging.INFO)
