@@ -8,7 +8,6 @@ import time
 from typing import Dict, List, Tuple
 
 
-import pytest
 import requests
 
 
