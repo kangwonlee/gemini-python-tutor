@@ -187,7 +187,3 @@ def assignment_code(student_files:Tuple[pathlib.Path]) -> str:
 @functools.lru_cache
 def assignment_instruction(readme_file:pathlib.Path) -> str:
     return readme_file.read_text()
-
-
-if "__main__" == __name__:
-    pytest.main([__file__])
