@@ -1,3 +1,5 @@
 *
 !Dockerfile
 !entrypoint.py
+!requirements.txt
+!ai_tutor.py
