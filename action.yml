@@ -10,20 +10,20 @@ inputs:
     description: 'Comma-separeted list of json report file paths'
     required: true
     default: 'report.json'
+    type: list
   student-files:
     description: 'Comma-separated list of student's Python file paths or a glob pattern'
     required: false
     default: 'exercise.py'
+    type: list
   readme-path:
     description: 'assignment instructions path'
     required: false
     default: 'README.md'
+    type: string
 outputs:
   feedback:
     description: 'Feedback from the tutor'
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.input-one }}
-    - ${{ inputs.input-two }}
