@@ -150,7 +150,7 @@ def test_json_reports(report_paths:Tuple[pathlib.Path]):
     )
 
 
-def gemini_qna(report_paths):
+def gemini_qna(report_paths:List[pathlib.Path]) -> str:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
 
@@ -175,13 +175,14 @@ def gemini_qna(report_paths):
         message_count += len(longrepr_list)
         questions += longrepr_list
 
+    answers = None
+
     # Query Gemini with consolidated questions if there are any
     if questions:
         consolidated_question = "\n\n".join(questions) + get_code_instruction()  # Add code & instruction only once
         answers = ask_gemini(consolidated_question)
-        print(answers)  # Print the consolidated answers directly
 
-    return message_count
+    return answers
 
 
 def collect_longrepr(data:Dict[str, str]) -> List[str]:
