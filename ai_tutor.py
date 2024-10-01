@@ -36,7 +36,14 @@ def header() -> HEADER:
     return {'Content-Type': 'application/json'}
 
 
-def ask_gemini(question: str, url=url(), header=header(), retry_delay_sec: float = 5.0, max_retry_attempt: int = 3, timeout_sec: int = 60) -> str:
+def ask_gemini(
+            question: str,
+            url:str=url(),
+            header:HEADER=header(),
+            retry_delay_sec: float = 5.0,
+            max_retry_attempt: int = 3,
+            timeout_sec: int = 60
+    ) -> str:
     """
     Asks a question to Gemini with rate limiting, retry logic, and timeout.
 
@@ -92,32 +99,37 @@ def gemini_qna(
     Queries the Gemini API to provide explanations for failed pytest test cases.
 
     Args:
-        report_paths: A tuple of pathlib.Path objects representing the paths to JSON pytest report files.
+        report_paths: A list of pathlib.Path objects representing the paths to JSON pytest report files.
+        student_files: A list of pathlib.Path objects representing the paths to student's Python files.
+        readme_file: A pathlib.Path object representing the path to the assignment instruction file.
 
     Returns:
-        The total number of failed test cases processed.
+        A string containing the feedback from Gemini.
     '''
-
-    message_count = 0
-    questions = [
-        "# 숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.:\n"
-    ]  # Collect all questions in a list
-
-    # Process each report file
-    for report_path in report_paths:
-        data = json.loads(report_path.read_text())
-
-        longrepr_list = collect_longrepr(data)
-
-        message_count += len(longrepr_list)
-        questions += longrepr_list
-
     answers = None
+    try:
+        message_count = 0
+        questions = [
+            "# 숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.:\n"
+        ]  # Collect all questions in a list
 
-    # Query Gemini with consolidated questions if there are any
-    if questions:
-        consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
-        answers = ask_gemini(consolidated_question)
+        # Process each report file
+        for report_path in report_paths:
+            data = json.loads(report_path.read_text())
+
+            longrepr_list = collect_longrepr(data)
+
+            message_count += len(longrepr_list)
+            questions += longrepr_list
+
+        # Query Gemini with consolidated questions if there are any
+        if questions:
+            consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
+            answers = ask_gemini(consolidated_question)
+
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        answers = "An unexpected error occurred while processing your request."
 
     return answers
 
