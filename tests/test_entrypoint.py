@@ -1,6 +1,8 @@
 import logging
+import os
 import pathlib
 import sys
+
 from typing import Dict, Union, List, Tuple
 
 
@@ -12,6 +14,9 @@ sys.path.insert(
     str(pathlib.Path(__file__).parent.parent.resolve())
 )
 
+
+# fake API key
+os.environ['GOOGLE_API_KEY'] = 'test_key'
 
 import entrypoint
 
