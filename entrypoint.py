@@ -16,6 +16,9 @@ import ai_tutor
 
 
 def main():
+    # Check if the API key is available
+    ai_tutor.test_API_key()
+
     report_files_str = os.getenv('INPUT_REPORT-FILES')
     report_files = get_path_tuple(report_files_str)
 
