@@ -1,19 +1,15 @@
 # Make sure to change the action name here (must be unique).
 # Update the rest as needed.
-name: 'unique-action-goes-here'
-description: 'BRIEF DESCRIPTION OF YOUR ACTION'
+name: 'gemini-tutor'
+description: 'Gemini Tutor for Github Classroom Assignments'
 branding: # Look at documentation for branding options/requirements. These are my favorites.
   icon: 'book-open'
   color: 'green'
 inputs:
-  input-one:  
-    description: 'Description of input-one'
+  report-files:  
+    description: 'Comma-separeted list of json report file paths'
     required: false
-    default: 'default value goes here'
-  input-two:
-    description: 'Description of input-two'
-    required: false
-    default: 'default value goes here'
+    default: 'report.json'
 outputs:
   output-one:
     description: 'Description of output-one'
