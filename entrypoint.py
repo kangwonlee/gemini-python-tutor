@@ -9,8 +9,6 @@
 
 import os
 import pathlib
-import sys
-
 from typing import Tuple
 
 
