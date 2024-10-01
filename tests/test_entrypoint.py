@@ -21,11 +21,11 @@ PATH_TUPLE_STR = Tuple[PATH_TUPLE, str]
 
 
 @pytest.fixture
-def path_tuple() -> PATH_TUPLE_STR:
+def path_tuple(tmp_path) -> PATH_TUPLE_STR:
     s = [
-        pathlib.Path('file1.txt'),
-        pathlib.Path('file2.txt'),
-        pathlib.Path('file3.txt')
+        tmp_path / 'file1.txt',
+        tmp_path / 'file2.txt',
+        tmp_path / 'file3.txt',
     ]
 
     t = f'{s[0]},{s[1]},{s[2]}'
@@ -44,7 +44,8 @@ def test_get_path_tuple__normal(path_tuple:PATH_TUPLE_STR) -> None:
     result = entrypoint.get_path_tuple(t)
 
     # Then
-    assert result == (s)
+    assert len(result) == len(s)
+    assert all(map(lambda x_y: x_y[0] == x_y[1], zip(result, s)))
 
 
 def test_get_path_tuple__one_missing(path_tuple:PATH_TUPLE_STR, caplog) -> None:
