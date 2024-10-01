@@ -5,6 +5,12 @@
 
 Provide AI-powered feedback on Python code assignments using Google's Gemini language model.
 
+## Key Features
+
+* Provide feedback on Python code assignments.
+* Support multiple JSON files by pytest-json-report plugin.
+* Support multiple student files.
+
 # Usage
 * Please set `GOOGLE_API_KEY` in the repository's secrets.
 ``` yaml
@@ -17,4 +23,6 @@ Provide AI-powered feedback on Python code assignments using Google's Gemini lan
       student-files: exercies.py
       # assignment instruction file
       readme-path: README.md
+    env:
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 ```
