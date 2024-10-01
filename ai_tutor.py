@@ -84,16 +84,6 @@ def header() -> HEADER:
     return {'Content-Type': 'application/json'}
 
 
-@functools.lru_cache
-def assignment_code() -> str:
-    return script_path().read_text()
-
-
-@functools.lru_cache
-def assignment_instruction() -> str:
-    return (proj_folder() / 'README.md').read_text()
-
-
 def ask_gemini(question: str, url=url(), header=header(), retry_delay_sec: float = 5.0, max_retry_attempt: int = 3, timeout_sec: int = 60) -> str:
     """
     Asks a question to Gemini with rate limiting, retry logic, and timeout.
@@ -141,16 +131,11 @@ def ask_gemini(question: str, url=url(), header=header(), retry_delay_sec: float
     return answer  # Return the answer (or None if unsuccessful) at the end
 
 
-def test_json_reports(report_paths:Tuple[pathlib.Path]):
-    message_count = gemini_qna(report_paths)
-
-    assert 0 == message_count, (
-        "\nplease check Captured stdout call\n"
-        "Captured stdout call 메시지를 확인하시오"
-    )
-
-
-def gemini_qna(report_paths:List[pathlib.Path]) -> str:
+def gemini_qna(
+        report_paths:List[pathlib.Path],
+        student_files:List[pathlib.Path],
+        readme_file:pathlib.Path
+    ) -> str:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
 
@@ -179,7 +164,7 @@ def gemini_qna(report_paths:List[pathlib.Path]) -> str:
 
     # Query Gemini with consolidated questions if there are any
     if questions:
-        consolidated_question = "\n\n".join(questions) + get_code_instruction()  # Add code & instruction only once
+        consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
         answers = ask_gemini(consolidated_question)
 
     return answers
@@ -216,15 +201,28 @@ def get_question_footer() -> str:
     )
 
 
-def get_code_instruction():
+def get_code_instruction(
+        student_files,
+        readme_file:pathlib.Path,
+    ) -> str:
     return (
         "\n\n## 숙제 제출 코드 시작\n"
-        f"{assignment_code()}\n"
+        f"{assignment_code(student_files)}\n"
         "## 숙제 제출 코드 끝\n"
         "## 과제 지침 시작\n"
-        f"{assignment_instruction()}\n"
+        f"{assignment_instruction(readme_file)}\n"
         "## 과제 지침 끝\n"
     )
+
+
+@functools.lru_cache
+def assignment_code(student_files:Tuple[pathlib.Path]) -> str:
+    return '\n\n'.join([f"# begin : {str(f.name)} ======\n{f.read_text()}\n# end : {str(f.name)} ======\n" for f in student_files])
+
+
+@functools.lru_cache
+def assignment_instruction(readme_file:pathlib.Path) -> str:
+    return readme_file.read_text()
 
 
 if "__main__" == __name__:
