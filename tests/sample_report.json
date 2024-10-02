@@ -1,0 +1,109 @@
+{
+    "created": "REDACTED",
+    "duration": "REDACTED",
+    "exitcode": 1,
+    "root": "REDACTED",
+    "environment": {},
+    "summary": {
+        "passed": 0,
+        "failed": 1,
+        "total": 1,
+        "collected": 1
+    },
+    "tests": [
+        {
+            "nodeid": "tests_folder/test_file_name.py::test_function_name",
+            "lineno": 51,
+            "outcome": "failed",
+            "keywords": [
+                "test_function_name",
+                "test_file_name.py",
+                "tests",
+                "repo-name",
+                ""
+            ],
+            "setup": {
+                "duration": "REDACTED",
+                "outcome": "passed",
+                "longrepr": "REDACTED"
+            },
+            "call": {
+                "duration": "REDACTED",
+                "outcome": "failed",
+                "crash": {
+                    "path": "REDACTED",
+                    "lineno": 66,
+                    "message": "Failed: 0으로 나누려고 하면 'Cannot divide by zero'라는 문자열을 대신 반환 바랍니다."
+                },
+                "traceback": [
+                    {
+                        "path": "tests/test_file_name.py",
+                        "lineno": 66,
+                        "message": "Failed"
+                    }
+                ],
+                "longrepr": (
+                    "[gw1] linux -- Python 3.10.12 /path/repo-name/repo-name/test-env/bin/python\n"
+                    "\n"
+                    "    def test_function_name():\n"
+                    "        \"\"\"Tests the div function with various inputs, including division by zero.\"\"\"\n"
+                    "        assert exercise.div(10, 2) == 5\n"
+                    "        assert exercise.div(20, 5) == 4\n"
+                    "        assert exercise.div(-10, 2) == -5\n"
+                    "        assert exercise.div(10, -2) == -5\n"
+                    "        assert exercise.div(0, 5) == 0\n"
+                    "        # Test division by zero\n"
+                    "    \n"
+                    "        msg = \"0으로 나누려고 하면 'Cannot divide by zero'라는 문자열을 대신 반환 바랍니다.\"\n"
+                    "    \n"
+                    "        try:\n"
+                    ">           assert exercise.div(5, 0) == 'Cannot divide by zero', msg\n"
+                    "\n"
+                    "tests/test_file_name.py:64: \n"
+                    "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"
+                    "\n"
+                    "a = 5, b = 0\n"
+                    "\n"
+                    "    def div(a, b):\n"
+                    "        # TODO:\n"
+                    "        # write code dividing two numbers\n"
+                    "        # 두 숫자를 나누는 코드를 작성하세요.\n"
+                    "        # return the result.\n"
+                    "        # 결과값을 return하세요.\n"
+                    "        # if divide by zero, please return string `'Cannot divide by zero'` instead.\n"
+                    "        # 0으로 나누는 경우 `'Cannot divide by zero'` 라는 문자열을 반환합니다.\n"
+                    ">       return a / b\n"
+                    "E       ZeroDivisionError: division by zero\n"
+                    "\n"
+                    "exercise.py:33: ZeroDivisionError\n"
+                    "\n"
+                    "During handling of the above exception, another exception occurred:\n"
+                    "\n"
+                    "    def test_function_name():\n"
+                    "        \"\"\"Tests the div function with various inputs, including division by zero.\"\"\"\n"
+                    "        assert exercise.div(10, 2) == 5\n"
+                    "        assert exercise.div(20, 5) == 4\n"
+                    "        assert exercise.div(-10, 2) == -5\n"
+                    "        assert exercise.div(10, -2) == -5\n"
+                    "        assert exercise.div(0, 5) == 0\n"
+                    "        # Test division by zero\n"
+                    "    \n"
+                    "        msg = \"0으로 나누려고 하면 'Cannot divide by zero'라는 문자열을 대신 반환 바랍니다.\"\n"
+                    "    \n"
+                    "        try:\n"
+                    "            assert exercise.div(5, 0) == 'Cannot divide by zero', msg\n"
+                    "        except ZeroDivisionError:\n"
+                    ">           pytest.fail(msg)\n"
+                    "E           Failed: 0으로 나누려고 하면 'Cannot divide by zero'라는 문자열을 대신 반환 바랍니다.\n"
+                    "\n"
+                    "tests/test_file_name.py:66: Failed"
+                )
+            },
+            "teardown": {
+                "duration": "REDACTED",
+                "outcome": "passed",
+                "longrepr": "REDACTED"
+            }
+        }
+    ]
+}
