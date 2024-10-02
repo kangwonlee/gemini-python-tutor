@@ -14,8 +14,9 @@ Provide AI-powered feedback on Python code assignments using Google's Gemini lan
 # Usage
 * Please set `GOOGLE_API_KEY` in the repository's secrets.
 ``` yaml
-  - name: Gemini Python Tutor
-    uses: kangwonlee/gemini-python-tutor@v1
+  - name: AI Python Tutor
+    uses: kangwonlee/gemini-python-tutor@v0.1.1
+    if: always()
     with:
       # JSON files by pytest-json-report plugin
       report-files: report0.json, report1.json
@@ -25,4 +26,5 @@ Provide AI-powered feedback on Python code assignments using Google's Gemini lan
       readme-path: README.md
     env:
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+    timeout-minutes: 5
 ```
