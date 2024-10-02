@@ -15,7 +15,7 @@ import os
 import pytest
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def get_github_output(output_name:str) -> str:
