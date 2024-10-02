@@ -15,7 +15,7 @@ import os
 import pytest
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def get_github_output(output_name:str) -> str:
@@ -29,11 +29,11 @@ def get_github_output(output_name:str) -> str:
     with open(os.environ['GITHUB_OUTPUT'], 'r') as f:
         txt = f.read()
 
-    logging.info(f'Contents of GITHUB_OUTPUT: {len(txt)} characters')
+    logging.warning(f'Contents of GITHUB_OUTPUT: {len(txt)} characters')
 
     txt_lines = txt.splitlines()
 
-    logging.info(f'# lines of GITHUB_OUTPUT: {len(txt_lines)}')
+    logging.warning(f'# lines of GITHUB_OUTPUT: {len(txt_lines)}')
 
     for line in txt.splitlines():
         key, value = line.strip().split('=')
