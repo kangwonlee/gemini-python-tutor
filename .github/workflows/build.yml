@@ -34,8 +34,9 @@ jobs:
       id: integration
       uses: ./
       with:
-        input-one: something
-        input-two: true
+        report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
+        student-files: tests/sample_code.py
+        readme-path: tests/sample_readme.md
       env:
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
