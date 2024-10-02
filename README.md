@@ -20,11 +20,11 @@ Provide AI-powered feedback on Python code assignments using Google's Gemini lan
     with:
       # JSON files by pytest-json-report plugin
       report-files: report0.json, report1.json
+      # API key for AI
+      api-key: ${{ secrets.GOOGLE_API_KEY }}
       # python file including the student's code
       student-files: exercies.py
       # assignment instruction file
       readme-path: README.md
-    env:
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
     timeout-minutes: 5
 ```

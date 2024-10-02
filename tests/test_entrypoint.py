@@ -15,9 +15,6 @@ sys.path.insert(
 )
 
 
-# fake API key
-os.environ['GOOGLE_API_KEY'] = 'test_key'
-
 import entrypoint
 
 

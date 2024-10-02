@@ -19,20 +19,20 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main() -> None:
-    # Check if the API key is available
-    ai_tutor.test_API_key()
-
-    report_files_str = os.getenv('INPUT_REPORT-FILES')
+    report_files_str = os.environ['INPUT_REPORT-FILES']
     report_files = get_path_tuple(report_files_str)
 
-    student_files_str = os.getenv('INPUT_STUDENT-FILES')
+    student_files_str = os.environ['INPUT_STUDENT-FILES']
     student_files = get_path_tuple(student_files_str)
 
-    readme_file_str = os.getenv('INPUT_README-PATH')
+    readme_file_str = os.environ['INPUT_README-PATH']
     readme_file = pathlib.Path(readme_file_str)
     assert readme_file.exists(), 'No README file'
 
-    feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file)
+    assert 'INPUT_API-KEY' in os.environ, os.environ.keys()
+    api_key = os.environ['INPUT_API-KEY']
+
+    feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file, api_key)
 
     print(feedback)
 

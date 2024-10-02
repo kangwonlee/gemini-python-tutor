@@ -12,7 +12,6 @@ import requests
 
 
 HEADER = Dict[str, str]
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 
 logging.basicConfig(level=logging.INFO)
@@ -21,13 +20,9 @@ logging.basicConfig(level=logging.INFO)
 RESOURCE_EXHAUSTED = 429
 
 
-def test_API_key():
-    assert GOOGLE_API_KEY, 'API KEY NOT Available'
-
-
 @functools.lru_cache
-def url() -> str:
-    return f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GOOGLE_API_KEY}'
+def url(api_key:str) -> str:
+    return f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}'
 
 
 @functools.lru_cache
@@ -37,7 +32,7 @@ def header() -> HEADER:
 
 def ask_gemini(
             question: str,
-            url:str=url(),
+            api_key:str,
             header:HEADER=header(),
             retry_delay_sec: float = 5.0,
             max_retry_attempt: int = 3,
@@ -67,7 +62,7 @@ def ask_gemini(
             logging.error(f"Timeout exceeded for question: {question}")
             break  # Exit the loop on timeout
 
-        response = requests.post(url, headers=header, json=data)
+        response = requests.post(url(api_key), headers=header, json=data)
 
         if response.status_code == 200:
             result = response.json()
@@ -92,7 +87,8 @@ def ask_gemini(
 def gemini_qna(
         report_paths:List[pathlib.Path],
         student_files:List[pathlib.Path],
-        readme_file:pathlib.Path
+        readme_file:pathlib.Path,
+        api_key:str,
     ) -> str:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
@@ -133,7 +129,7 @@ def gemini_qna(
             "\n\n".join(questions)
             + get_code_instruction(student_files, readme_file)
         )  # Add code & instruction only once
-        answers = ask_gemini(consolidated_question)
+        answers = ask_gemini(consolidated_question, api_key)
 
     return answers
 

@@ -36,9 +36,9 @@ jobs:
       with:
         report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
         student-files: tests/sample_code.py
+        api-key: ${{ secrets.GOOGLE_API_KEY }}
         readme-path: tests/sample_readme.md
-      env:
-        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      timeout-minutes: 5
 
     - name: Output the outputs of the integration test of the action
       run: |

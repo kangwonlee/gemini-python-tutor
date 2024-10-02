@@ -11,6 +11,10 @@ inputs:
     required: true
     default: 'report.json'
     type: list
+  api-key:
+    description: 'API token for AI'
+    required: true
+    type: string
   student-files:
     description: "Comma-separated list of student's Python file paths or a glob pattern"
     required: false

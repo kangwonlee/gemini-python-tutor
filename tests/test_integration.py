@@ -11,8 +11,6 @@ sys.path.insert(
     str(pathlib.Path(__file__).parent.parent.resolve())
 )
 
-# fake API key
-os.environ['GOOGLE_API_KEY'] = 'test_key'
 
 import entrypoint
 
@@ -20,7 +18,7 @@ import entrypoint
 @unittest.mock.patch('ai_tutor.gemini_qna')
 def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) -> None:
     # Setup
-    os.environ['GOOGLE_API_KEY'] = 'test_key'
+    os.environ['INPUT_API-KEY'] = 'test_key'
 
     os.environ['GITHUB_OUTPUT'] = str(tmp_path / 'output.txt')
 
@@ -49,7 +47,8 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
     mock_gemini_qna.assert_called_once_with(
         (tmp_path / 'file1.txt', tmp_path / 'file2.txt', tmp_path / 'file3.txt'),
         (tmp_path / 'file4.txt', tmp_path / 'file5.txt', tmp_path / 'file6.txt'),
-        tmp_path / 'readme.txt'
+        tmp_path / 'readme.txt',
+        'test_key',
     )
 
     assert 'does not exist' not in caplog.text
