@@ -27,11 +27,19 @@ def get_github_output(output_name:str) -> str:
     found_keys = []
 
     with open(os.environ['GITHUB_OUTPUT'], 'r') as f:
-        for line in f:
-            key, value = line.strip().split('=')
-            found_keys.append(key)
-            if key == output_name:
-                result = value
+        txt = f.read()
+
+    logging.info(f'Contents of GITHUB_OUTPUT: {len(txt)} characters')
+
+    txt_lines = txt.splitlines()
+
+    logging.info(f'# lines of GITHUB_OUTPUT: {len(txt_lines)}')
+
+    for line in txt.splitlines():
+        key, value = line.strip().split('=')
+        found_keys.append(key)
+        if key == output_name:
+            result = value
 
     if result is None:
         logging.warning(
