@@ -22,6 +22,8 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
     # Setup
     os.environ['GOOGLE_API_KEY'] = 'test_key'
 
+    os.environ['GITHUB_OUTPUT'] = str(tmp_path / 'output.txt')
+
     names_input = ['file1.txt', 'file2.txt', 'file3.txt']
     names_student = ['file4.txt', 'file5.txt', 'file6.txt']
 

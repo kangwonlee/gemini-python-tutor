@@ -34,7 +34,9 @@ def main() -> None:
 
     feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file)
 
-    print(f'::set-output name=feedback::{feedback}')
+    # Write the feedback to the environment file
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+        print(f'feedback={feedback}', file=f)
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
