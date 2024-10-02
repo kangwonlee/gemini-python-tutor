@@ -111,30 +111,26 @@ def gemini_qna(
     logging.info(f"Readme file: {readme_file}")
 
     answers = None
-    try:
-        message_count = 0
-        questions = [
-            "# 숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.:\n"
-        ]  # Collect all questions in a list
 
-        # Process each report file
-        for report_path in report_paths:
-            logging.info(f"Processing report file: {report_path}")
-            data = json.loads(report_path.read_text())
+    message_count = 0
+    questions = [
+        "# 숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.:\n"
+    ]  # Collect all questions in a list
 
-            longrepr_list = collect_longrepr(data)
+    # Process each report file
+    for report_path in report_paths:
+        logging.info(f"Processing report file: {report_path}")
+        data = json.loads(report_path.read_text())
 
-            message_count += len(longrepr_list)
-            questions += longrepr_list
+        longrepr_list = collect_longrepr(data)
 
-        # Query Gemini with consolidated questions if there are any
-        if questions:
-            consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
-            answers = ask_gemini(consolidated_question)
+        message_count += len(longrepr_list)
+        questions += longrepr_list
 
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
-        answers = "An unexpected error occurred while processing your request."
+    # Query Gemini with consolidated questions if there are any
+    if questions:
+        consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
+        answers = ask_gemini(consolidated_question)
 
     return answers
 
