@@ -129,7 +129,10 @@ def gemini_qna(
 
     # Query Gemini with consolidated questions if there are any
     if questions:
-        consolidated_question = "\n\n".join(questions) + get_code_instruction(readme_file, student_files)  # Add code & instruction only once
+        consolidated_question = (
+            "\n\n".join(questions)
+            + get_code_instruction(student_files, readme_file)
+        )  # Add code & instruction only once
         answers = ask_gemini(consolidated_question)
 
     return answers
@@ -167,7 +170,7 @@ def get_question_footer() -> str:
 
 
 def get_code_instruction(
-        student_files,
+        student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
     ) -> str:
     return (
