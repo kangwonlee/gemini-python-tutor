@@ -46,5 +46,5 @@ jobs:
 
     - name: Verify integration test results
       run: |
-        echo "${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
