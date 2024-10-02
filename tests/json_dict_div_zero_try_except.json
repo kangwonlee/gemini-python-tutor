@@ -1,0 +1,54 @@
+{
+    "created": "REDACTED",
+    "duration": "REDACTED",
+    "exitcode": 1,
+    "root": "REDACTED",
+    "environment": {},
+    "summary": {
+        "passed": 0,
+        "failed": 1,
+        "total": 1,
+        "collected": 1
+    },
+    "tests": [
+        {
+            "nodeid": "tests_folder/test_file_name.py::test_function_name",
+            "lineno": 51,
+            "outcome": "failed",
+            "keywords": [
+                "test_function_name",
+                "test_file_name.py",
+                "tests",
+                "repo-name",
+                ""
+            ],
+            "setup": {
+                "duration": "REDACTED",
+                "outcome": "passed",
+                "longrepr": "REDACTED"
+            },
+            "call": {
+                "duration": "REDACTED",
+                "outcome": "failed",
+                "crash": {
+                    "path": "REDACTED",
+                    "lineno": 66,
+                    "message": "Failed: 0\uc73c\ub85c \ub098\ub204\ub824\uace0 \ud558\uba74 'Cannot divide by zero'\ub77c\ub294 \ubb38\uc790\uc5f4\uc744 \ub300\uc2e0 \ubc18\ud658 \ubc14\ub78d\ub2c8\ub2e4."
+                },
+                "traceback": [
+                    {
+                        "path": "tests/test_file_name.py",
+                        "lineno": 66,
+                        "message": "Failed"
+                    }
+                ],
+                "longrepr": "[gw1] linux -- Python 3.10.12 /path/repo-name/repo-name/test-env/bin/python\n\n    def test_function_name():\n        \"\"\"Tests the div function with various inputs, including division by zero.\"\"\"\n        assert exercise.div(10, 2) == 5\n        assert exercise.div(20, 5) == 4\n        assert exercise.div(-10, 2) == -5\n        assert exercise.div(10, -2) == -5\n        assert exercise.div(0, 5) == 0\n        # Test division by zero\n    \n        msg = \"0\uc73c\ub85c \ub098\ub204\ub824\uace0 \ud558\uba74 'Cannot divide by zero'\ub77c\ub294 \ubb38\uc790\uc5f4\uc744 \ub300\uc2e0 \ubc18\ud658 \ubc14\ub78d\ub2c8\ub2e4.\"\n    \n        try:\n>           assert exercise.div(5, 0) == 'Cannot divide by zero', msg\n\ntests/test_file_name.py:64: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\na = 5, b = 0\n\n    def div(a, b):\n        # TODO:\n        # write code dividing two numbers\n        # \ub450 \uc22b\uc790\ub97c \ub098\ub204\ub294 \ucf54\ub4dc\ub97c \uc791\uc131\ud558\uc138\uc694.\n        # return the result.\n        # \uacb0\uacfc\uac12\uc744 return\ud558\uc138\uc694.\n        # if divide by zero, please return string `'Cannot divide by zero'` instead.\n        # 0\uc73c\ub85c \ub098\ub204\ub294 \uacbd\uc6b0 `'Cannot divide by zero'` \ub77c\ub294 \ubb38\uc790\uc5f4\uc744 \ubc18\ud658\ud569\ub2c8\ub2e4.\n>       return a / b\nE       ZeroDivisionError: division by zero\n\nexercise.py:33: ZeroDivisionError\n\nDuring handling of the above exception, another exception occurred:\n\n    def test_function_name():\n        \"\"\"Tests the div function with various inputs, including division by zero.\"\"\"\n        assert exercise.div(10, 2) == 5\n        assert exercise.div(20, 5) == 4\n        assert exercise.div(-10, 2) == -5\n        assert exercise.div(10, -2) == -5\n        assert exercise.div(0, 5) == 0\n        # Test division by zero\n    \n        msg = \"0\uc73c\ub85c \ub098\ub204\ub824\uace0 \ud558\uba74 'Cannot divide by zero'\ub77c\ub294 \ubb38\uc790\uc5f4\uc744 \ub300\uc2e0 \ubc18\ud658 \ubc14\ub78d\ub2c8\ub2e4.\"\n    \n        try:\n            assert exercise.div(5, 0) == 'Cannot divide by zero', msg\n        except ZeroDivisionError:\n>           pytest.fail(msg)\nE           Failed: 0\uc73c\ub85c \ub098\ub204\ub824\uace0 \ud558\uba74 'Cannot divide by zero'\ub77c\ub294 \ubb38\uc790\uc5f4\uc744 \ub300\uc2e0 \ubc18\ud658 \ubc14\ub78d\ub2c8\ub2e4.\n\ntests/test_file_name.py:66: Failed"
+            },
+            "teardown": {
+                "duration": "REDACTED",
+                "outcome": "passed",
+                "longrepr": "REDACTED"
+            }
+        }
+    ]
+}
