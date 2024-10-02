@@ -105,6 +105,11 @@ def gemini_qna(
     Returns:
         A string containing the feedback from Gemini.
     '''
+    logging.info("Starting Gemini Q&A process...")
+    logging.info(f"Report paths: {report_paths}")
+    logging.info(f"Student files: {student_files}")
+    logging.info(f"Readme file: {readme_file}")
+
     answers = None
     try:
         message_count = 0
@@ -114,6 +119,7 @@ def gemini_qna(
 
         # Process each report file
         for report_path in report_paths:
+            logging.info(f"Processing report file: {report_path}")
             data = json.loads(report_path.read_text())
 
             longrepr_list = collect_longrepr(data)
