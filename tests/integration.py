@@ -24,14 +24,20 @@ def get_github_output(output_name:str) -> str:
     '''
     result = None
 
+    found_keys = []
+
     with open(os.environ['GITHUB_OUTPUT'], 'r') as f:
         for line in f:
             key, value = line.strip().split('=')
+            found_keys.append(key)
             if key == output_name:
                 result = value
 
     if result is None:
-        logging.warning(f'Output {output_name} not found in GITHUB_OUTPUT file')
+        logging.warning(
+            f'Output {output_name} not found in GITHUB_OUTPUT file\n'
+            f'Keys found: {found_keys}'
+        )
 
     return result  # Or raise an exception if the output is not found
 
