@@ -36,7 +36,8 @@ def main() -> None:
 
     # Write the feedback to the environment file
     with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-        print(f'feedback={feedback}', file=f)
+        out_string = f'feedback={feedback}'
+        logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
