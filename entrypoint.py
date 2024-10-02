@@ -34,6 +34,8 @@ def main() -> None:
 
     feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file)
 
+    print(feedback)
+
     # Write the feedback to the environment file
     with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
         out_string = f'feedback={feedback}'
