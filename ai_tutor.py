@@ -145,10 +145,10 @@ def get_the_question(
     
     questions = (
         # Add the initial instruction
-        [get_initial_instruction(questions, human_language), get_question_header(human_language)]
+        [get_initial_instruction(questions, human_language), get_report_header(human_language)]
         + questions
         # Add the code and instructions
-        + [get_question_footer(human_language), get_code_instruction(student_files, readme_file, human_language)]
+        + [get_report_footer(human_language), get_code_instruction(student_files, readme_file, human_language)]
     )
 
     # Join all questions into a single string
@@ -186,12 +186,12 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
 @functools.lru_cache
 def get_question(longrepr:str, human_language:str,) -> str:
     return (
-        get_question_header(human_language) + f"{longrepr}\n" + get_question_footer(human_language)
+        get_report_header(human_language) + f"{longrepr}\n" + get_report_footer(human_language)
     )
 
 
 @functools.lru_cache
-def get_question_header(human_language:str) -> str:
+def get_report_header(human_language:str) -> str:
     d = {
         'Korean': "오류 메시지 시작",
         'English': "Error Message Start",
@@ -208,7 +208,7 @@ def get_question_header(human_language:str) -> str:
 
 
 @functools.lru_cache
-def get_question_footer(human_language:str) -> str:
+def get_report_footer(human_language:str) -> str:
     d = {
         'Korean': "오류 메시지 끝",
         'English': "Error Message End",

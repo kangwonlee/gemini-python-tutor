@@ -98,8 +98,8 @@ def test_get_instruction(human_language, homework,):
     assert homework in result.lower()
 
 
-@pytest.mark.parametrize("func", (ai_tutor.get_question_header, ai_tutor.get_question_footer))
-def test_get_question_header_footer(human_language, msg, func):
+@pytest.mark.parametrize("func", (ai_tutor.get_report_header, ai_tutor.get_report_footer))
+def test_get_report__header__footer(human_language, msg, func):
 
     result = func(human_language=human_language)
 
