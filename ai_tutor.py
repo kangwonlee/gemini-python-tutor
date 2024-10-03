@@ -111,7 +111,7 @@ def gemini_qna(
 
     message_count = 0
     questions = [
-        get_instruction(human_language)
+        get_directive(human_language)
     ]  # Collect all questions in a list
 
     # Process each report file
@@ -136,7 +136,7 @@ def gemini_qna(
 
 
 @functools.lru_cache
-def get_instruction(human_language:str='Korean') -> str:
+def get_directive(human_language:str='Korean') -> str:
     d = {
         'Korean': '숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.',
         'English': 'Explain in beginner terms, without duplicates, the cause of the error in the code submitted as homework.',

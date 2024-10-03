@@ -65,7 +65,7 @@ def int_homework(request):
 
 def test_get_instruction(int_homework):
     human_language, signature = int_homework
-    result = ai_tutor.get_instruction(human_language=human_language)
+    result = ai_tutor.get_directive(human_language=human_language)
 
     assert signature in result.lower()
 
