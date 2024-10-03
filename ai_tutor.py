@@ -87,7 +87,7 @@ def gemini_qna(
         student_files:List[pathlib.Path],
         readme_file:pathlib.Path,
         api_key:str,
-        human_language:str='Korean',
+        explanation_in:str='Korean',
     ) -> str:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
@@ -109,7 +109,7 @@ def gemini_qna(
         report_paths,
         student_files,
         readme_file,
-        human_language
+        explanation_in
     )
 
     answers = ask_gemini(consolidated_question, api_key)
@@ -121,7 +121,7 @@ def get_the_question(
         report_paths:Tuple[pathlib.Path],
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
-        human_language:str,
+        explanation_in:str,
     ) -> str:
     questions = []
 
@@ -145,10 +145,10 @@ def get_the_question(
     
     questions = (
         # Add the initial instruction
-        [get_initial_instruction(questions, human_language), get_report_header(human_language)]
+        [get_initial_instruction(questions, explanation_in), get_report_header(explanation_in)]
         + questions
         # Add the code and instructions
-        + [get_report_footer(human_language), get_code_instruction(student_files, readme_file, human_language)]
+        + [get_report_footer(explanation_in), get_code_instruction(student_files, readme_file, explanation_in)]
     )
 
     # Join all questions into a single string
@@ -158,7 +158,7 @@ def get_the_question(
 
 
 @functools.lru_cache
-def get_directive(human_language:str) -> str:
+def get_directive(explanation_in:str) -> str:
     d = {
         'Korean': '숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.',
         'English': 'Explain in beginner terms, without duplicates, the cause of the error in the code submitted as homework.',
@@ -169,7 +169,7 @@ def get_directive(human_language:str) -> str:
         'German': 'Erklären Sie in Anfängerterminologie ohne Duplikate die Ursache des Fehlers im als Hausaufgabe eingereichten Code.',
         'Thai': 'อธิบายด้วยภาษาของผู้เริ่มต้นโดยไม่ซ้ำซ้อนว่าสาเหตุของข้อผิดพลาดในรหัสที่ส่งเป็นการบ้านคืออะไร',
     }
-    return f"{d[human_language]}\n"
+    return f"{d[explanation_in]}\n"
 
 
 def collect_longrepr(data:Dict[str, str]) -> List[str]:
@@ -184,14 +184,14 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
 
 
 @functools.lru_cache
-def get_question(longrepr:str, human_language:str,) -> str:
+def get_question(longrepr:str, explanation_in:str,) -> str:
     return (
-        get_report_header(human_language) + f"{longrepr}\n" + get_report_footer(human_language)
+        get_report_header(explanation_in) + f"{longrepr}\n" + get_report_footer(explanation_in)
     )
 
 
 @functools.lru_cache
-def get_report_header(human_language:str) -> str:
+def get_report_header(explanation_in:str) -> str:
     d = {
         'Korean': "오류 메시지 시작",
         'English': "Error Message Start",
@@ -203,12 +203,12 @@ def get_report_header(human_language:str) -> str:
         'Thai': "ข้อความผิดพลาดเริ่มต้น",
     }
     return (
-        f"## {d[human_language]}\n"
+        f"## {d[explanation_in]}\n"
     )
 
 
 @functools.lru_cache
-def get_report_footer(human_language:str) -> str:
+def get_report_footer(explanation_in:str) -> str:
     d = {
         'Korean': "오류 메시지 끝",
         'English': "Error Message End",
@@ -220,7 +220,7 @@ def get_report_footer(human_language:str) -> str:
         'Thai': "ข้อความผิดพลาดสิ้นสุด",
     }
     return (
-        f"## {d[human_language]}\n"
+        f"## {d[explanation_in]}\n"
     )
 
 
@@ -228,7 +228,7 @@ def get_report_footer(human_language:str) -> str:
 def get_code_instruction(
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
-        human_language:str,
+        explanation_in:str,
     ) -> str:
 
     d_homework_start = {
@@ -276,12 +276,12 @@ def get_code_instruction(
     }
 
     return (
-        f"\n\n## {d_homework_start[human_language]}\n"
+        f"\n\n## {d_homework_start[explanation_in]}\n"
         f"{assignment_code(student_files)}\n"
-        f"## {d_homework_end[human_language]}\n"
-        f"## {d_instruction_start[human_language]}\n"
+        f"## {d_homework_end[explanation_in]}\n"
+        f"## {d_instruction_start[explanation_in]}\n"
         f"{assignment_instruction(readme_file)}\n"
-        f"## {d_instruction_end[human_language]}\n"
+        f"## {d_instruction_end[explanation_in]}\n"
     )
 
 

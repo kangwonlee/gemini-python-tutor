@@ -58,12 +58,12 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
 
 
 @pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Thai'))
-def human_language(request) -> str:
+def explanation_in(request) -> str:
     return request.param.capitalize()
 
 
 @pytest.fixture
-def homework(human_language:str) -> str:
+def homework(explanation_in:str) -> str:
     d = {
         'Korean': '숙제',
         'English': 'Homework',
@@ -74,11 +74,11 @@ def homework(human_language:str) -> str:
         'German': 'Hausaufgabe',
         'Thai': 'การบ้าน',
     }    
-    return d[human_language].lower()
+    return d[explanation_in].lower()
 
 
 @pytest.fixture
-def msg(human_language:str) -> str:
+def msg(explanation_in:str) -> str:
     d = {
         'Korean': '메시지',
         'English': 'Message',
@@ -89,19 +89,19 @@ def msg(human_language:str) -> str:
         'German': 'Fehlermeldung',
         'Thai': 'ข้อความ',
     }
-    return d[human_language].lower()
+    return d[explanation_in].lower()
 
 
-def test_get_instruction(human_language, homework,):
-    result = ai_tutor.get_directive(human_language=human_language)
+def test_get_instruction(explanation_in, homework,):
+    result = ai_tutor.get_directive(explanation_in=explanation_in)
 
     assert homework in result.lower()
 
 
 @pytest.mark.parametrize("func", (ai_tutor.get_report_header, ai_tutor.get_report_footer))
-def test_get_report__header__footer(human_language, msg, func):
+def test_get_report__header__footer(explanation_in, msg, func):
 
-    result = func(human_language=human_language)
+    result = func(explanation_in=explanation_in)
 
     assert msg in result.lower()
 
@@ -117,7 +117,7 @@ def sample_readme_path() -> pathlib.Path:
 
 
 @pytest.fixture
-def instruction(human_language:str) -> str:
+def instruction(explanation_in:str) -> str:
     d = {
         'Korean': '지침',
         'English': 'Instruction',
@@ -128,13 +128,13 @@ def instruction(human_language:str) -> str:
         'German': 'Aufgabenanweisung',
         'Thai': 'แนะนำ',
     }
-    return d[human_language].lower()
+    return d[explanation_in].lower()
 
 
 def test_get_code_instruction(
         sample_student_code_path:pathlib.Path,
         sample_readme_path:pathlib.Path,
-        human_language:str,
+        explanation_in:str,
         homework:str,
         instruction:str,
     ):
@@ -142,7 +142,7 @@ def test_get_code_instruction(
     result = ai_tutor.get_code_instruction(
         student_files = (sample_student_code_path,),
         readme_file = sample_readme_path,
-        human_language=human_language
+        explanation_in=explanation_in
     ).lower()
 
     assert homework in result
@@ -154,7 +154,7 @@ def test_get_the_question(
         div_zero_report_path:pathlib.Path,
         sample_student_code_path:pathlib.Path,
         sample_readme_path:pathlib.Path,
-        human_language:str,
+        explanation_in:str,
         homework:str, msg:str,
         instruction:str,
     ):
@@ -162,7 +162,7 @@ def test_get_the_question(
         report_paths=(sample_report_path,div_zero_report_path),
         student_files=(sample_student_code_path,),
         readme_file=sample_readme_path,
-        human_language=human_language,
+        explanation_in=explanation_in,
     ).lower()
 
     assert homework in result
