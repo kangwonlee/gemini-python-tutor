@@ -29,16 +29,23 @@ def main() -> None:
     readme_file = pathlib.Path(readme_file_str)
     assert readme_file.exists(), 'No README file'
 
-    assert 'INPUT_API-KEY' in os.environ, os.environ.keys()
     api_key = os.environ['INPUT_API-KEY']
 
-    feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file, api_key)
+    explanation_in = os.environ['INPUT_EXPLANATION-IN']
+
+    feedback = ai_tutor.gemini_qna(
+        report_files,
+        student_files,
+        readme_file,
+        api_key,
+        explanation_in
+    )
 
     print(feedback)
 
     # Write the feedback to the environment file
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-        out_string = f'feedback={feedback}'
+    with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+        out_string = f'feedback<<EOF\n{feedback}\nEOF'
         logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
 
 

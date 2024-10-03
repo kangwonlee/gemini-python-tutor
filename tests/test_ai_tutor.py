@@ -22,8 +22,13 @@ import ai_tutor
 
 
 @pytest.fixture
-def json_dict() -> Dict[str, Union[str, List]]:
-    with open(test_folder/'sample_report.json', 'r') as f:
+def sample_report_path() -> pathlib.Path:
+    return test_folder/'sample_report.json'
+
+
+@pytest.fixture
+def json_dict(sample_report_path) -> Dict[str, Union[str, List]]:
+    with sample_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
@@ -35,8 +40,13 @@ def test_collect_longrepr(json_dict):
 
 
 @pytest.fixture
-def json_dict_div_zero_try_except() -> Dict[str, Union[str, List]]:
-    with open(test_folder/'json_dict_div_zero_try_except.json', 'r') as f:
+def div_zero_report_path() -> pathlib.Path:
+    return test_folder/'json_dict_div_zero_try_except.json'
+
+
+@pytest.fixture
+def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> Dict[str, Union[str, List]]:
+    with div_zero_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
@@ -45,6 +55,119 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     result = ai_tutor.collect_longrepr(json_dict_div_zero_try_except)
 
     assert result
+
+
+@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Thai'))
+def explanation_in(request) -> str:
+    return request.param.capitalize()
+
+
+@pytest.fixture
+def homework(explanation_in:str) -> str:
+    d = {
+        'Korean': '숙제',
+        'English': 'Homework',
+        'Japanese': '宿題',
+        'Chinese': '作业',
+        'Spanish': 'Tarea',
+        'French': 'Devoir',
+        'German': 'Hausaufgabe',
+        'Thai': 'การบ้าน',
+    }    
+    return d[explanation_in].lower()
+
+
+@pytest.fixture
+def msg(explanation_in:str) -> str:
+    d = {
+        'Korean': '메시지',
+        'English': 'Message',
+        'Japanese': 'メッセ',
+        'Chinese': '消息',
+        'Spanish': 'Mensaje',
+        'French': 'Message',
+        'German': 'Fehlermeldung',
+        'Thai': 'ข้อความ',
+    }
+    return d[explanation_in].lower()
+
+
+def test_get_instruction(explanation_in, homework,):
+    result = ai_tutor.get_directive(explanation_in=explanation_in)
+
+    assert homework in result.lower()
+
+
+@pytest.mark.parametrize("func", (ai_tutor.get_report_header, ai_tutor.get_report_footer))
+def test_get_report__header__footer(explanation_in, msg, func):
+
+    result = func(explanation_in=explanation_in)
+
+    assert msg in result.lower()
+
+
+@pytest.fixture
+def sample_student_code_path() -> pathlib.Path:
+    return test_folder/'sample_code.py'
+
+
+@pytest.fixture
+def sample_readme_path() -> pathlib.Path:
+    return test_folder/'sample_readme.md'
+
+
+@pytest.fixture
+def instruction(explanation_in:str) -> str:
+    d = {
+        'Korean': '지침',
+        'English': 'Instruction',
+        'Japanese': '指示',
+        'Chinese': '说明',
+        'Spanish': 'instrucción',
+        'French': 'instruction',
+        'German': 'Aufgabenanweisung',
+        'Thai': 'แนะนำ',
+    }
+    return d[explanation_in].lower()
+
+
+def test_get_code_instruction(
+        sample_student_code_path:pathlib.Path,
+        sample_readme_path:pathlib.Path,
+        explanation_in:str,
+        homework:str,
+        instruction:str,
+    ):
+
+    result = ai_tutor.get_code_instruction(
+        student_files = (sample_student_code_path,),
+        readme_file = sample_readme_path,
+        explanation_in=explanation_in
+    ).lower()
+
+    assert homework in result
+    assert instruction in result
+
+
+def test_get_the_question(
+        sample_report_path:pathlib.Path,
+        div_zero_report_path:pathlib.Path,
+        sample_student_code_path:pathlib.Path,
+        sample_readme_path:pathlib.Path,
+        explanation_in:str,
+        homework:str, msg:str,
+        instruction:str,
+    ):
+    result = ai_tutor.get_the_question(
+        report_paths=(sample_report_path,div_zero_report_path),
+        student_files=(sample_student_code_path,),
+        readme_file=sample_readme_path,
+        explanation_in=explanation_in,
+    ).lower()
+
+    assert homework in result
+    assert msg in result
+    assert instruction in result
 
 
 if '__main__' == __name__:

@@ -19,6 +19,7 @@ import entrypoint
 def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) -> None:
     # Setup
     os.environ['INPUT_API-KEY'] = 'test_key'
+    os.environ['INPUT_EXPLANATION-IN'] = 'Korean'
 
     os.environ['GITHUB_OUTPUT'] = str(tmp_path / 'output.txt')
 
@@ -49,6 +50,7 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
         (tmp_path / 'file4.txt', tmp_path / 'file5.txt', tmp_path / 'file6.txt'),
         tmp_path / 'readme.txt',
         'test_key',
+        'Korean',
     )
 
     assert 'does not exist' not in caplog.text
