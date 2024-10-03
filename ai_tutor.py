@@ -135,6 +135,7 @@ def gemini_qna(
     return answers
 
 
+@functools.lru_cache
 def get_instruction(human_language:str='Korean') -> str:
     d = {
         'Korean': '숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.',
@@ -160,6 +161,7 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
     return longrepr_list
 
 
+@functools.lru_cache
 def get_question(longrepr:str, human_language:str='Korean',) -> str:
     return (
         get_question_header(human_language) + f"{longrepr}\n" + get_question_footer(human_language)
@@ -200,6 +202,7 @@ def get_question_footer(human_language:str='Korean') -> str:
     )
 
 
+@functools.lru_cache
 def get_code_instruction(
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
