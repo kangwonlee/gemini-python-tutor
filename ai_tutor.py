@@ -137,7 +137,10 @@ def get_the_question(
     def get_initial_instruction(questions:List[str],language:str) -> str:
         # Add the main directive or instruction based on whether there are failed tests
         if questions:
-            initial_instruction = get_directive(language)
+            initial_instruction = (
+                get_directive(language) + '\n' +
+                'Please understand that only student files can be changed.'
+            )
         else:
             initial_instruction = f'In {language}, please comment on the student code given the assignment instruction.'
         return initial_instruction
