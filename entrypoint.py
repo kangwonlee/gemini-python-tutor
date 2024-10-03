@@ -29,10 +29,17 @@ def main() -> None:
     readme_file = pathlib.Path(readme_file_str)
     assert readme_file.exists(), 'No README file'
 
-    assert 'INPUT_API-KEY' in os.environ, os.environ.keys()
     api_key = os.environ['INPUT_API-KEY']
 
-    feedback = ai_tutor.gemini_qna(report_files, student_files, readme_file, api_key)
+    explanation_in = os.environ['INPUT_EXPLANATION-IN']
+
+    feedback = ai_tutor.gemini_qna(
+        report_files,
+        student_files,
+        readme_file,
+        api_key,
+        explanation_in
+    )
 
     print(feedback)
 
