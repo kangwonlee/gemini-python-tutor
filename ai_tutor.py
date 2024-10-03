@@ -109,11 +109,7 @@ def gemini_qna(
 
     answers = None
 
-    message_count = 0
-    questions = [
-        get_directive(human_language)
-    ]  # Collect all questions in a list
-
+    questions = []
     # Process each report file
     for report_path in report_paths:
         logging.info(f"Processing report file: {report_path}")
@@ -121,16 +117,18 @@ def gemini_qna(
 
         longrepr_list = collect_longrepr(data)
 
-        message_count += len(longrepr_list)
         questions += longrepr_list
 
     # Query Gemini with consolidated questions if there are any
-    if message_count:
-        consolidated_question = (
-            "\n\n".join(questions)
-            + get_code_instruction(student_files, readme_file, human_language)
-        )  # Add code & instruction only once
-        answers = ask_gemini(consolidated_question, api_key)
+    if questions:
+        questions.insert(0, get_directive(human_language))
+    else:
+        questions.insert(0, f'In {human_language}, please comment on the student code given the assignment instruction.')
+
+    questions.append(get_code_instruction(student_files, readme_file, human_language))
+    consolidated_question = "\n\n".join(questions)
+
+    answers = ask_gemini(consolidated_question, api_key)
 
     return answers
 
