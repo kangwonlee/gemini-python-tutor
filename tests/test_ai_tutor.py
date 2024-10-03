@@ -47,52 +47,53 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     assert result
 
 
-@pytest.fixture(
-    params=(
-        ('Korean', '숙제'),
-        ('English', 'Homework'),
-        ('Japanese', '宿題'),
-        ('Chinese', '作业'),
-        ('Spanish', 'Tarea'),
-        ('French', 'Devoir'),
-        ('German', 'Hausaufgabe'),
-       ('Thai', 'การบ้าน'),
-    )
-)
-def int_homework(request):
-    return request.param[0].capitalize(), request.param[1].lower()
+@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Thai'))
+def human_language(request) -> str:
+    return request.param.capitalize()
 
 
-def test_get_instruction(int_homework):
-    human_language, signature = int_homework
+@pytest.fixture
+def homework(human_language:str) -> str:
+    d = {
+        'Korean': '숙제',
+        'English': 'Homework',
+        'Japanese': '宿題',
+        'Chinese': '作业',
+        'Spanish': 'Tarea',
+        'French': 'Devoir',
+        'German': 'Hausaufgabe',
+        'Thai': 'การบ้าน',
+    }    
+    return d[human_language].lower()
+
+
+@pytest.fixture
+def msg(human_language:str) -> str:
+    d = {
+        'Korean': '메시지',
+        'English': 'Message',
+        'Japanese': 'メッセ',
+        'Chinese': '消息',
+        'Spanish': 'Mensaje',
+        'French': 'Message',
+        'German': 'Fehlermeldung',
+        'Thai': 'ข้อความ',
+    }
+    return d[human_language].lower()
+
+
+def test_get_instruction(human_language, homework,):
     result = ai_tutor.get_directive(human_language=human_language)
 
-    assert signature in result.lower()
-
-
-@pytest.fixture(
-    params=(
-        ('Korean', '메시지'),
-        ('English', 'Message'),
-        ('Japanese', 'メッセ'),
-        ('Chinese', '消息'),
-        ('Spanish', 'Mensaje'),
-        ('French', 'Message'),
-        ('German', 'Fehlermeldung'),
-       ('Thai', 'ข้อความ'),
-    )
-)
-def int_msg(request):
-    return request.param[0].capitalize(), request.param[1].lower()
+    assert homework in result.lower()
 
 
 @pytest.mark.parametrize("func", (ai_tutor.get_question_header, ai_tutor.get_question_footer))
-def test_get_question_header_footer(int_msg, func):
-    human_language, signature = int_msg
+def test_get_question_header_footer(human_language, msg, func):
 
     result = func(human_language=human_language)
 
-    assert signature in result.lower()
+    assert msg in result.lower()
 
 
 if '__main__' == __name__:
