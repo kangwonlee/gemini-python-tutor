@@ -96,5 +96,48 @@ def test_get_question_header_footer(human_language, msg, func):
     assert msg in result.lower()
 
 
+@pytest.fixture
+def sample_student_code_path() -> pathlib.Path:
+    return test_folder/'sample_code.py'
+
+
+@pytest.fixture
+def sample_readme_path() -> pathlib.Path:
+    return test_folder/'sample_readme.md'
+
+
+@pytest.fixture
+def instruction(human_language:str) -> str:
+    d = {
+        'Korean': '지침',
+        'English': 'Instruction',
+        'Japanese': '指示',
+        'Chinese': '说明',
+        'Spanish': 'instrucción',
+        'French': 'instruction',
+        'German': 'Aufgabenanweisung',
+        'Thai': 'แนะนำ',
+    }
+    return d[human_language].lower()
+
+
+def test_get_code_instruction(
+        sample_student_code_path:pathlib.Path,
+        sample_readme_path:pathlib.Path,
+        human_language:str,
+        homework:str,
+        instruction:str,
+    ):
+
+    result = ai_tutor.get_code_instruction(
+        student_files = (sample_student_code_path,),
+        readme_file = sample_readme_path,
+        human_language=human_language
+    ).lower()
+
+    assert homework in result
+    assert instruction in result
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
