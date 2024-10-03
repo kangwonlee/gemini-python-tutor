@@ -125,7 +125,7 @@ def gemini_qna(
         questions += longrepr_list
 
     # Query Gemini with consolidated questions if there are any
-    if questions:
+    if message_count:
         consolidated_question = (
             "\n\n".join(questions)
             + get_code_instruction(student_files, readme_file, human_language)
