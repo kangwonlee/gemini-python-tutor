@@ -82,10 +82,11 @@ def int_msg(request):
     return request.param
 
 
-def test_get_question_header(int_msg):
+@pytest.mark.parametrize("func", (ai_tutor.get_question_header, ai_tutor.get_question_footer))
+def test_get_question_header_footer(int_msg, func):
     human_language, signature = int_msg
 
-    result = ai_tutor.get_question_header(human_language=human_language)
+    result = func(human_language=human_language)
 
     assert signature in result
 
