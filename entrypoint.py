@@ -44,8 +44,8 @@ def main() -> None:
     print(feedback)
 
     # Write the feedback to the environment file
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-        out_string = f'feedback={feedback}'
+    with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+        out_string = f'feedback<<EOF\n{feedback}\nEOF'
         logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
 
 
