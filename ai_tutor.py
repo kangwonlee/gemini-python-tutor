@@ -136,7 +136,7 @@ def gemini_qna(
 
 
 @functools.lru_cache
-def get_directive(human_language:str='Korean') -> str:
+def get_directive(human_language:str) -> str:
     d = {
         'Korean': '숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.',
         'English': 'Explain in beginner terms, without duplicates, the cause of the error in the code submitted as homework.',
@@ -162,14 +162,14 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
 
 
 @functools.lru_cache
-def get_question(longrepr:str, human_language:str='Korean',) -> str:
+def get_question(longrepr:str, human_language:str,) -> str:
     return (
         get_question_header(human_language) + f"{longrepr}\n" + get_question_footer(human_language)
     )
 
 
 @functools.lru_cache
-def get_question_header(human_language:str='Korean') -> str:
+def get_question_header(human_language:str) -> str:
     d = {
         'Korean': "오류 메시지 시작",
         'English': "Error Message Start",
@@ -186,7 +186,7 @@ def get_question_header(human_language:str='Korean') -> str:
 
 
 @functools.lru_cache
-def get_question_footer(human_language:str='Korean') -> str:
+def get_question_footer(human_language:str) -> str:
     d = {
         'Korean': "오류 메시지 끝",
         'English': "Error Message End",
@@ -206,7 +206,7 @@ def get_question_footer(human_language:str='Korean') -> str:
 def get_code_instruction(
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
-        human_language:str='Korean',
+        human_language:str,
     ) -> str:
 
     d_homework_start = {
