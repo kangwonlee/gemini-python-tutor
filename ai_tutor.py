@@ -142,10 +142,14 @@ def get_the_question(
             initial_instruction = f'In {language}, please comment on the student code given the assignment instruction.'
         return initial_instruction
 
-    questions = [get_initial_instruction(questions, human_language)] + questions
-
-    # Add the code and instructions
-    questions.append(get_code_instruction(student_files, readme_file, human_language))
+    
+    questions = (
+        # Add the initial instruction
+        [get_initial_instruction(questions, human_language), get_question_header(human_language)]
+        + questions
+        # Add the code and instructions
+        + [get_question_footer(human_language), get_code_instruction(student_files, readme_file, human_language)]
+    )
 
     # Join all questions into a single string
     consolidated_question = "\n\n".join(questions)

@@ -22,8 +22,13 @@ import ai_tutor
 
 
 @pytest.fixture
-def json_dict() -> Dict[str, Union[str, List]]:
-    with open(test_folder/'sample_report.json', 'r') as f:
+def sample_report_path() -> pathlib.Path:
+    return test_folder/'sample_report.json'
+
+
+@pytest.fixture
+def json_dict(sample_report_path) -> Dict[str, Union[str, List]]:
+    with sample_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
@@ -35,8 +40,13 @@ def test_collect_longrepr(json_dict):
 
 
 @pytest.fixture
-def json_dict_div_zero_try_except() -> Dict[str, Union[str, List]]:
-    with open(test_folder/'json_dict_div_zero_try_except.json', 'r') as f:
+def div_zero_report_path() -> pathlib.Path:
+    return test_folder/'json_dict_div_zero_try_except.json'
+
+
+@pytest.fixture
+def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> Dict[str, Union[str, List]]:
+    with div_zero_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
@@ -136,6 +146,27 @@ def test_get_code_instruction(
     ).lower()
 
     assert homework in result
+    assert instruction in result
+
+
+def test_get_the_question(
+        sample_report_path:pathlib.Path,
+        div_zero_report_path:pathlib.Path,
+        sample_student_code_path:pathlib.Path,
+        sample_readme_path:pathlib.Path,
+        human_language:str,
+        homework:str, msg:str,
+        instruction:str,
+    ):
+    result = ai_tutor.get_the_question(
+        report_paths=(sample_report_path,div_zero_report_path),
+        student_files=(sample_student_code_path,),
+        readme_file=sample_readme_path,
+        human_language=human_language,
+    ).lower()
+
+    assert homework in result
+    assert msg in result
     assert instruction in result
 
 
