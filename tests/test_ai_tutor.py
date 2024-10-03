@@ -66,5 +66,29 @@ def test_get_instruction(human_language:str, signature:str):
     assert signature in result
 
 
+@pytest.fixture(
+    params=(
+        ('Korean', '메시지'),
+        ('English', 'Message'),
+        ('Japanese', 'メッセ'),
+        ('Chinese', '消息'),
+        ('Spanish', 'Mensaje'),
+        ('French', 'Message'),
+        ('German', 'Fehlermeldung'),
+       ('Thai', 'ข้อความ'),
+    )
+)
+def int_msg(request):
+    return request.param
+
+
+def test_get_question_header(int_msg):
+    human_language, signature = int_msg
+
+    result = ai_tutor.get_question_header(human_language=human_language)
+
+    assert signature in result
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
