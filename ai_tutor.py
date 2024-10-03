@@ -107,9 +107,26 @@ def gemini_qna(
     logging.info(f"Student files: {student_files}")
     logging.info(f"Readme file: {readme_file}")
 
-    answers = None
+    consolidated_question = get_the_question(
+        report_paths,
+        student_files,
+        readme_file,
+        human_language
+    )
 
+    answers = ask_gemini(consolidated_question, api_key)
+
+    return answers
+
+
+def get_the_question(
+        report_paths:Tuple[pathlib.Path],
+        student_files:Tuple[pathlib.Path],
+        readme_file:pathlib.Path,
+        human_language:str,
+    ) -> str:
     questions = []
+
     # Process each report file
     for report_path in report_paths:
         logging.info(f"Processing report file: {report_path}")
@@ -126,11 +143,10 @@ def gemini_qna(
         questions.insert(0, f'In {human_language}, please comment on the student code given the assignment instruction.')
 
     questions.append(get_code_instruction(student_files, readme_file, human_language))
+
     consolidated_question = "\n\n".join(questions)
 
-    answers = ask_gemini(consolidated_question, api_key)
-
-    return answers
+    return consolidated_question
 
 
 @functools.lru_cache
