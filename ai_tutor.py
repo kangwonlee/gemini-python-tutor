@@ -89,6 +89,7 @@ def gemini_qna(
         student_files:List[pathlib.Path],
         readme_file:pathlib.Path,
         api_key:str,
+        human_language:str='Korean',
     ) -> str:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
@@ -110,7 +111,7 @@ def gemini_qna(
 
     message_count = 0
     questions = [
-        "# 숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.:\n"
+        get_instruction(human_language)
     ]  # Collect all questions in a list
 
     # Process each report file
@@ -127,11 +128,25 @@ def gemini_qna(
     if questions:
         consolidated_question = (
             "\n\n".join(questions)
-            + get_code_instruction(student_files, readme_file)
+            + get_code_instruction(student_files, readme_file, human_language)
         )  # Add code & instruction only once
         answers = ask_gemini(consolidated_question, api_key)
 
     return answers
+
+
+def get_instruction(human_language:str='Korean') -> str:
+    d = {
+        'Korean': '숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.',
+        'English': 'Explain in beginner terms, without duplicates, the cause of the error in the code submitted as homework.',
+        'Japanese': '宿題の回答として提出されたコードがエラーの原因を、初心者向けの用語で重複なく簡潔に説明してください。',
+        'Chinese': '请用初学者术语简洁地解释作业提交的代码出错的原因，不要重复。',
+        'Spanish': 'Explique en términos para principiantes, sin duplicados, la causa del error en el código enviado como tarea.',
+        'French': '''Expliquez en termes de débutant, sans doublons, la cause de l'erreur dans le code soumis comme devoir.''',
+        'German': 'Erklären Sie in Anfängerterminologie ohne Duplikate die Ursache des Fehlers im als Hausaufgabe eingereichten Code.',
+        'Thai': 'อธิบายด้วยภาษาของผู้เริ่มต้นโดยไม่ซ้ำซ้อนว่าสาเหตุของข้อผิดพลาดในรหัสที่ส่งเป็นการบ้านคืออะไร',
+    }
+    return f"{d[human_language]}\n"
 
 
 def collect_longrepr(data:Dict[str, str]) -> List[str]:
@@ -145,37 +160,103 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
     return longrepr_list
 
 
-def get_question(longrepr:str) -> str:
+def get_question(longrepr:str, human_language:str='Korean',) -> str:
     return (
-        get_question_header() + f"{longrepr}\n" + get_question_footer()
+        get_question_header(human_language) + f"{longrepr}\n" + get_question_footer(human_language)
     )
 
 
 @functools.lru_cache
-def get_question_header() -> str:
+def get_question_header(human_language:str='Korean') -> str:
+    d = {
+        'Korean': "오류 메시지 시작",
+        'English': "Error Message Start",
+        'Japanese': "エラーメッセージ開始",
+        'Chinese': "错误消息开始",
+        'Spanish': "Mensaje de error comienza",
+        'French': '''Message d'erreur commence''',
+        'German': "Fehlermeldung beginnt",
+        'Thai': "ข้อความผิดพลาดเริ่มต้น",
+    }
     return (
-        "## 오류 메시지 시작\n"
+        f"## {d[human_language]}\n"
     )
 
 
 @functools.lru_cache
-def get_question_footer() -> str:
+def get_question_footer(human_language:str='Korean') -> str:
+    d = {
+        'Korean': "오류 메시지 끝",
+        'English': "Error Message End",
+        'Japanese': "エラーメッセージ終わり",
+        'Chinese': "错误消息结束",
+        'Spanish': "Mensaje de error termina",
+        'French': '''Message d'erreur fin''',
+        'German': "Fehlermeldung endet",
+        'Thai': "ข้อความผิดพลาดสิ้นสุด",
+    }
     return (
-        "## 오류 메시지 끝\n"
+        f"## {d[human_language]}\n"
     )
 
 
 def get_code_instruction(
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
+        human_language:str='Korean',
     ) -> str:
+
+    d_homework_start = {
+        'Korean': "숙제 제출 코드 시작",
+        'English': "Homework Submission Code Start",
+        'Japanese': "宿題提出コード開始",
+        'Chinese': "作业提交代码开始",
+        'Spanish': "Inicio del código de envío de tareas",
+        'French': '''Début du code de soumission des devoirs''',
+        'German': "Code für die Einreichung von Hausaufgaben von hier aus",
+        'Thai': "การส่งงานเริ่มต้น",
+    }
+
+    d_homework_end = {
+        'Korean': "숙제 제출 코드 끝",
+        'English': "Homework Submission Code End",
+        'Japanese': "宿題提出コード終わり",
+        'Chinese': "作业提交代码结束",
+        'Spanish': "Fin del código de envío de tareas",
+        'French': '''Fin du code de soumission des devoirs''',
+        'German': "Ende der Hausaufgaben-Einreichungscodes",
+        'Thai': "การส่งงานสิ้นสุด",
+    }
+
+    d_instruction_start = {
+        'Korean': "과제 지침 시작",
+        'English': "Assignment Instruction Start",
+        'Japanese': "課題指示開始",
+        'Chinese': "作业说明开始",
+        'Spanish': "Inicio de la instrucción de la tarea",
+        'French': '''Début de l'instruction de la tâche''',
+        'German': "Start der Aufgabenanweisung",
+        'Thai': "คำแนะนำการบ้านเริ่มต้น",
+    }
+
+    d_instruction_end = {
+        'Korean': "과제 지침 끝",
+        'English': "Assignment Instruction End",
+        'Japanese': "課題指示終わり",
+        'Chinese': "作业说明结束",
+        'Spanish': "Fin de la instrucción de la tarea",
+        'French': '''Fin de l'instruction de la tâche''',
+        'German': "Ende der Aufgabenanweisung",
+        'Thai': "คำแนะนำการบ้านสิ้นสุด",
+    }
+
     return (
-        "\n\n## 숙제 제출 코드 시작\n"
+        f"\n\n## {d_homework_start[human_language]}\n"
         f"{assignment_code(student_files)}\n"
-        "## 숙제 제출 코드 끝\n"
-        "## 과제 지침 시작\n"
+        f"## {d_homework_end[human_language]}\n"
+        f"## {d_instruction_start[human_language]}\n"
         f"{assignment_instruction(readme_file)}\n"
-        "## 과제 지침 끝\n"
+        f"## {d_instruction_end[human_language]}\n"
     )
 
 

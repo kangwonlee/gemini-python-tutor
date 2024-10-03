@@ -47,5 +47,24 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     assert result
 
 
+@pytest.mark.parametrize(
+    'human_language, signature',
+    (
+        ('Korean', '설명'),
+        ('English', 'Explain'),
+        ('Japanese', '説明'),
+        ('Chinese', '解释'),
+        ('Spanish', 'Explique'),
+        ('French', 'Expliquez'),
+        ('German', 'Erklären'),
+       ('Thai', 'อธิบาย'),
+    )
+)
+def test_get_instruction(human_language:str, signature:str):
+    result = ai_tutor.get_instruction(human_language=human_language)
+
+    assert signature in result
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
