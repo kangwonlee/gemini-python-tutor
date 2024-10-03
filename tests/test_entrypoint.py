@@ -3,7 +3,7 @@ import os
 import pathlib
 import sys
 
-from typing import Dict, Union, List, Tuple
+from typing import Tuple
 
 
 import pytest
