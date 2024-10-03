@@ -134,11 +134,15 @@ def get_the_question(
 
         questions += longrepr_list
 
-    # Add the main directive or instruction based on whether there are failed tests
-    if questions:
-        questions.insert(0, get_directive(human_language))
-    else:
-        questions.insert(0, f'In {human_language}, please comment on the student code given the assignment instruction.')
+    def get_initial_instruction(questions:List[str],language:str) -> str:
+        # Add the main directive or instruction based on whether there are failed tests
+        if questions:
+            initial_instruction = get_directive(language)
+        else:
+            initial_instruction = f'In {language}, please comment on the student code given the assignment instruction.'
+        return initial_instruction
+
+    questions = [get_initial_instruction(questions, human_language)] + questions
 
     # Add the code and instructions
     questions.append(get_code_instruction(student_files, readme_file, human_language))
