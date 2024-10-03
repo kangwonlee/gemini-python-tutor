@@ -1,12 +1,10 @@
 import functools
 import json
 import logging
-import os
 import pathlib
 import time
 
 from typing import Dict, List, Tuple
-
 
 import requests
 
@@ -136,14 +134,16 @@ def get_the_question(
 
         questions += longrepr_list
 
-    # Query Gemini with consolidated questions if there are any
+    # Add the main directive or instruction based on whether there are failed tests
     if questions:
         questions.insert(0, get_directive(human_language))
     else:
         questions.insert(0, f'In {human_language}, please comment on the student code given the assignment instruction.')
 
+    # Add the code and instructions
     questions.append(get_code_instruction(student_files, readme_file, human_language))
 
+    # Join all questions into a single string
     consolidated_question = "\n\n".join(questions)
 
     return consolidated_question
