@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * API key as a required input.
 * Future plans & more in README.md.
+* International support
+
 
 ### Changed
 * append integration step feedback output to the GITHUB_OUTPUT file of verification step.

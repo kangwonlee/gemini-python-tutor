@@ -56,6 +56,7 @@ jobs:
           api-key: ${{ secrets.GOOGLE_API_KEY }}
           student-files: exercise.py
           readme-path: README.md
+          explanation-in: English
         timeout-minutes: 5 
 
 ```
@@ -66,6 +67,7 @@ jobs:
 * `api-key`: Your Google API key. (Required)
 * `student-files`: Comma-separated list of Python files containing the student's code for review. (Required)
 * `readme-path`: Path to the assignment instructions (README.md). (Optional)
+* `explanation-in`: Language for explanations (e.g., English, Korean). (Optional, default: English)
 
 ### Example with multiple JSON files and student files
 ``` yaml
@@ -74,6 +76,7 @@ with:
   api-key: ${{ secrets.GOOGLE_API_KEY }}
   student-files: 'exercise1.py, exercise2.py' 
   readme-path: README.md
+  explanation-in: English
 ```
 
 ## Limitations

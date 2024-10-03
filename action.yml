@@ -25,6 +25,11 @@ inputs:
     required: false
     default: 'README.md'
     type: string
+  explanation-in:
+    description: 'Generate explanations in the specified language'
+    required: false
+    default: 'English'
+    type: string
 outputs:
   feedback:
     description: 'Feedback from the tutor'
