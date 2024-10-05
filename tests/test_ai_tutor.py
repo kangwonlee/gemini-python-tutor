@@ -99,6 +99,17 @@ def msg(explanation_in:str) -> str:
     return d[explanation_in].lower()
 
 
+def test_get_directive(explanation_in:str, homework:Tuple[str]):
+    result = ai_tutor.get_directive(explanation_in=explanation_in)
+
+    assert any(
+        map(
+            lambda x: x in result.lower(),
+            homework
+        )
+    )
+
+
 def test_get_instruction(explanation_in:str, homework:Tuple[str],):
     result = ai_tutor.get_directive(explanation_in=explanation_in)
 
