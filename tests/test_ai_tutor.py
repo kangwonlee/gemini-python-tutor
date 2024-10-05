@@ -3,7 +3,7 @@ import os
 import pathlib
 import sys
 
-from typing import Dict, Union, List
+from typing import Callable, Dict, List, Tuple, Union
 
 import pytest
 
@@ -57,24 +57,30 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     assert result
 
 
-@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Thai'))
+@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Italian', 'Thai'))
 def explanation_in(request) -> str:
     return request.param.capitalize()
 
 
 @pytest.fixture
-def homework(explanation_in:str) -> str:
+def homework(explanation_in:str) -> Tuple[str]:
     d = {
-        'Korean': '숙제',
-        'English': 'Homework',
-        'Japanese': '宿題',
-        'Chinese': '作业',
-        'Spanish': 'Tarea',
-        'French': 'Devoir',
-        'German': 'Hausaufgabe',
-        'Thai': 'การบ้าน',
+        'Korean': ('숙제',),
+        'English': ('Homework',),
+        'Japanese': ('宿題',),
+        'Chinese': ('作业',),
+        'Spanish': ('Tarea',),
+        'French': ('Devoir',),
+        'German': ('Hausaufgabe',),
+        'Italian': ('Compito', 'Compiti'),
+        'Thai': ('การบ้าน',),
     }    
-    return d[explanation_in].lower()
+    return tuple(
+        map(
+            lambda x: x.lower(),
+            d[explanation_in]
+        )
+    )
 
 
 @pytest.fixture
@@ -87,19 +93,36 @@ def msg(explanation_in:str) -> str:
         'Spanish': 'Mensaje',
         'French': 'Message',
         'German': 'Fehlermeldung',
+        'Italian': 'Messaggio',
         'Thai': 'ข้อความ',
     }
     return d[explanation_in].lower()
 
 
-def test_get_instruction(explanation_in, homework,):
+def test_get_directive(explanation_in:str, homework:Tuple[str]):
     result = ai_tutor.get_directive(explanation_in=explanation_in)
 
-    assert homework in result.lower()
+    assert any(
+        map(
+            lambda x: x in result.lower(),
+            homework
+        )
+    )
+
+
+def test_get_instruction(explanation_in:str, homework:Tuple[str],):
+    result = ai_tutor.get_directive(explanation_in=explanation_in)
+
+    assert any(
+        map(
+            lambda x: x in result.lower(),
+            homework
+        )
+    )
 
 
 @pytest.mark.parametrize("func", (ai_tutor.get_report_header, ai_tutor.get_report_footer))
-def test_get_report__header__footer(explanation_in, msg, func):
+def test_get_report__header__footer(explanation_in:str, msg:str, func:Callable):
 
     result = func(explanation_in=explanation_in)
 
@@ -126,6 +149,7 @@ def instruction(explanation_in:str) -> str:
         'Spanish': 'instrucción',
         'French': 'instruction',
         'German': 'Aufgabenanweisung',
+        'Italian': 'istruzione',
         'Thai': 'แนะนำ',
     }
     return d[explanation_in].lower()
@@ -135,7 +159,7 @@ def test_get_code_instruction(
         sample_student_code_path:pathlib.Path,
         sample_readme_path:pathlib.Path,
         explanation_in:str,
-        homework:str,
+        homework:Tuple[str],
         instruction:str,
     ):
 
@@ -145,7 +169,12 @@ def test_get_code_instruction(
         explanation_in=explanation_in
     ).lower()
 
-    assert homework in result
+    assert any(
+        map(
+            lambda x: x in result,
+            homework
+        )
+    )
     assert instruction in result
 
 
@@ -155,7 +184,8 @@ def test_get_the_question(
         sample_student_code_path:pathlib.Path,
         sample_readme_path:pathlib.Path,
         explanation_in:str,
-        homework:str, msg:str,
+        homework:Tuple[str],
+        msg:str,
         instruction:str,
     ):
     result = ai_tutor.get_the_question(
@@ -165,7 +195,12 @@ def test_get_the_question(
         explanation_in=explanation_in,
     ).lower()
 
-    assert homework in result
+    assert any(
+        map(
+            lambda x: x in result,
+            homework
+        )
+    )
     assert msg in result
     assert instruction in result
 
