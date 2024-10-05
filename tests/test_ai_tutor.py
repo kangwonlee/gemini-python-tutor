@@ -57,7 +57,7 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     assert result
 
 
-@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Thai'))
+@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Italian', 'Thai'))
 def explanation_in(request) -> str:
     return request.param.capitalize()
 
@@ -72,6 +72,7 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Spanish': ('Tarea',),
         'French': ('Devoir',),
         'German': ('Hausaufgabe',),
+        'Italian': ('Compito', 'Compiti'),
         'Thai': ('การบ้าน',),
     }    
     return tuple(
@@ -92,6 +93,7 @@ def msg(explanation_in:str) -> str:
         'Spanish': 'Mensaje',
         'French': 'Message',
         'German': 'Fehlermeldung',
+        'Italian': 'Messaggio',
         'Thai': 'ข้อความ',
     }
     return d[explanation_in].lower()
@@ -136,6 +138,7 @@ def instruction(explanation_in:str) -> str:
         'Spanish': 'instrucción',
         'French': 'instruction',
         'German': 'Aufgabenanweisung',
+        'Italian': 'istruzione',
         'Thai': 'แนะนำ',
     }
     return d[explanation_in].lower()

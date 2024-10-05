@@ -170,6 +170,7 @@ def get_directive(explanation_in:str) -> str:
         'Spanish': 'Explique en términos para principiantes, sin duplicados, la causa del error en el código enviado como tarea.',
         'French': '''Expliquez en termes de débutant, sans doublons, la cause de l'erreur dans le code soumis comme devoir.''',
         'German': 'Erklären Sie in Anfängerterminologie ohne Duplikate die Ursache des Fehlers im als Hausaufgabe eingereichten Code.',
+        'Italian': 'Spiega in termini per principianti, senza duplicati, la causa dell\'errore nel codice inviato come compito.',
         'Thai': 'อธิบายด้วยภาษาของผู้เริ่มต้นโดยไม่ซ้ำซ้อนว่าสาเหตุของข้อผิดพลาดในรหัสที่ส่งเป็นการบ้านคืออะไร',
     }
     return f"{d[explanation_in]}\n"
@@ -203,6 +204,7 @@ def get_report_header(explanation_in:str) -> str:
         'Spanish': "Mensaje de error comienza",
         'French': '''Message d'erreur commence''',
         'German': "Fehlermeldung beginnt",
+        'Italian': "Messaggio di errore inizia",
         'Thai': "ข้อความผิดพลาดเริ่มต้น",
     }
     return (
@@ -220,6 +222,7 @@ def get_report_footer(explanation_in:str) -> str:
         'Spanish': "Mensaje de error termina",
         'French': '''Message d'erreur fin''',
         'German': "Fehlermeldung endet",
+        'Italian': "Messaggio di errore finisce",
         'Thai': "ข้อความผิดพลาดสิ้นสุด",
     }
     return (
@@ -242,6 +245,7 @@ def get_code_instruction(
         'Spanish': "Inicio del código de envío de tareas",
         'French': '''Début du code de soumission des devoirs''',
         'German': "Code für die Einreichung von Hausaufgaben von hier aus",
+        'Italian': "Inizio del codice di invio dei compiti",
         'Thai': "การส่งงานเริ่มต้น",
     }
 
@@ -253,6 +257,7 @@ def get_code_instruction(
         'Spanish': "Fin del código de envío de tareas",
         'French': '''Fin du code de soumission des devoirs''',
         'German': "Ende der Hausaufgaben-Einreichungscodes",
+        'Italian': "Fine del codice di invio dei compiti",
         'Thai': "การส่งงานสิ้นสุด",
     }
 
@@ -264,6 +269,7 @@ def get_code_instruction(
         'Spanish': "Inicio de la instrucción de la tarea",
         'French': '''Début de l'instruction de la tâche''',
         'German': "Start der Aufgabenanweisung",
+        'Italian': "Inizio dell'istruzione dell'assegnazione",
         'Thai': "คำแนะนำการบ้านเริ่มต้น",
     }
 
@@ -275,6 +281,7 @@ def get_code_instruction(
         'Spanish': "Fin de la instrucción de la tarea",
         'French': '''Fin de l'instruction de la tâche''',
         'German': "Ende der Aufgabenanweisung",
+        'Italian': "Fine dell'istruzione dell'assegnazione",
         'Thai': "คำแนะนำการบ้านสิ้นสุด",
     }
 
