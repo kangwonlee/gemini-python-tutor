@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
-* Italian support
+* Bahasa Indonesia, Nederands, and Vietnamese support
+
 
 ### Changed
 
