@@ -57,9 +57,9 @@ def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
     assert result
 
 
-@pytest.fixture(params=('Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German', 'Italian', 'Thai'))
+@pytest.fixture(params=('Korean', 'English', 'Bahasa Indonesia', 'Chinese', 'French', 'German', 'Italian', 'Japanese', 'Nederlands', 'Spanish', 'Thai', 'Vietnamese'))
 def explanation_in(request) -> str:
-    return request.param.capitalize()
+    return request.param
 
 
 @pytest.fixture
@@ -67,13 +67,16 @@ def homework(explanation_in:str) -> Tuple[str]:
     d = {
         'Korean': ('숙제',),
         'English': ('Homework',),
-        'Japanese': ('宿題',),
+        'Bahasa Indonesia': ('tugas', 'pekerjaan rumah', 'PR'),
         'Chinese': ('作业',),
-        'Spanish': ('Tarea',),
         'French': ('Devoir',),
         'German': ('Hausaufgabe',),
         'Italian': ('Compito', 'Compiti'),
+        'Japanese': ('宿題',),
+        'Nederlands': ('Huiswerk',),
+        'Spanish': ('Tarea',),
         'Thai': ('การบ้าน',),
+        'Vietnamese': ('Bài tập',),
     }    
     return tuple(
         map(
@@ -88,13 +91,16 @@ def msg(explanation_in:str) -> str:
     d = {
         'Korean': '메시지',
         'English': 'Message',
-        'Japanese': 'メッセ',
+        'Bahasa Indonesia': 'Pesan',
         'Chinese': '消息',
-        'Spanish': 'Mensaje',
         'French': 'Message',
         'German': 'Fehlermeldung',
         'Italian': 'Messaggio',
+        'Japanese': 'メッセ',
+        'Nederlands': 'Foutmelding', # error message
+        'Spanish': 'Mensaje',
         'Thai': 'ข้อความ',
+        'Vietnamese': 'thông báo', # notification
     }
     return d[explanation_in].lower()
 
@@ -107,17 +113,21 @@ def test_get_directive(explanation_in:str, homework:Tuple[str]):
             lambda x: x in result.lower(),
             homework
         )
+    ), (
+        f"Could not find homework: {homework} in result: {result}."
     )
 
 
 def test_get_instruction(explanation_in:str, homework:Tuple[str],):
-    result = ai_tutor.get_directive(explanation_in=explanation_in)
+    result = ai_tutor.get_directive(explanation_in=explanation_in).lower()
 
     assert any(
         map(
-            lambda x: x in result.lower(),
+            lambda x: x in result,
             homework
         )
+    ), (
+        f"Could not find homework: {homework} in result: {result}."
     )
 
 
@@ -126,7 +136,7 @@ def test_get_report__header__footer(explanation_in:str, msg:str, func:Callable):
 
     result = func(explanation_in=explanation_in)
 
-    assert msg in result.lower()
+    assert msg in result.lower(), f"Could not find msg: {msg} in result: {result}."
 
 
 @pytest.fixture
@@ -142,17 +152,25 @@ def sample_readme_path() -> pathlib.Path:
 @pytest.fixture
 def instruction(explanation_in:str) -> str:
     d = {
-        'Korean': '지침',
-        'English': 'Instruction',
-        'Japanese': '指示',
-        'Chinese': '说明',
-        'Spanish': 'instrucción',
-        'French': 'instruction',
-        'German': 'Aufgabenanweisung',
-        'Italian': 'istruzione',
-        'Thai': 'แนะนำ',
+        'Korean': ('지침',),
+        'English': ('Instruction',),
+        'Bahasa Indonesia': ('Petunjuk', 'Instruksi'),
+        'Chinese': ('说明',),
+        'French': ('instruction',),
+        'German': ('Aufgabenanweisung',),
+        'Italian': ('istruzione',),
+        'Japanese': ('指示',),
+        'Nederlands': ('instructie',),
+        'Spanish': ('instrucción',),
+        'Thai': ('แนะนำ',),
+        'Vietnamese': ('hướng dẫn',),
     }
-    return d[explanation_in].lower()
+    return tuple(
+        map(
+            lambda x: x.lower(),
+            d[explanation_in]
+        )
+    )
 
 
 def test_get_code_instruction(
@@ -175,7 +193,13 @@ def test_get_code_instruction(
             homework
         )
     )
-    assert instruction in result
+
+    assert any(
+        map(
+            lambda x: x in result,
+            instruction
+        )
+    ), f"Could not find instruction: {instruction} in result: {result}."
 
 
 def test_get_the_question(
@@ -202,7 +226,13 @@ def test_get_the_question(
         )
     )
     assert msg in result
-    assert instruction in result
+
+    assert any(
+        map(
+            lambda x: x in result,
+            instruction
+        )
+    ), f"Could not find instruction: {instruction} in result: {result}."
 
 
 if '__main__' == __name__:
