@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v0.1.4] - 2024-10-09
+
+### Added
+* Bahasa Indonesia support
+* Nederands support
+* Vietnamese support
+
+
 ## [v0.1.3] - 2024-10-06
 
 ### Added
