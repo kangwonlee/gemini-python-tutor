@@ -33,7 +33,7 @@ def json_dict(sample_report_path) -> Dict[str, Union[str, List]]:
     return result
 
 
-def test_collect_longrepr(json_dict):
+def test_collect_longrepr__returns_non_empty(json_dict):
     result = ai_tutor.collect_longrepr(json_dict)
 
     assert result
@@ -51,8 +51,23 @@ def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> Dict[str
     return result
 
 
-def test_collect_longrepr_div_zero_dict(json_dict_div_zero_try_except:Dict):
+def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except:Dict):
     result = ai_tutor.collect_longrepr(json_dict_div_zero_try_except)
+
+    assert result
+
+
+def test_collect_longrepr_from_multiple_reports__returns_non_empty(
+        sample_report_path,
+        div_zero_report_path,
+    ):
+    multiple_reports = (
+        sample_report_path,
+        div_zero_report_path
+    )
+    result = ai_tutor.collect_longrepr_from_multiple_reports(
+        multiple_reports
+    )
 
     assert result
 
