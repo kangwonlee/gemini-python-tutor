@@ -1,0 +1,9 @@
+{
+    "directive": "Hãy giải thích lỗi trong đoạn mã bài tập đã nộp bằng ngôn ngữ dễ hiểu dành cho người mới bắt đầu, và đừng lặp lại thông tin.",
+    "report_header": "Thông báo lỗi bắt đầu",
+    "report_footer": "Thông báo lỗi kết thúc",
+    "instruction_start": "Bắt đầu hướng dẫn nhiệm vụ",
+    "instruction_end": "Kết thúc hướng dẫn nhiệm vụ",
+    "homework_start": "Bắt đầu mã nộp bài tập",
+    "homework_end": "Mã nộp bài tập kết thúc"
+}

@@ -3,3 +3,4 @@
 !entrypoint.py
 !requirements.txt
 !ai_tutor.py
+!locale/*.json

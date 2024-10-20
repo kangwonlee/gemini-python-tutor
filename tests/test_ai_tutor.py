@@ -1,9 +1,9 @@
 import json
-import os
 import pathlib
 import sys
 
 from typing import Callable, Dict, List, Tuple, Union
+
 
 import pytest
 
@@ -23,7 +23,7 @@ import ai_tutor
 
 @pytest.fixture
 def sample_report_path() -> pathlib.Path:
-    return test_folder/'sample_report.json'
+    return test_folder / 'sample_report.json'
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def test_collect_longrepr__returns_non_empty(json_dict):
 
 @pytest.fixture
 def div_zero_report_path() -> pathlib.Path:
-    return test_folder/'json_dict_div_zero_try_except.json'
+    return test_folder / 'json_dict_div_zero_try_except.json'
 
 
 @pytest.fixture
@@ -74,7 +74,7 @@ def test_collect_longrepr_from_multiple_reports__returns_non_empty(
     assert result
 
 
-@pytest.fixture(params=('Korean', 'English', 'Bahasa Indonesia', 'Chinese', 'French', 'German', 'Italian', 'Japanese', 'Nederlands', 'Spanish', 'Thai', 'Vietnamese'))
+@pytest.fixture(params=tuple(path.stem for path in pathlib.Path('locale').glob('*.json')))
 def explanation_in(request) -> str:
     return request.param
 
@@ -92,6 +92,7 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Japanese': ('宿題',),
         'Nederlands': ('Huiswerk',),
         'Spanish': ('Tarea',),
+        'Swedish': ('Läxa',),
         'Thai': ('การบ้าน',),
         'Vietnamese': ('Bài tập',),
     }    
@@ -116,10 +117,36 @@ def msg(explanation_in:str) -> str:
         'Japanese': 'メッセ',
         'Nederlands': 'Foutmelding', # error message
         'Spanish': 'Mensaje',
+        'Swedish': 'Meddelande',
         'Thai': 'ข้อความ',
         'Vietnamese': 'thông báo', # notification
     }
     return d[explanation_in].lower()
+
+
+@pytest.fixture
+def instruction(explanation_in:str) -> str:
+    d = {
+        'Korean': ('지침',),
+        'English': ('Instruction',),
+        'Bahasa Indonesia': ('Petunjuk', 'Instruksi'),
+        'Chinese': ('说明',),
+        'French': ('instruction',),
+        'German': ('Aufgabenanweisung',),
+        'Italian': ('istruzione',),
+        'Japanese': ('指示',),
+        'Nederlands': ('instructie',),
+        'Spanish': ('instrucción',),
+        'Swedish': ('instruktion',),
+        'Thai': ('แนะนำ',),
+        'Vietnamese': ('hướng dẫn',),
+    }
+    return tuple(
+        map(
+            lambda x: x.lower(),
+            d[explanation_in]
+        )
+    )
 
 
 def test_get_directive(explanation_in:str, homework:Tuple[str]):
@@ -158,36 +185,12 @@ def test_get_report__header__footer(explanation_in:str, msg:str, func:Callable):
 
 @pytest.fixture
 def sample_student_code_path() -> pathlib.Path:
-    return test_folder/'sample_code.py'
+    return test_folder / 'sample_code.py'
 
 
 @pytest.fixture
 def sample_readme_path() -> pathlib.Path:
-    return test_folder/'sample_readme.md'
-
-
-@pytest.fixture
-def instruction(explanation_in:str) -> str:
-    d = {
-        'Korean': ('지침',),
-        'English': ('Instruction',),
-        'Bahasa Indonesia': ('Petunjuk', 'Instruksi'),
-        'Chinese': ('说明',),
-        'French': ('instruction',),
-        'German': ('Aufgabenanweisung',),
-        'Italian': ('istruzione',),
-        'Japanese': ('指示',),
-        'Nederlands': ('instructie',),
-        'Spanish': ('instrucción',),
-        'Thai': ('แนะนำ',),
-        'Vietnamese': ('hướng dẫn',),
-    }
-    return tuple(
-        map(
-            lambda x: x.lower(),
-            d[explanation_in]
-        )
-    )
+    return test_folder / 'sample_readme.md'
 
 
 def test_get_instruction_block(
@@ -259,6 +262,19 @@ def test_get_prompt__has__homework__msg__instruction(
             instruction
         )
     ), f"Could not find instruction: {instruction} in result: {result}."
+
+
+def test_load_locale(explanation_in:str, homework:Tuple[str]):
+    result = ai_tutor.load_locale(explanation_in)
+
+    assert 'directive' in result
+
+    assert any(
+        map(
+            lambda x: x in result['directive'].lower(),
+            homework
+        )
+    )
 
 
 if '__main__' == __name__:

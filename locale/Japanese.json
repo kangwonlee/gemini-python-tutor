@@ -1,0 +1,9 @@
+{
+    "directive": "宿題の回答として提出されたコードがエラーの原因を、初心者向けの用語で重複なく簡潔に説明してください。",
+    "report_header": "エラーメッセージ開始",
+    "report_footer": "エラーメッセージ終わり",
+    "instruction_start": "課題指示開始",
+    "instruction_end": "課題指示終わり",
+    "homework_start": "宿題提出コード開始",
+    "homework_end": "宿題提出コード終わり"
+}

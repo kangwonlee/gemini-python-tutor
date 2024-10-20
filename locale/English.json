@@ -1,0 +1,9 @@
+{
+    "directive": "Explain in beginner terms, without duplicates, the cause of the error in the code submitted as homework.",
+    "report_header": "Error Message Start",
+    "report_footer": "Error Message End",
+    "instruction_start": "Assignment Instruction Start",
+    "instruction_end": "Assignment Instruction End",
+    "homework_start": "Homework Submission Code Start",
+    "homework_end": "Homework Submission Code End"
+}

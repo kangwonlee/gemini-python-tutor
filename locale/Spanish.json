@@ -1,0 +1,9 @@
+{
+    "directive": "Explique en términos para principiantes, sin duplicados, la causa del error en el código enviado como tarea.",
+    "report_header": "Mensaje de error comienza",
+    "report_footer": "Mensaje de error termina",
+    "instruction_start": "Inicio de la instrucción de la tarea",
+    "instruction_end": "Fin de la instrucción de la tarea",
+    "homework_start": "Inicio del código de envío de tareas",
+    "homework_end": "Fin del código de envío de tareas"
+}

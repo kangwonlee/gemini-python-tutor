@@ -1,0 +1,9 @@
+{
+    "directive":"Förklara orsaken till felet i koden som lämnats in som läxa med enkla ord utan att upprepa.",
+    "report_header":"Felmeddelande börjar",
+    "report_footer":"Felmeddelande slutar",
+    "instruction_start":"Start av uppgiftsinstruktion",
+    "instruction_end":"Slut av uppgiftsinstruktion",
+    "homework_start":"Start av inlämningskod för läxa",
+    "homework_end":"Slut av inlämningskod för läxa"
+}

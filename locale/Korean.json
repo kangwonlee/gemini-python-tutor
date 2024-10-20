@@ -1,0 +1,9 @@
+{
+    "directive": "숙제 답안으로 제출한 코드가 오류를 일으킨 원인을 입문자 용어만으로 중복 없는 간결한 문장으로 설명하시오.",
+    "report_header": "오류 메시지 시작",
+    "report_footer": "오류 메시지 끝",
+    "instruction_start": "과제 지침 시작",
+    "instruction_end": "과제 지침 끝",
+    "homework_start": "숙제 제출 코드 시작",
+    "homework_end": "숙제 제출 코드 끝"
+}

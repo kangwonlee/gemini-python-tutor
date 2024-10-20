@@ -1,0 +1,9 @@
+{
+    "directive": "Spiega in termini per principianti, senza duplicati, la causa dell'errore nel codice inviato come compito.",
+    "report_header": "Messaggio di errore inizia",
+    "report_footer": "Messaggio di errore finisce",
+    "instruction_start": "Inizio dell'istruzione dell'assegnazione",
+    "instruction_end": "Fine dell'istruzione dell'assegnazione",
+    "homework_start": "Inizio del codice di invio dei compiti",
+    "homework_end": "Fine del codice di invio dei compiti"
+}
