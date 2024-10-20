@@ -1,0 +1,9 @@
+{
+    "directive": "Jelaskan dalam istilah pemula, tanpa duplikat, penyebab kesalahan dalam kode yang dikirim sebagai pekerjaan rumah.",
+    "report_header": "Pesan Kesalahan Dimulai",
+    "report_footer": "Pesan Kesalahan Berakhir",
+    "instruction_start": "Instruksi Tugas Dimulai",
+    "instruction_end": "Instruksi Tugas Berakhir",
+    "homework_start": "Kode Pengumpulan Tugas Dimulai",
+    "homework_end": "Kode Pengumpulan Tugas Berakhir"
+}

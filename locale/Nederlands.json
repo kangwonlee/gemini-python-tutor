@@ -1,0 +1,9 @@
+{
+    "directive": "Leg in beginners termen, zonder duplicaten, de oorzaak van de fout in de code die als huiswerk is ingediend uit.",
+    "report_header": "Foutmelding begint",
+    "report_footer": "Foutmelding eindigt",
+    "instruction_start": "Start van de taakinstructie",
+    "instruction_end": "Einde van de taakinstructie",
+    "homework_start": "Huiswerk inzendcode begint",
+    "homework_end": "Huiswerk inzendcode eindigt"
+}

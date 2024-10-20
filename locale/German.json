@@ -1,0 +1,9 @@
+{
+    "directive": "Erklären Sie in Anfängerterminologie ohne Duplikate die Ursache des Fehlers im als Hausaufgabe eingereichten Code.",
+    "report_header": "Fehlermeldung beginnt",
+    "report_footer": "Fehlermeldung endet",
+    "instruction_start": "Start der Aufgabenanweisung",
+    "instruction_end": "Ende der Aufgabenanweisung",
+    "homework_start": "Code für die Einreichung von Hausaufgaben von hier aus",
+    "homework_end": "Ende der Hausaufgaben-Einreichungscodes"
+}

@@ -1,0 +1,9 @@
+{
+    "directive": "请用初学者术语简洁地解释作业提交的代码出错的原因，不要重复。",
+    "report_header": "错误消息开始",
+    "report_footer": "错误消息结束",
+    "instruction_start": "作业说明开始",
+    "instruction_end": "作业说明结束",
+    "homework_start": "作业提交代码开始",
+    "homework_end": "作业提交代码结束"
+}

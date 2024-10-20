@@ -1,0 +1,9 @@
+{
+    "directive": "Expliquez en termes de débutant, sans doublons, la cause de l'erreur dans le code soumis comme devoir.",
+    "report_header": "Message d'erreur commence",
+    "report_footer": "Message d'erreur fin",
+    "instruction_start": "Début de l'instruction de la tâche",
+    "instruction_end": "Fin de l'instruction de la tâche",
+    "homework_start": "Début du code de soumission des devoirs",
+    "homework_end": "Fin du code de soumission des devoirs"
+}
