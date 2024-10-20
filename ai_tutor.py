@@ -142,7 +142,11 @@ def get_prompt(
         [get_initial_instruction(pytest_longrepr_list, explanation_in), get_report_header(explanation_in)]
         + pytest_longrepr_list
         # Add the code and instructions
-        + [get_report_footer(explanation_in), get_code_instruction(student_files, readme_file, explanation_in)]
+        + [
+            get_report_footer(explanation_in),
+            get_student_code_block(student_files, explanation_in,),
+            get_instruction_block(readme_file, explanation_in,)
+        ]
     )
 
     # Join all questions into a single string
@@ -245,42 +249,7 @@ def get_report_footer(explanation_in:str) -> str:
     )
 
 
-@functools.lru_cache
-def get_code_instruction(
-        student_files:Tuple[pathlib.Path],
-        readme_file:pathlib.Path,
-        explanation_in:str,
-    ) -> str:
-
-    d_homework_start = {
-        'Korean': "숙제 제출 코드 시작",
-        'English': "Homework Submission Code Start",
-        'Bahasa Indonesia': "Kode Pengumpulan Tugas Dimulai",
-        'Chinese': "作业提交代码开始",
-        'French': '''Début du code de soumission des devoirs''',
-        'German': "Code für die Einreichung von Hausaufgaben von hier aus",
-        'Italian': "Inizio del codice di invio dei compiti",
-        'Japanese': "宿題提出コード開始",
-        'Nederlands': "Huiswerk inzendcode begint",
-        'Spanish': "Inicio del código de envío de tareas",
-        'Thai': "การส่งงานเริ่มต้น",
-        'Vietnamese': "Bắt đầu mã nộp bài tập",
-    }
-
-    d_homework_end = {
-        'Korean': "숙제 제출 코드 끝",
-        'English': "Homework Submission Code End",
-        'Bahasa Indonesia': "Kode Pengumpulan Tugas Berakhir",
-        'Chinese': "作业提交代码结束",
-        'French': '''Fin du code de soumission des devoirs''',
-        'German': "Ende der Hausaufgaben-Einreichungscodes",
-        'Italian': "Fine del codice di invio dei compiti",
-        'Japanese': "宿題提出コード終わり",
-        'Nederlands': "Huiswerk inzendcode eindigt",
-        'Spanish': "Fin del código de envío de tareas",
-        'Thai': "การส่งงานสิ้นสุด",
-        'Vietnamese': "Mã nộp bài tập kết thúc",
-    }
+def get_instruction_block(readme_file:pathlib.Path, explanation_in:str='Korean',) -> str:
 
     d_instruction_start = {
         'Korean': "과제 지침 시작",
@@ -313,12 +282,48 @@ def get_code_instruction(
     }
 
     return (
-        f"\n\n## {d_homework_start[explanation_in]}\n"
-        f"{assignment_code(student_files)}\n"
-        f"## {d_homework_end[explanation_in]}\n"
         f"## {d_instruction_start[explanation_in]}\n"
         f"{assignment_instruction(readme_file)}\n"
         f"## {d_instruction_end[explanation_in]}\n"
+    )
+
+
+def get_student_code_block(student_files:Tuple[pathlib.Path], explanation_in:str) -> str:
+
+    d_homework_start = {
+        'Korean': "숙제 제출 코드 시작",
+        'English': "Homework Submission Code Start",
+        'Bahasa Indonesia': "Kode Pengumpulan Tugas Dimulai",
+        'Chinese': "作业提交代码开始",
+        'French': '''Début du code de soumission des devoirs''',
+        'German': "Code für die Einreichung von Hausaufgaben von hier aus",
+        'Italian': "Inizio del codice di invio dei compiti",
+        'Japanese': "宿題提出コード開始",
+        'Nederlands': "Huiswerk inzendcode begint",
+        'Spanish': "Inicio del código de envío de tareas",
+        'Thai': "เริ่มส่งรหัสการบ้าน",
+        'Vietnamese': "Bắt đầu mã nộp bài tập",
+    }
+
+    d_homework_end = {
+        'Korean': "숙제 제출 코드 끝",
+        'English': "Homework Submission Code End",
+        'Bahasa Indonesia': "Kode Pengumpulan Tugas Berakhir",
+        'Chinese': "作业提交代码结束",
+        'French': '''Fin du code de soumission des devoirs''',
+        'German': "Ende der Hausaufgaben-Einreichungscodes",
+        'Italian': "Fine del codice di invio dei compiti",
+        'Japanese': "宿題提出コード終わり",
+        'Nederlands': "Huiswerk inzendcode eindigt",
+        'Spanish': "Fin del código de envío de tareas",
+        'Thai': "จบรหัสส่งการบ้าน",
+        'Vietnamese': "Mã nộp bài tập kết thúc",
+    }
+
+    return (
+        f"\n\n## {d_homework_start[explanation_in]}\n"
+        f"{assignment_code(student_files)}\n"
+        f"## {d_homework_end[explanation_in]}\n"
     )
 
 

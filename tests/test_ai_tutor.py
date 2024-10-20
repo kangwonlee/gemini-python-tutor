@@ -188,17 +188,33 @@ def instruction(explanation_in:str) -> str:
     )
 
 
-def test_get_code_instruction(
-        sample_student_code_path:pathlib.Path,
+def test_get_instruction_block(
         sample_readme_path:pathlib.Path,
         explanation_in:str,
-        homework:Tuple[str],
         instruction:str,
     ):
 
-    result = ai_tutor.get_code_instruction(
-        student_files = (sample_student_code_path,),
+    result = ai_tutor.get_instruction_block(
         readme_file = sample_readme_path,
+        explanation_in=explanation_in
+    ).lower()
+
+    assert any(
+        map(
+            lambda x: x in result,
+            instruction
+        )
+    ), f"Could not find instruction: {instruction} in result: {result}."
+
+
+def test_get_student_code_block(
+        sample_student_code_path:pathlib.Path,
+        explanation_in:str,
+        homework:Tuple[str],
+    ):
+
+    result = ai_tutor.get_student_code_block(
+        student_files = (sample_student_code_path,),
         explanation_in=explanation_in
     ).lower()
 
@@ -208,13 +224,6 @@ def test_get_code_instruction(
             homework
         )
     )
-
-    assert any(
-        map(
-            lambda x: x in result,
-            instruction
-        )
-    ), f"Could not find instruction: {instruction} in result: {result}."
 
 
 def test_get_prompt__has__homework__msg__instruction(
