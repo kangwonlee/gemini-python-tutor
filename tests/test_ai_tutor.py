@@ -202,7 +202,7 @@ def test_get_code_instruction(
     ), f"Could not find instruction: {instruction} in result: {result}."
 
 
-def test_get_the_question(
+def test_get_prompt__has__homework__msg__instruction(
         sample_report_path:pathlib.Path,
         div_zero_report_path:pathlib.Path,
         sample_student_code_path:pathlib.Path,
