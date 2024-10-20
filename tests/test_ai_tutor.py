@@ -51,7 +51,7 @@ def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> Dict[str
     return result
 
 
-def test_collect_longrepr(json_dict_div_zero_try_except:Dict):
+def test_collect_longrepr_div_zero_dict(json_dict_div_zero_try_except:Dict):
     result = ai_tutor.collect_longrepr(json_dict_div_zero_try_except)
 
     assert result
