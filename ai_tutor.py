@@ -333,3 +333,16 @@ def assignment_code(student_files:Tuple[pathlib.Path]) -> str:
 @functools.lru_cache
 def assignment_instruction(readme_file:pathlib.Path) -> str:
     return readme_file.read_text()
+
+
+@functools.lru_cache(maxsize=None)
+def load_locale(explain_in:str) -> Dict[str, str]:
+    locale_folder = pathlib.Path(__file__).parent/'locale'
+    assert locale_folder.exists(), f"Locale folder not found: {locale_folder}"
+    assert locale_folder.is_dir(), f"Locale folder is not a directory: {locale_folder}"
+
+    locale_file = locale_folder/f'{explain_in}.json'
+    assert locale_file.exists(), f"Locale file not found: {locale_file}"
+    assert locale_file.is_file(), f"Locale file is not a file: {locale_file}"
+
+    return json.loads(locale_file.read_text())
