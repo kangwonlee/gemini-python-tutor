@@ -123,16 +123,7 @@ def get_prompt(
         readme_file:pathlib.Path,
         explanation_in:str,
     ) -> str:
-    questions = []
-
-    # Process each report file
-    for report_path in report_paths:
-        logging.info(f"Processing report file: {report_path}")
-        data = json.loads(report_path.read_text())
-
-        longrepr_list = collect_longrepr(data)
-
-        questions += longrepr_list
+    pytest_longrepr_list = collect_longrepr_from_multiple_reports(report_paths)
 
     def get_initial_instruction(questions:List[str],language:str) -> str:
         # Add the main directive or instruction based on whether there are failed tests
@@ -146,18 +137,33 @@ def get_prompt(
         return initial_instruction
 
     
-    questions = (
+    prompt_list = (
         # Add the initial instruction
-        [get_initial_instruction(questions, explanation_in), get_report_header(explanation_in)]
-        + questions
+        [get_initial_instruction(pytest_longrepr_list, explanation_in), get_report_header(explanation_in)]
+        + pytest_longrepr_list
         # Add the code and instructions
         + [get_report_footer(explanation_in), get_code_instruction(student_files, readme_file, explanation_in)]
     )
 
     # Join all questions into a single string
-    consolidated_question = "\n\n".join(questions)
+    prompt_str = "\n\n".join(prompt_list)
 
-    return consolidated_question
+    return prompt_str
+
+
+def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathlib.Path]) -> List[str]:
+    questions = []
+
+    # Process each report file
+    for pytest_json_report_path in pytest_json_report_paths:
+        logging.info(f"Processing report file: {pytest_json_report_path}")
+        data = json.loads(pytest_json_report_path.read_text())
+
+        longrepr_list = collect_longrepr(data)
+
+        questions += longrepr_list
+
+    return questions
 
 
 @functools.lru_cache
