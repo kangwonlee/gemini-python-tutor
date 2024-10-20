@@ -201,13 +201,6 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
 
 
 @functools.lru_cache
-def get_question(longrepr:str, explanation_in:str,) -> str:
-    return (
-        get_report_header(explanation_in) + f"{longrepr}\n" + get_report_footer(explanation_in)
-    )
-
-
-@functools.lru_cache
 def get_report_header(explanation_in:str) -> str:
     d = {
         'Korean': "오류 메시지 시작",
