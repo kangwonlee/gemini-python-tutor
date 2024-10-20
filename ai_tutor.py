@@ -130,7 +130,7 @@ def get_prompt(
         if questions:
             initial_instruction = (
                 get_directive(language) + '\n' +
-                'Please understand that only student files can be changed.'
+                'Please generate comments mutually exclusive and collectively exhaustive for the following failed test cases.'
             )
         else:
             initial_instruction = f'In {language}, please comment on the student code given the assignment instruction.'
