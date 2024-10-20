@@ -139,12 +139,14 @@ def get_prompt(
     
     prompt_list = (
         # Add the initial instruction
-        [get_initial_instruction(pytest_longrepr_list, explanation_in),]
+        [
+            get_initial_instruction(pytest_longrepr_list, explanation_in),
+            get_instruction_block(readme_file, explanation_in,),
+        ]
         + pytest_longrepr_list
         # Add the code and instructions
         + [
             get_student_code_block(student_files, explanation_in,),
-            get_instruction_block(readme_file, explanation_in,)
         ]
     )
 
