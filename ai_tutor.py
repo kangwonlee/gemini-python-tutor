@@ -219,9 +219,13 @@ def get_instruction_block(readme_file:pathlib.Path, explanation_in:str='Korean',
 def get_student_code_block(student_files:Tuple[pathlib.Path], explanation_in:str) -> str:
 
     return (
-        f"\n\n## {load_locale(explanation_in)['homework_start']}\n"
+        "\n"
+        "\n"
+        "##### Start mutable code block\n"
+        "## {load_locale(explanation_in)['homework_start']}\n"
         f"{assignment_code(student_files)}\n"
         f"## {load_locale(explanation_in)['homework_end']}\n"
+        "##### End mutable code block\n"
     )
 
 
