@@ -7,11 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - YYYY-MM-DD
 
 ### Added
-* Swedish support
 
 
 ### Changed
-* move README before pytest longrepr
 
 
 ### Deprecated
@@ -21,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+
+
+## [v0.1.5] - 2024-10-20
+
+### Added
+* Swedish support
+
+### Changed
+* move README before pytest longrepr
 
 
 ## [v0.1.4] - 2024-10-09
