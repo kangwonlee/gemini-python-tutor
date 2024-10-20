@@ -212,7 +212,7 @@ def test_get_the_question(
         msg:str,
         instruction:str,
     ):
-    result = ai_tutor.get_the_question(
+    result = ai_tutor.get_prompt(
         report_paths=(sample_report_path,div_zero_report_path),
         student_files=(sample_student_code_path,),
         readme_file=sample_readme_path,

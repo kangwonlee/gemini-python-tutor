@@ -105,7 +105,7 @@ def gemini_qna(
     logging.info(f"Student files: {student_files}")
     logging.info(f"Readme file: {readme_file}")
 
-    consolidated_question = get_the_question(
+    consolidated_question = get_prompt(
         report_paths,
         student_files,
         readme_file,
@@ -117,7 +117,7 @@ def gemini_qna(
     return answers
 
 
-def get_the_question(
+def get_prompt(
         report_paths:Tuple[pathlib.Path],
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
