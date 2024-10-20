@@ -58,15 +58,17 @@ def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_tr
 
 
 def test_collect_longrepr_from_multiple_reports__returns_non_empty(
-        sample_report_path,
-        div_zero_report_path,
+        sample_report_path:pathlib.Path,
+        div_zero_report_path:pathlib.Path,
+        explanation_in:str
     ):
     multiple_reports = (
         sample_report_path,
         div_zero_report_path
     )
     result = ai_tutor.collect_longrepr_from_multiple_reports(
-        multiple_reports
+        multiple_reports,
+        explanation_in=explanation_in,
     )
 
     assert result

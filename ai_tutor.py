@@ -123,7 +123,7 @@ def get_prompt(
         readme_file:pathlib.Path,
         explanation_in:str,
     ) -> str:
-    pytest_longrepr_list = collect_longrepr_from_multiple_reports(report_paths)
+    pytest_longrepr_list = collect_longrepr_from_multiple_reports(report_paths, explanation_in)
 
     def get_initial_instruction(questions:List[str],language:str) -> str:
         # Add the main directive or instruction based on whether there are failed tests
@@ -139,11 +139,10 @@ def get_prompt(
     
     prompt_list = (
         # Add the initial instruction
-        [get_initial_instruction(pytest_longrepr_list, explanation_in), get_report_header(explanation_in)]
+        [get_initial_instruction(pytest_longrepr_list, explanation_in),]
         + pytest_longrepr_list
         # Add the code and instructions
         + [
-            get_report_footer(explanation_in),
             get_student_code_block(student_files, explanation_in,),
             get_instruction_block(readme_file, explanation_in,)
         ]
@@ -155,7 +154,7 @@ def get_prompt(
     return prompt_str
 
 
-def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathlib.Path]) -> List[str]:
+def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathlib.Path], explanation_in:str) -> List[str]:
     questions = []
 
     # Process each report file
@@ -166,6 +165,10 @@ def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathli
         longrepr_list = collect_longrepr(data)
 
         questions += longrepr_list
+
+    if questions:
+        questions.insert(0, get_report_header(explanation_in))
+        questions.append(get_report_footer(explanation_in))
 
     return questions
 
