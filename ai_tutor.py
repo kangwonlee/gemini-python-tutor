@@ -105,7 +105,7 @@ def gemini_qna(
     logging.info(f"Student files: {student_files}")
     logging.info(f"Readme file: {readme_file}")
 
-    consolidated_question = get_the_question(
+    consolidated_question = get_prompt(
         report_paths,
         student_files,
         readme_file,
@@ -117,22 +117,13 @@ def gemini_qna(
     return answers
 
 
-def get_the_question(
+def get_prompt(
         report_paths:Tuple[pathlib.Path],
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
         explanation_in:str,
     ) -> str:
-    questions = []
-
-    # Process each report file
-    for report_path in report_paths:
-        logging.info(f"Processing report file: {report_path}")
-        data = json.loads(report_path.read_text())
-
-        longrepr_list = collect_longrepr(data)
-
-        questions += longrepr_list
+    pytest_longrepr_list = collect_longrepr_from_multiple_reports(report_paths, explanation_in)
 
     def get_initial_instruction(questions:List[str],language:str) -> str:
         # Add the main directive or instruction based on whether there are failed tests
@@ -146,18 +137,42 @@ def get_the_question(
         return initial_instruction
 
     
-    questions = (
+    prompt_list = (
         # Add the initial instruction
-        [get_initial_instruction(questions, explanation_in), get_report_header(explanation_in)]
-        + questions
+        [
+            get_initial_instruction(pytest_longrepr_list, explanation_in),
+            get_instruction_block(readme_file, explanation_in,),
+        ]
+        + pytest_longrepr_list
         # Add the code and instructions
-        + [get_report_footer(explanation_in), get_code_instruction(student_files, readme_file, explanation_in)]
+        + [
+            get_student_code_block(student_files, explanation_in,),
+        ]
     )
 
     # Join all questions into a single string
-    consolidated_question = "\n\n".join(questions)
+    prompt_str = "\n\n".join(prompt_list)
 
-    return consolidated_question
+    return prompt_str
+
+
+def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathlib.Path], explanation_in:str) -> List[str]:
+    questions = []
+
+    # Process each report file
+    for pytest_json_report_path in pytest_json_report_paths:
+        logging.info(f"Processing report file: {pytest_json_report_path}")
+        data = json.loads(pytest_json_report_path.read_text())
+
+        longrepr_list = collect_longrepr(data)
+
+        questions += longrepr_list
+
+    if questions:
+        questions.insert(0, get_report_header(explanation_in))
+        questions.append(get_report_footer(explanation_in))
+
+    return questions
 
 
 @functools.lru_cache
@@ -188,13 +203,6 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
                 if isinstance(r[k], dict) and 'longrepr' in r[k]:
                     longrepr_list.append(r['outcome'] + ':' + k + ':' + r[k]['longrepr'])
     return longrepr_list
-
-
-@functools.lru_cache
-def get_question(longrepr:str, explanation_in:str,) -> str:
-    return (
-        get_report_header(explanation_in) + f"{longrepr}\n" + get_report_footer(explanation_in)
-    )
 
 
 @functools.lru_cache
@@ -239,42 +247,7 @@ def get_report_footer(explanation_in:str) -> str:
     )
 
 
-@functools.lru_cache
-def get_code_instruction(
-        student_files:Tuple[pathlib.Path],
-        readme_file:pathlib.Path,
-        explanation_in:str,
-    ) -> str:
-
-    d_homework_start = {
-        'Korean': "숙제 제출 코드 시작",
-        'English': "Homework Submission Code Start",
-        'Bahasa Indonesia': "Kode Pengumpulan Tugas Dimulai",
-        'Chinese': "作业提交代码开始",
-        'French': '''Début du code de soumission des devoirs''',
-        'German': "Code für die Einreichung von Hausaufgaben von hier aus",
-        'Italian': "Inizio del codice di invio dei compiti",
-        'Japanese': "宿題提出コード開始",
-        'Nederlands': "Huiswerk inzendcode begint",
-        'Spanish': "Inicio del código de envío de tareas",
-        'Thai': "การส่งงานเริ่มต้น",
-        'Vietnamese': "Bắt đầu mã nộp bài tập",
-    }
-
-    d_homework_end = {
-        'Korean': "숙제 제출 코드 끝",
-        'English': "Homework Submission Code End",
-        'Bahasa Indonesia': "Kode Pengumpulan Tugas Berakhir",
-        'Chinese': "作业提交代码结束",
-        'French': '''Fin du code de soumission des devoirs''',
-        'German': "Ende der Hausaufgaben-Einreichungscodes",
-        'Italian': "Fine del codice di invio dei compiti",
-        'Japanese': "宿題提出コード終わり",
-        'Nederlands': "Huiswerk inzendcode eindigt",
-        'Spanish': "Fin del código de envío de tareas",
-        'Thai': "การส่งงานสิ้นสุด",
-        'Vietnamese': "Mã nộp bài tập kết thúc",
-    }
+def get_instruction_block(readme_file:pathlib.Path, explanation_in:str='Korean',) -> str:
 
     d_instruction_start = {
         'Korean': "과제 지침 시작",
@@ -307,12 +280,48 @@ def get_code_instruction(
     }
 
     return (
-        f"\n\n## {d_homework_start[explanation_in]}\n"
-        f"{assignment_code(student_files)}\n"
-        f"## {d_homework_end[explanation_in]}\n"
         f"## {d_instruction_start[explanation_in]}\n"
         f"{assignment_instruction(readme_file)}\n"
         f"## {d_instruction_end[explanation_in]}\n"
+    )
+
+
+def get_student_code_block(student_files:Tuple[pathlib.Path], explanation_in:str) -> str:
+
+    d_homework_start = {
+        'Korean': "숙제 제출 코드 시작",
+        'English': "Homework Submission Code Start",
+        'Bahasa Indonesia': "Kode Pengumpulan Tugas Dimulai",
+        'Chinese': "作业提交代码开始",
+        'French': '''Début du code de soumission des devoirs''',
+        'German': "Code für die Einreichung von Hausaufgaben von hier aus",
+        'Italian': "Inizio del codice di invio dei compiti",
+        'Japanese': "宿題提出コード開始",
+        'Nederlands': "Huiswerk inzendcode begint",
+        'Spanish': "Inicio del código de envío de tareas",
+        'Thai': "เริ่มส่งรหัสการบ้าน",
+        'Vietnamese': "Bắt đầu mã nộp bài tập",
+    }
+
+    d_homework_end = {
+        'Korean': "숙제 제출 코드 끝",
+        'English': "Homework Submission Code End",
+        'Bahasa Indonesia': "Kode Pengumpulan Tugas Berakhir",
+        'Chinese': "作业提交代码结束",
+        'French': '''Fin du code de soumission des devoirs''',
+        'German': "Ende der Hausaufgaben-Einreichungscodes",
+        'Italian': "Fine del codice di invio dei compiti",
+        'Japanese': "宿題提出コード終わり",
+        'Nederlands': "Huiswerk inzendcode eindigt",
+        'Spanish': "Fin del código de envío de tareas",
+        'Thai': "จบรหัสส่งการบ้าน",
+        'Vietnamese': "Mã nộp bài tập kết thúc",
+    }
+
+    return (
+        f"\n\n## {d_homework_start[explanation_in]}\n"
+        f"{assignment_code(student_files)}\n"
+        f"## {d_homework_end[explanation_in]}\n"
     )
 
 
