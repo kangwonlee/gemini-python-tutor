@@ -261,5 +261,18 @@ def test_get_prompt__has__homework__msg__instruction(
     ), f"Could not find instruction: {instruction} in result: {result}."
 
 
+def test_load_locale(explanation_in:str, homework:Tuple[str]):
+    result = ai_tutor.load_locale(explanation_in)
+
+    assert 'directive' in result
+
+    assert any(
+        map(
+            lambda x: x in result['directive'].lower(),
+            homework
+        )
+    )
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
