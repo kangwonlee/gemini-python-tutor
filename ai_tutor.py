@@ -88,7 +88,7 @@ def gemini_qna(
         readme_file:pathlib.Path,
         api_key:str,
         explanation_in:str='Korean',
-    ) -> str:
+    ) -> Tuple[int, str]:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
 
@@ -105,7 +105,7 @@ def gemini_qna(
     logging.info(f"Student files: {student_files}")
     logging.info(f"Readme file: {readme_file}")
 
-    consolidated_question = get_prompt(
+    n_failed, consolidated_question = get_prompt(
         report_paths,
         student_files,
         readme_file,
@@ -114,7 +114,7 @@ def gemini_qna(
 
     answers = ask_gemini(consolidated_question, api_key)
 
-    return answers
+    return n_failed, answers
 
 
 def get_prompt(
@@ -122,8 +122,11 @@ def get_prompt(
         student_files:Tuple[pathlib.Path],
         readme_file:pathlib.Path,
         explanation_in:str,
-    ) -> str:
+    ) -> Tuple[int, str]:
     pytest_longrepr_list = collect_longrepr_from_multiple_reports(report_paths, explanation_in)
+
+    n_failed_tests = len(pytest_longrepr_list)
+
 
     def get_initial_instruction(questions:List[str],language:str) -> str:
         # Add the main directive or instruction based on whether there are failed tests
@@ -153,7 +156,7 @@ def get_prompt(
     # Join all questions into a single string
     prompt_str = "\n\n".join(prompt_list)
 
-    return prompt_str
+    return n_failed_tests, prompt_str
 
 
 def collect_longrepr_from_multiple_reports(pytest_json_report_paths:Tuple[pathlib.Path], explanation_in:str) -> List[str]:

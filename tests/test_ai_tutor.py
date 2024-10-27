@@ -246,22 +246,25 @@ def test_get_prompt__has__homework__msg__instruction(
         student_files=(sample_student_code_path,),
         readme_file=sample_readme_path,
         explanation_in=explanation_in,
-    ).lower()
+    )
+
+    n_failed = result[0]
+    prompe_text = result[1].lower()
 
     assert any(
         map(
-            lambda x: x in result,
+            lambda x: x in prompe_text,
             homework
         )
     )
-    assert msg in result
+    assert msg in prompe_text
 
     assert any(
         map(
-            lambda x: x in result,
+            lambda x: x in prompe_text,
             instruction
         )
-    ), f"Could not find instruction: {instruction} in result: {result}."
+    ), f"Could not find instruction: {instruction} in result: {prompe_text}."
 
 
 def test_load_locale(explanation_in:str, homework:Tuple[str]):

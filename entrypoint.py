@@ -33,7 +33,7 @@ def main() -> None:
 
     explanation_in = os.environ['INPUT_EXPLANATION-IN']
 
-    feedback = ai_tutor.gemini_qna(
+    n_failed, feedback = ai_tutor.gemini_qna(
         report_files,
         student_files,
         readme_file,
@@ -47,6 +47,8 @@ def main() -> None:
     with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
         out_string = f'feedback<<EOF\n{feedback}\nEOF'
         logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
+
+    assert n_failed == 0, f'{n_failed} failed tests'
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
