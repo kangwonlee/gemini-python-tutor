@@ -42,6 +42,7 @@ jobs:
         api-key: ${{ secrets.GOOGLE_API_KEY }}
         readme-path: tests/sample_readme.md
         explanation-in: Korean
+        fail-expected: True
       timeout-minutes: 5
 
     - name: Output the outputs of the integration test of the action
