@@ -128,3 +128,7 @@ with:
 
 ## Contact
 * If you have any questions or feedback, please contact the author : https://github.com/kangwonlee.
+
+## Acknowledgements
+
+This project is based on the [python-github-action-template](https://github.com/cicirello/python-github-action-template) by Vincent A. Cicirello, licensed under the MIT License.
