@@ -33,6 +33,8 @@ def main() -> None:
 
     explanation_in = os.environ['INPUT_EXPLANATION-IN']
 
+    b_fail_expected = ('true' == os.getenv('INPUT_FAIL-EXPECTED', 'false').lower())
+
     n_failed, feedback = ai_tutor.gemini_qna(
         report_files,
         student_files,
@@ -48,7 +50,12 @@ def main() -> None:
         out_string = f'feedback<<EOF\n{feedback}\nEOF'
         logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
 
-    assert n_failed == 0, f'{n_failed} failed tests'
+    if not b_fail_expected:
+        assert n_failed == 0, f'{n_failed} failed tests'
+    elif b_fail_expected:
+        assert n_failed > 0, 'No failed tests'
+    else:
+        raise NotImplementedError('Unexpected value for INPUT_FAIL-EXPECTED')    
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
