@@ -129,6 +129,12 @@ with:
 ## Contact
 * If you have any questions or feedback, please contact the author : https://github.com/kangwonlee.
 
+## License
+
+This project is licensed under the BSD 3-Clause License + Do No Harm.
+
+Copyright (c) 2024 Kangwon Lee
+
 ## Acknowledgements
 
 This project is based on the [python-github-action-template](https://github.com/cicirello/python-github-action-template) by Vincent A. Cicirello, licensed under the MIT License.
