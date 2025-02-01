@@ -280,43 +280,84 @@ def test_load_locale(explanation_in:str, homework:Tuple[str]):
     )
 
 
-def test__exclude_common_contents__single():
-    start_marker = '``From here is common to all assignments.``'
-    end_marker = '``Until here is common to all assignments.``'
+@pytest.fixture
+def start_marker() -> str:
+    return r"``From here is common to all assignments.``"
 
-    common_line_0 = "def subtract(a, b):"
-    common_line_1 = "return a - b"
 
-    common_content = start_marker + (
-        '``\n'
-        "\n"
-        f"{common_line_0}\n"
-        f"    {common_line_1}\n"
-    ) + end_marker + '\n'
+@pytest.fixture
+def end_marker() -> str:
+    return r"``Until here is common to all assignments.``"
 
-    specific_line_0 = "def add(a, b):"
-    specific_line_1 = "return a + b"
 
-    content = (
-        "Write a function that returns the sum of two numbers.\n"
-        "\n"
-        f"{specific_line_0}\n"
-        f"    {specific_line_1}\n"
-    ) + common_content
+@pytest.fixture
+def common_lines() -> Tuple[str]:
+    return (
+        "def subtract(a, b):",
+        "    return a - b"
+    )
 
+
+@pytest.fixture
+def specific_lines() -> Tuple[str]:
+    return (
+        "Write a function that returns the sum of two numbers.",
+        "def add(a, b):",
+        "    return a + b"
+    )
+
+
+@pytest.fixture
+def common_content_single(
+    start_marker:str,
+    common_lines:Tuple[str],
+    end_marker:str
+) -> str:
+    return (
+        '\n'.join((start_marker,) + common_lines + (end_marker,))
+        + '\n'
+    )
+
+
+@pytest.fixture
+def readme_content_single(
+    specific_lines:Tuple[str],
+    common_content_single:str
+) -> str:
+    return (
+        '\n'.join(specific_lines)
+        + '\n'
+        + common_content_single
+    )
+
+
+def test__exclude_common_contents__single(
+    readme_content_single:str,
+    start_marker:str,
+    end_marker:str,
+    specific_lines:Tuple[str],
+    common_lines:Tuple[str],
+):
     result = ai_tutor.exclude_common_contents(
-        readme_content=content,
+        readme_content=readme_content_single,
         common_content_start_marker=start_marker,
         common_content_end_marker=end_marker,
     )
 
-    assert specific_line_0 in result
-    assert specific_line_1 in result
+    for line in specific_lines:
+        assert line.strip() in result, ("\n"
+            f"Could not find line: {line}\n"
+            f"in result: {result}."
+        )
 
-    assert common_line_0 not in result
-    assert common_line_1 not in result
-    assert start_marker not in result
-    assert end_marker not in result
+    for line in common_lines:
+        assert line.strip() not in result, ("\n"
+            f"Found line: {line}\n"
+            f"in result: {result}."
+        )
+
+    assert start_marker.strip() not in result
+    assert end_marker.strip() not in result
 
 
 if '__main__' == __name__:
