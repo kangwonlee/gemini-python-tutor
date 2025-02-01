@@ -470,5 +470,57 @@ def test__exclude_common_contents__double(
     assert end_marker.strip() not in result
 
 
+@pytest.fixture
+def specific_lines_3() -> Tuple[str]:
+    """Provides a tuple of specific lines to be inserted after two common content blocks."""
+    return (
+        "# This is also specific content, after two common blocks.",
+        "# It should be preserved in the output, too."
+    )
+
+
+@pytest.fixture
+def readme_content__double_specific(
+    readme_content_double:str,
+    specific_lines_3:Tuple[str],
+) -> str:
+    return (
+        readme_content_double
+        + '\n'.join(specific_lines_3) + '\n'
+    )
+
+
+def test__exclude_common_contents__double_specific(
+    readme_content__double_specific:str,
+    start_marker:str,
+    end_marker:str,
+    specific_lines:Tuple[str],
+    specific_lines_2:Tuple[str],
+    specific_lines_3:Tuple[str],
+    common_lines:Tuple[str],
+    common_lines_2:Tuple[str],
+):
+    result = ai_tutor.exclude_common_contents(
+        readme_content=readme_content__double_specific,
+        common_content_start_marker=start_marker,
+        common_content_end_marker=end_marker,
+    )
+
+    for line in (specific_lines + specific_lines_2 + specific_lines_3):
+        assert line.strip() in result, ("\n"
+            f"Could not find line: {line}\n"
+            f"in result: {result}."
+        )
+
+    for line in (common_lines + common_lines_2):
+        assert line.strip() not in result, ("\n"
+            f"Found line: {line}\n"
+            f"in result: {result}."
+        )
+
+    assert start_marker.strip() not in result
+    assert end_marker.strip() not in result
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
