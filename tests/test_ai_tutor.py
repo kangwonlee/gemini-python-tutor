@@ -280,5 +280,44 @@ def test_load_locale(explanation_in:str, homework:Tuple[str]):
     )
 
 
+def test__exclude_common_contents__single():
+    start_marker = '``From here is common to all assignments.``'
+    end_marker = '``Until here is common to all assignments.``'
+
+    common_line_0 = "def subtract(a, b):"
+    common_line_1 = "return a - b"
+
+    common_content = start_marker + (
+        '``\n'
+        "\n"
+        f"{common_line_0}\n"
+        f"    {common_line_1}\n"
+    ) + end_marker + '\n'
+
+    specific_line_0 = "def add(a, b):"
+    specific_line_1 = "return a + b"
+
+    content = (
+        "Write a function that returns the sum of two numbers.\n"
+        "\n"
+        f"{specific_line_0}\n"
+        f"    {specific_line_1}\n"
+    ) + common_content
+
+    result = ai_tutor.exclude_common_contents(
+        readme_content=content,
+        common_content_start_marker=start_marker,
+        common_content_end_marker=end_marker,
+    )
+
+    assert specific_line_0 in result
+    assert specific_line_1 in result
+
+    assert common_line_0 not in result
+    assert common_line_1 not in result
+    assert start_marker not in result
+    assert end_marker not in result
+
+
 if '__main__' == __name__:
     pytest.main([__file__])
