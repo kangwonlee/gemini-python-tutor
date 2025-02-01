@@ -283,18 +283,17 @@ def exclude_common_contents(
         A string with the common content removed.
     """
     # Include the markers in the pattern itself
-    pattern = rf"(.*?){common_content_start_marker}\s*(.*?)\s*{common_content_end_marker}(.*?)"
-    match = re.search(pattern, readme_content, re.DOTALL | re.IGNORECASE)
+    pattern = rf"({common_content_start_marker}\s*.*?\s*{common_content_end_marker})"
+    found_list = re.findall(pattern, readme_content, re.DOTALL | re.IGNORECASE)
 
-    if match:
-        # Extract the parts before and after the common content
-        before_common = match.group(1).strip()
-        after_common = match.group(3).strip()
-        # Combine them to get the final instructions
-        instruction = (before_common + after_common).strip()
-    else:
+    instruction = str(readme_content)
+
+    if not found_list:
         logging.warning(f"Common content markers '{common_content_start_marker}' and '{common_content_end_marker}' not found in README.md. Returning entire file.")
-        instruction = readme_content.strip()  # Single exit point
+    else:
+        for found in found_list:
+            # Remove the common content
+            instruction = instruction.replace(found, "")
 
     return instruction
 
