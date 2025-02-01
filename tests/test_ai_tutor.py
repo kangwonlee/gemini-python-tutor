@@ -368,6 +368,33 @@ def test__exclude_common_contents__single(
     assert end_marker.strip() not in result
 
 
+def test__exclude_common_contents__single__default_markers(
+    readme_content_single:str,
+    start_marker:str,
+    end_marker:str,
+    specific_lines:Tuple[str],
+    common_lines:Tuple[str],
+):
+    result = ai_tutor.exclude_common_contents(
+        readme_content=readme_content_single,
+    )
+
+    for line in specific_lines:
+        assert line.strip() in result, ("\n"
+            f"Could not find line: {line}\n"
+            f"in result: {result}."
+        )
+
+    for line in common_lines:
+        assert line.strip() not in result, ("\n"
+            f"Found line: {line}\n"
+            f"in result: {result}."
+        )
+
+    assert start_marker.strip() not in result
+    assert end_marker.strip() not in result
+
+
 @pytest.fixture
 def specific_lines_2() -> Tuple[str]:
     """Provides a tuple of specific lines to be inserted between common content blocks."""
