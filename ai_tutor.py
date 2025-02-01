@@ -2,8 +2,8 @@ import functools
 import json
 import logging
 import pathlib
+import re
 import time
-
 from typing import Dict, List, Tuple
 
 import requests
@@ -238,8 +238,64 @@ def assignment_code(student_files:Tuple[pathlib.Path]) -> str:
 
 
 @functools.lru_cache
-def assignment_instruction(readme_file:pathlib.Path) -> str:
-    return readme_file.read_text()
+def assignment_instruction(
+    readme_file: pathlib.Path,
+    common_content_start_marker: str = r"``From here is common to all assignments\.``",
+    common_content_end_marker: str = r"``Until here is common to all assignments\.``",
+) -> str:
+    """Extracts assignment-specific instructions from a README.md file.
+
+    This function reads a README.md file and removes content marked as common
+    to all assignments, returning only the assignment-specific instructions.
+
+    Args:
+        readme_file: Path to the README.md file.
+        common_content_start_marker: The marker indicating the start of common content.
+        common_content_end_marker: The marker indicating the end of common content.
+
+    Returns:
+        A string containing the assignment-specific instructions.
+    """
+
+    return exclude_common_contents(
+        readme_file.read_text(),
+        common_content_start_marker,
+        common_content_end_marker,
+    )  # Single exit point
+
+
+def exclude_common_contents(
+    readme_content:str,
+    common_content_start_marker: str = r"``From here is common to all assignments.``",
+    common_content_end_marker: str = r"``Until here is common to all assignments.``",
+) -> str:
+    """Removes common content from a string.
+
+    This function takes a string and removes the content between the specified
+    start and end markers.
+
+    Args:
+        readme_content: The input string containing the README content.
+        common_content_start_marker: The marker indicating the start of common content.
+        common_content_end_marker: The marker indicating the end of common content.
+
+    Returns:
+        A string with the common content removed.
+    """
+    # Include the markers in the pattern itself
+    pattern = rf"({common_content_start_marker}\s*.*?\s*{common_content_end_marker})"
+    found_list = re.findall(pattern, readme_content, re.DOTALL | re.IGNORECASE)
+
+    instruction = str(readme_content)
+
+    if not found_list:
+        logging.warning(f"Common content markers '{common_content_start_marker}' and '{common_content_end_marker}' not found in README.md. Returning entire file.")
+    else:
+        for found in found_list:
+            # Remove the common content
+            instruction = instruction.replace(found, "")
+
+    return instruction
 
 
 @functools.lru_cache(maxsize=None)

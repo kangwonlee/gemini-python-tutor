@@ -44,7 +44,7 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
     os.environ['INPUT_README-PATH'] = str(path_readme)
 
     # mock return value
-    mock_gemini_qna.return_value = (0, "This is the feedback message.") 
+    mock_gemini_qna.return_value = (0, "This is the feedback message.")
 
     entrypoint.main()
 

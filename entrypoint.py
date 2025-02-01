@@ -55,7 +55,7 @@ def main() -> None:
     elif b_fail_expected:
         assert n_failed > 0, 'No failed tests'
     else:
-        raise NotImplementedError('Unexpected value for INPUT_FAIL-EXPECTED')    
+        raise NotImplementedError('Unexpected value for INPUT_FAIL-EXPECTED')
 
 
 def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
