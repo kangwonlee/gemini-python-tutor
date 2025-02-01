@@ -378,6 +378,47 @@ def specific_lines_2() -> Tuple[str]:
 
 
 @pytest.fixture
+def readme_content_specific_common_specific(
+    readme_content_single:str,
+    specific_lines_2:Tuple[str],
+) -> str:
+    return (
+        readme_content_single
+        + '\n'.join(specific_lines_2) + '\n'
+    )
+
+
+def test__exclude_common_contents__specific_common_specific(
+    readme_content_specific_common_specific:str,
+    start_marker:str,
+    end_marker:str,
+    specific_lines:Tuple[str],
+    common_lines:Tuple[str],
+    specific_lines_2:Tuple[str],
+):
+    result = ai_tutor.exclude_common_contents(
+        readme_content=readme_content_specific_common_specific,
+        common_content_start_marker=start_marker,
+        common_content_end_marker=end_marker,
+    )
+
+    for line in (specific_lines + specific_lines_2):
+        assert line.strip() in result, ("\n"
+            f"Could not find line: {line}\n"
+            f"in result: {result}."
+        )
+
+    for line in common_lines:
+        assert line.strip() not in result, ("\n"
+            f"Found line: {line}\n"
+            f"in result: {result}."
+        )
+
+    assert start_marker.strip() not in result
+    assert end_marker.strip() not in result
+
+
+@pytest.fixture
 def common_lines_2() -> Tuple[str]:
     return (
         "def div(a, b):",
@@ -387,15 +428,13 @@ def common_lines_2() -> Tuple[str]:
 
 @pytest.fixture
 def readme_content_double(
-    readme_content_single:str,
-    specific_lines_2:Tuple[str],
+    readme_content_specific_common_specific:str,
     start_marker:str,
     common_lines_2:Tuple[str],
     end_marker:str
 ) -> str:
     return (
-        readme_content_single
-        + '\n'.join(specific_lines_2) + '\n'
+        readme_content_specific_common_specific
         + create_common_block(start_marker, common_lines_2, end_marker)
     )
 
