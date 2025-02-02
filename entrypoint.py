@@ -29,7 +29,9 @@ def main() -> None:
     readme_file = pathlib.Path(readme_file_str)
     assert readme_file.exists(), 'No README file'
 
-    api_key = os.environ['INPUT_API-KEY']
+    api_key = os.environ['INPUT_API-KEY'].strip()
+
+    assert api_key, "Please check API-KEY"
 
     explanation_in = os.environ['INPUT_EXPLANATION-IN']
 
