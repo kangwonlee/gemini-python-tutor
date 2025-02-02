@@ -20,6 +20,7 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
     # Setup
     os.environ['INPUT_API-KEY'] = 'test_key'
     os.environ['INPUT_EXPLANATION-IN'] = 'Korean'
+    os.environ['INPUT_MODEL'] = 'gemini-2.0-flash-exp'
 
     os.environ['GITHUB_OUTPUT'] = str(tmp_path / 'output.txt')
 
@@ -54,6 +55,7 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
         tmp_path / 'readme.txt',
         'test_key',
         'Korean',
+         model='gemini-2.0-flash-exp',
     )
 
     assert 'does not exist' not in caplog.text
