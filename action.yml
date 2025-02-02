@@ -15,6 +15,11 @@ inputs:
     description: 'API token for AI'
     required: true
     type: string
+  model:  # New input for the model
+    description: 'The Gemini model to use (e.g., gemini-1.5-flash-latest)'
+    required: false
+    default: 'gemini-1.5-flash-latest'
+    type: string
   student-files:
     description: "Comma-separated list of student's Python file paths or a glob pattern"
     required: false

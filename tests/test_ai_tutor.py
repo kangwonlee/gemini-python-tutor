@@ -1,6 +1,7 @@
 import json
 import pathlib
 import sys
+import urllib.parse as up
 
 from typing import Callable, Dict, List, Tuple, Union
 
@@ -547,6 +548,56 @@ def test__exclude_common_contents__double_specific(
 
     assert start_marker.strip() not in result
     assert end_marker.strip() not in result
+
+
+@pytest.fixture
+def test_api_key() -> str:
+    return 'test_api_key'
+
+
+@pytest.fixture
+def expected_default_gemini_model() -> str:
+    return 'gemini-1.5-flash-latest'
+
+
+def test_url__default_model(
+        test_api_key:str,
+        expected_default_gemini_model:str
+    ):
+    result = ai_tutor.url(test_api_key)
+
+    result_parsed = up.urlparse(result)
+
+    path_parts = result_parsed.path.split('/')
+
+    b_found = False
+
+    for part in path_parts:
+        if expected_default_gemini_model in part.split(':'):
+            b_found = True
+            break
+
+    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
+
+
+def test_url__specific_model(
+        test_api_key:str,
+    ):
+    model = 'gemini-2.0-flash'
+    result = ai_tutor.url(test_api_key, model=model)
+
+    result_parsed = up.urlparse(result)
+
+    path_parts = result_parsed.path.split('/')
+
+    b_found = False
+
+    for part in path_parts:
+        if model in part.split(':'):
+            b_found = True
+            break
+
+    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
 
 
 if '__main__' == __name__:

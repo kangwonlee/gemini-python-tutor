@@ -30,9 +30,12 @@ def main() -> None:
     assert readme_file.exists(), 'No README file'
 
     api_key = os.environ['INPUT_API-KEY'].strip()
-
     assert api_key, "Please check API-KEY"
 
+    model = os.getenv(
+        'INPUT_MODEL',              # Get model from environment
+        'gemini-1.5-flash-latest'   # use default if not provided
+    )
     explanation_in = os.environ['INPUT_EXPLANATION-IN']
 
     b_fail_expected = ('true' == os.getenv('INPUT_FAIL-EXPECTED', 'false').lower())
@@ -42,7 +45,8 @@ def main() -> None:
         student_files,
         readme_file,
         api_key,
-        explanation_in
+        explanation_in,
+        model=model,
     )
 
     print(feedback)
