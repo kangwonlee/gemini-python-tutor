@@ -16,9 +16,9 @@ inputs:
     required: true
     type: string
   model:  # New input for the model
-    description: 'The Gemini model to use (e.g., gemini-1.5-flash-latest)'
+    description: 'The Gemini model to use (e.g., gemini-2.0-flash)'
     required: false
-    default: 'gemini-1.5-flash-latest'
+    default: 'gemini-2.0-flash'
     type: string
   student-files:
     description: "Comma-separated list of student's Python file paths or a glob pattern"

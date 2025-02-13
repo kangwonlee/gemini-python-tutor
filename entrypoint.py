@@ -34,7 +34,7 @@ def main() -> None:
 
     model = os.getenv(
         'INPUT_MODEL',              # Get model from environment
-        'gemini-1.5-flash-latest'   # use default if not provided
+        'gemini-2.0-flash'   # use default if not provided
     )
     explanation_in = os.environ['INPUT_EXPLANATION-IN']
 

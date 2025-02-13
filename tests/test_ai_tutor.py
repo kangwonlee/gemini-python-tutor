@@ -560,7 +560,7 @@ def test_api_key() -> str:
 
 @pytest.fixture
 def expected_default_gemini_model() -> str:
-    return 'gemini-1.5-flash-latest'
+    return 'gemini-2.0-flash'
 
 
 def test_url__default_model(
