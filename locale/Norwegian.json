@@ -1,0 +1,9 @@
+{
+    "directive": "Forklar årsaken til feilen i koden som ble sendt inn som lekser, på en enkel måte uten å gjenta deg selv.",
+    "report_header": "Feilmelding starter",
+    "report_footer": "Feilmelding slutter",
+    "instruction_start": "Oppgaveinstruksjon starter",
+    "instruction_end": "Oppgaveinstruksjon slutter",
+    "homework_start": "Innlevering av lekser starter",
+    "homework_end": "Innlevering av lekser slutter"
+}
