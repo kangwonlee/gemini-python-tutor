@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added the ability to specify the Gemini model when using the AI Tutor GitHub Action.  A new `model` input has been added to the action, allowing users to select different Gemini models.  The default model remains `gemini-1.5-flash-latest` for backward compatibility.
+- Added the ability to specify the Gemini model when using the AI Tutor GitHub Action.  A new `model` input has been added to the action, allowing users to select different Gemini models.  The default model remains `gemini-2.0-flash` for backward compatibility.
 - Added Norwegian support
 
 ### Changed

@@ -19,7 +19,7 @@ RESOURCE_EXHAUSTED = 429
 
 
 @functools.lru_cache
-def url(api_key:str, model:str='gemini-1.5-flash-latest') -> str:
+def url(api_key:str, model:str='gemini-2.0-flash') -> str:
     return f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}'
 
 
@@ -31,7 +31,7 @@ def header() -> HEADER:
 def ask_gemini(
             question: str,
             api_key:str,
-            model:str='gemini-1.5-flash-latest',
+            model:str='gemini-2.0-flash',
             header:HEADER=header(),
             retry_delay_sec: float = 5.0,
             max_retry_attempt: int = 3,
@@ -93,7 +93,7 @@ def gemini_qna(
         readme_file:pathlib.Path,
         api_key:str,
         explanation_in:str='Korean',
-        model:str='gemini-1.5-flash-latest',
+        model:str='gemini-2.0-flash',
     ) -> Tuple[int, str]:
     '''
     Queries the Gemini API to provide explanations for failed pytest test cases.
