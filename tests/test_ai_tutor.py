@@ -92,6 +92,7 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Italian': ('Compito', 'Compiti'),
         'Japanese': ('宿題',),
         'Nederlands': ('Huiswerk',),
+        'Norwegian': ('Hjemmelekse', 'lekser'),
         'Spanish': ('Tarea',),
         'Swedish': ('Läxa',),
         'Thai': ('การบ้าน',),
@@ -117,6 +118,7 @@ def msg(explanation_in:str) -> str:
         'Italian': 'Messaggio',
         'Japanese': 'メッセ',
         'Nederlands': 'Foutmelding', # error message
+        'Norwegian': 'Melding',
         'Spanish': 'Mensaje',
         'Swedish': 'Meddelande',
         'Thai': 'ข้อความ',
@@ -137,6 +139,7 @@ def instruction(explanation_in:str) -> str:
         'Italian': ('istruzione',),
         'Japanese': ('指示',),
         'Nederlands': ('instructie',),
+        'Norwegian': ('instruksjon',),
         'Spanish': ('instrucción',),
         'Swedish': ('instruktion',),
         'Thai': ('แนะนำ',),
