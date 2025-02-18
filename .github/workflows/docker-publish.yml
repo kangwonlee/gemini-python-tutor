@@ -1,7 +1,6 @@
 name: Docker Publish
 
 on:
-  push:
   release:
     types: [created]
 
