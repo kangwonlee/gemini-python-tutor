@@ -16,7 +16,7 @@ jobs:
         id: prep
         run: |
           DOCKERHUB_IMAGE=${{ vars.DOCKER_USERNAME }}/${{ github.event.repository.name }}
-          GHCR_IMAGE=ghcr.io/${{ github.repository }}
+          GHCR_IMAGE=ghcr.io/${DOCKERHUB_IMAGE}
           VERSION=${GITHUB_REF#refs/tags/v}
           MINOR=${VERSION%.*}
           MAJOR=${VERSION%%.*}
