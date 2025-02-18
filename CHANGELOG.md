@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added the ability to specify the Gemini model when using the AI Tutor GitHub Action.  A new `model` input has been added to the action, allowing users to select different Gemini models.  The default model remains `gemini-2.0-flash` for backward compatibility.
-- Added Norwegian support
 
 ### Changed
 
@@ -19,6 +17,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+
+### Fixed
+
+## [v0.1.7] - 2025-02-18
+
+### Added
+
+- Added the ability to specify the Gemini model when using the AI Tutor GitHub Action.  A new `model` input has been added to the action, allowing users to select different Gemini models.  The default model remains `gemini-2.0-flash` for backward compatibility.
+- Added Norwegian support
+- Added Docker Image Build & Push to the CI/CD pipeline. Please use the following line
+    ```yaml
+      uses: docker://ghcr.io/github-id/action-name:tag
+    ```
+
+### Changed
+
+
+### Deprecated
+
+
+### Removed
+
+- Removed major version number yaml seemingly not working in the action.
 
 ### Fixed
 
