@@ -1,5 +1,6 @@
 [![Build Status](https://github.com/kangwonlee/gemini-python-tutor/workflows/build/badge.svg)](https://github.com/kangwonlee/gemini-python-tutor/actions)
 [![GitHub release](https://img.shields.io/github/release/kangwonlee/gemini-python-tutor.svg)](https://github.com/kangwonlee/gemini-python-tutor/releases)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/beachgoer/gemini-python-tutor?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/beachgoer/gemini-python-tutor)
 
 # AI Python Code Tutor (Gemini)
 
