@@ -20,6 +20,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.1.8] - 2025-02-20
+
+### Added
+* Manual publishing
+
+### Changed
+
+
+### Deprecated
+
+
+### Removed
+* no `pip` cache to save docker size
+
+### Fixed
+
 ## [v0.1.7] - 2025-02-18
 
 ### Added
