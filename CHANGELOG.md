@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 * no `pip` cache to save docker size
+* support for linux/386,linux/arm/v7,linux/arm/v6 to save docker size
+    Expected Github Actions runners : AMD64 or ARM64
+
 
 ### Fixed
 
