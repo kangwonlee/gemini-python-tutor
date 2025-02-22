@@ -52,9 +52,10 @@ def main() -> None:
     print(feedback)
 
     # Write the feedback to the environment file
-    with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
-        out_string = f'feedback<<EOF\n{feedback}\nEOF'
-        logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
+    if os.getenv('GITHUB_OUTPUT', False):
+        with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+            out_string = f'feedback<<EOF\n{feedback}\nEOF'
+            logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
 
     if not b_fail_expected:
         assert n_failed == 0, f'{n_failed} failed tests'
