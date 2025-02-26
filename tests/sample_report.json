@@ -37,12 +37,12 @@
                         "message": ";) 8) ;D :) ;P"
                     }
                 ],
-                "longrepr": ";P ;D ;) 8) :)"
+                "longrepr": "longrepr100 ;P ;D ;) 8) :)"
             },
             "teardown": {
                 "duration": "8) :) ;P ;) ;D",
                 "outcome": "8) :) ;D ;) ;P",
-                "longrepr": ":) ;D 8) ;) ;P"
+                "longrepr": "longrepr110 :) ;D 8) ;) ;P"
             }
         },
         {
@@ -71,12 +71,14 @@
                         "message": ";D ;P ;) :) 8)"
                     }
                 ],
-                "longrepr": ";D ;P :) 8) ;)"
+                "longrepr": "longrepr200 ;D ;P :) 8) ;)",
+                "stderr": "stderr200 ? ?? ???"
             },
             "teardown": {
                 "duration": "8) ;P :) ;D ;)",
                 "outcome": ";P ;D 8) :) ;)",
-                "longrepr": ";) :) ;D ;P 8)"
+                "longrepr": "longrepr210 ;) :) ;D ;P 8)",
+                "stderr": "stderr210 ? ?? ???"
             }
         },
         {
@@ -105,12 +107,12 @@
                         "message": "8) :) ;) ;D ;P"
                     }
                 ],
-                "longrepr": ";D 8) ;P :) ;)"
+                "longrepr": "longrepr300 ;D 8) ;P :) ;)"
             },
             "teardown": {
                 "duration": "8) ;) ;P ;D :)",
                 "outcome": "8) ;D :) ;P ;)",
-                "longrepr": ";P :) ;) ;D 8)"
+                "longrepr": "longrepr310 ;P :) ;) ;D 8)"
             }
         },
         {
@@ -139,12 +141,12 @@
                         "message": ":) ;) ;D ;P 8)"
                     }
                 ],
-                "longrepr": ";) 8) :) ;D ;P"
+                "longrepr": "longrepr400 ;) 8) :) ;D ;P"
             },
             "teardown": {
                 "duration": ";D 8) ;P ;) :)",
                 "outcome": ";D 8) :) ;P ;)",
-                "longrepr": ";) ;P :) 8) ;D"
+                "longrepr": "longrepr410;) ;P :) 8) ;D"
             }
         },
         {
@@ -162,17 +164,17 @@
             "setup": {
                 "duration": "8) :) ;D ;) ;P",
                 "outcome": "8) ;P ;) ;D :)",
-                "longrepr": "8) ;D :) ;) ;P"
+                "longrepr": "longrepr500 8) ;D :) ;) ;P"
             },
             "call": {
                 "duration": ";) :) ;P 8) ;D",
                 "outcome": ";) ;P 8) :) ;D",
-                "longrepr": ";) 8) :) ;D ;P"
+                "longrepr": "longrepr510;) 8) :) ;D ;P"
             },
             "teardown": {
                 "duration": ";) 8) ;P :) ;D",
                 "outcome": "8) :) ;) ;D ;P",
-                "longrepr": ";D 8) :) ;) ;P"
+                "longrepr": "longrepr520 ;D 8) :) ;) ;P"
             }
         },
         {
@@ -190,17 +192,17 @@
             "setup": {
                 "duration": ":) ;) ;D 8) ;P",
                 "outcome": ";P 8) ;D :) ;)",
-                "longrepr": "8) :) ;D ;) ;P"
+                "longrepr": "longrepr600 8) :) ;D ;) ;P"
             },
             "call": {
                 "duration": "8) ;D ;) ;P :)",
                 "outcome": ";) ;D :) ;P 8)",
-                "longrepr": ";P :) 8) ;D ;)"
+                "longrepr": "longrepr610 ;P :) 8) ;D ;)"
             },
             "teardown": {
                 "duration": "8) :) ;P ;) ;D",
                 "outcome": "8) ;D ;) :) ;P",
-                "longrepr": "8) ;P :) ;) ;D"
+                "longrepr": "longrepr620 8) ;P :) ;) ;D"
             }
         },
         {
@@ -218,17 +220,17 @@
             "setup": {
                 "duration": ";P ;) :) 8) ;D",
                 "outcome": ":) ;D 8) ;P ;)",
-                "longrepr": ";) ;P :) 8) ;D"
+                "longrepr": "longrepr700 ;) ;P :) 8) ;D"
             },
             "call": {
                 "duration": "8) ;D ;) :) ;P",
                 "outcome": ";) :) ;P ;D 8)",
-                "longrepr": ";P ;D :) ;) 8)"
+                "longrepr": "longrepr710 ;P ;D :) ;) 8)"
             },
             "teardown": {
                 "duration": ";P :) ;) ;D 8)",
                 "outcome": ";P ;D ;) 8) :)",
-                "longrepr": ";D :) ;P 8) ;)"
+                "longrepr": "longrepr720 ;D :) ;P 8) ;)"
             }
         },
         {
@@ -246,17 +248,17 @@
             "setup": {
                 "duration": ";D ;P :) ;) 8)",
                 "outcome": ";D ;P :) ;) 8)",
-                "longrepr": ";) 8) ;D ;P :)"
+                "longrepr": "longrepr800 ;) 8) ;D ;P :)"
             },
             "call": {
                 "duration": ";) ;D 8) ;P :)",
                 "outcome": "8) ;) ;D ;P :)",
-                "longrepr": ";) ;P 8) ;D :)"
+                "longrepr": "longrepr810;) ;P 8) ;D :)"
             },
             "teardown": {
                 "duration": "8) ;D :) ;P ;)",
                 "outcome": ";P 8) ;) ;D :)",
-                "longrepr": "8) ;P ;D :) ;)"
+                "longrepr": "longrepr820 8) ;P ;D :) ;)"
             }
         },
         {
@@ -274,17 +276,17 @@
             "setup": {
                 "duration": "8) ;D ;) :) ;P",
                 "outcome": ";D ;) 8) :) ;P",
-                "longrepr": ":) ;) ;P 8) ;D"
+                "longrepr": "longrepr900 :) ;) ;P 8) ;D"
             },
             "call": {
                 "duration": ";) ;D ;P 8) :)",
                 "outcome": "8) ;) :) ;D ;P",
-                "longrepr": ";P ;D 8) ;) :)"
+                "longrepr": "longrepr910 ;P ;D 8) ;) :)"
             },
             "teardown": {
                 "duration": ":) 8) ;P ;) ;D",
                 "outcome": "8) ;D :) ;P ;)",
-                "longrepr": ";) ;P ;D :) 8)"
+                "longrepr": "longrepr920 ;) ;P ;D :) 8)"
             }
         },
         {
@@ -302,17 +304,17 @@
             "setup": {
                 "duration": ";D 8) :) ;) ;P",
                 "outcome": ";P ;D 8) ;) :)",
-                "longrepr": ";D ;P 8) ;) :)"
+                "longrepr": "longrepr1000 ;D ;P 8) ;) :)"
             },
             "call": {
                 "duration": ";) ;P 8) ;D :)",
                 "outcome": ";) ;P ;D 8) :)",
-                "longrepr": "8) ;D ;P ;) :)"
+                "longrepr": "longrepr1010 8) ;D ;P ;) :)"
             },
             "teardown": {
                 "duration": ";P :) 8) ;D ;)",
                 "outcome": ";P 8) :) ;) ;D",
-                "longrepr": ";) ;D 8) ;P :)"
+                "longrepr": "longrepr1020 ;) ;D 8) ;P :)"
             }
         },
         {
@@ -330,17 +332,17 @@
             "setup": {
                 "duration": ";D ;P :) ;) 8)",
                 "outcome": "8) :) ;D ;) ;P",
-                "longrepr": ";D 8) ;) ;P :)"
+                "longrepr": "longrepr1100 ;D 8) ;) ;P :)"
             },
             "call": {
                 "duration": ":) ;D ;) 8) ;P",
                 "outcome": ":) ;P ;) ;D 8)",
-                "longrepr": ":) ;) ;D 8) ;P"
+                "longrepr": "longrepr1110 :) ;) ;D 8) ;P"
             },
             "teardown": {
                 "duration": ";D ;) ;P :) 8)",
                 "outcome": "8) ;D ;P ;) :)",
-                "longrepr": ";) ;D 8) :) ;P"
+                "longrepr": "longrepr1120;) ;D 8) :) ;P"
             }
         },
         {
@@ -358,17 +360,17 @@
             "setup": {
                 "duration": ";D :) ;) 8) ;P",
                 "outcome": ";) ;D 8) :) ;P",
-                "longrepr": "8) ;P ;) :) ;D"
+                "longrepr": "longrepr1200 8) ;P ;) :) ;D"
             },
             "call": {
                 "duration": "8) ;) ;P ;D :)",
                 "outcome": ":) ;) 8) ;P ;D",
-                "longrepr": "8) ;) ;D :) ;P"
+                "longrepr": "longrepr1210 8) ;) ;D :) ;P"
             },
             "teardown": {
                 "duration": ";P 8) ;) ;D :)",
                 "outcome": ":) ;) ;D 8) ;P",
-                "longrepr": ";D 8) ;) ;P :)"
+                "longrepr": "longrepr1220 ;D 8) ;) ;P :)"
             }
         }
     ]

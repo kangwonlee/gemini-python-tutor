@@ -6,6 +6,9 @@ import urllib.parse as up
 from typing import Callable, Dict, List, Tuple, Union
 
 
+PYTEST_JSON_REPORT = Dict[str, Union[str, List]]
+
+
 import pytest
 
 
@@ -22,19 +25,20 @@ sys.path.insert(
 import ai_tutor
 
 
+
 @pytest.fixture
 def sample_report_path() -> pathlib.Path:
     return test_folder / 'sample_report.json'
 
 
 @pytest.fixture
-def json_dict(sample_report_path) -> Dict[str, Union[str, List]]:
+def json_dict(sample_report_path) -> PYTEST_JSON_REPORT:
     with sample_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
 
-def test_collect_longrepr__returns_non_empty(json_dict):
+def test_collect_longrepr__returns_non_empty(json_dict:PYTEST_JSON_REPORT):
     result = ai_tutor.collect_longrepr(json_dict)
 
     assert result
@@ -46,13 +50,13 @@ def div_zero_report_path() -> pathlib.Path:
 
 
 @pytest.fixture
-def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> Dict[str, Union[str, List]]:
+def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> PYTEST_JSON_REPORT:
     with div_zero_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
 
-def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except:Dict):
+def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except:PYTEST_JSON_REPORT):
     result = ai_tutor.collect_longrepr(json_dict_div_zero_try_except)
 
     assert result
@@ -601,6 +605,49 @@ def test_url__specific_model(
             break
 
     assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
+
+
+@pytest.fixture
+def collect_longrepr_result(json_dict:PYTEST_JSON_REPORT) -> List[str]:
+    return ai_tutor.collect_longrepr(json_dict)
+
+
+def test__collect_longrepr__is_list(collect_longrepr_result:List[str]):
+    assert isinstance(collect_longrepr_result, list), f"Expected list, got {type(collect_longrepr_result)}."
+
+
+def test__collect_longrepr__has_list_items(collect_longrepr_result:List[str]):
+    assert collect_longrepr_result, "Expected non-empty list, got empty list."
+
+
+def test__collect_longrepr__has_list_items_len(collect_longrepr_result:List[str]):
+    for s in collect_longrepr_result:
+        assert isinstance(s, str), f"Expected string, has {s} which is {type(s)}."
+        assert s, "Expected non-empty string, got empty string."
+
+
+def test__collect_longrepr__compare_contents(collect_longrepr_result:List[str]):
+    markers = 'longrepr100 longrepr110'.split()
+    markers += 'longrepr200 longrepr210'.split()
+    markers += 'longrepr300 longrepr310'.split()
+    markers += 'longrepr400 longrepr410'.split()
+    markers += 'longrepr500 longrepr510 longrepr520'.split()
+    markers += 'longrepr600 longrepr610 longrepr620'.split()
+    markers += 'longrepr700 longrepr710 longrepr720'.split()
+    markers += 'longrepr800 longrepr810 longrepr820'.split()
+    markers += 'longrepr900 longrepr910 longrepr920'.split()
+    markers += 'longrepr1000 longrepr1010 longrepr1020'.split()
+    markers += 'longrepr1100 longrepr1110 longrepr1120'.split()
+    markers += 'longrepr1200 longrepr1210 longrepr1220'.split()
+
+    markers += 'stderr200 stderr210'.split()
+
+    for s in collect_longrepr_result:
+        for marker in markers:
+            if marker in s:
+                markers.remove(marker)
+
+    assert not markers, f"Expected all markers to be found, but missing: {markers}."
 
 
 if '__main__' == __name__:
