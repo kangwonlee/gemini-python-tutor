@@ -196,7 +196,9 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
         if r['outcome'] != 'passed':
             for k in r:
                 if isinstance(r[k], dict) and 'longrepr' in r[k]:
-                    longrepr_list.append(r['outcome'] + ':' + k + ':' + r[k]['longrepr'])
+                    longrepr_list.append(r['outcome'] + ':' + k + ': longrepr begin :' + r[k]['longrepr'] + ': longrepr end \n')
+                if isinstance(r[k], dict) and 'stderr' in r[k]:
+                    longrepr_list.append(r['outcome'] + ':' + k + ': stderr begin' + r[k]['stderr'] + ': stderr end \n')
     return longrepr_list
 
 
