@@ -20,24 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.1.9] - 2025-02-22
+
+### Changed
+* for `edu-base` docker, write to `GITHUB_OUTPUT` only if the env var exists. If the script is running within the docker, there would be no `GITHUB_OUTPUT` enviroment variable.
+
 ## [v0.1.8] - 2025-02-20
 
 ### Added
 * Manual publishing
 
-### Changed
-
-
-### Deprecated
-
-
 ### Removed
 * no `pip` cache to save docker size
 * support for linux/386,linux/arm/v7,linux/arm/v6 to save docker size
     Expected Github Actions runners : AMD64 or ARM64
-
-
-### Fixed
 
 ## [v0.1.7] - 2025-02-18
 
@@ -50,18 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       uses: docker://ghcr.io/github-id/action-name:tag
     ```
 
-### Changed
-
-
-### Deprecated
-
-
-### Removed
-
 - Removed major version number yaml seemingly not working in the action.
-
-### Fixed
-
 
 ## [v0.1.6] - 2025-02-01
 
