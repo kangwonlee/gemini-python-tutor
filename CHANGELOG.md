@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.1.10] - 2025-02-26
+
+### Changed
+* Will include available `stderr` values when generating comments. Expected to be helpful sometimes.
+
 ## [v0.1.9] - 2025-02-22
 
 ### Changed
