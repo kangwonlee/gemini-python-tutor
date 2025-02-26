@@ -71,12 +71,14 @@
                         "message": ";D ;P ;) :) 8)"
                     }
                 ],
-                "longrepr": "longrepr200 ;D ;P :) 8) ;)"
+                "longrepr": "longrepr200 ;D ;P :) 8) ;)",
+                "stderr": "stderr200 ? ?? ???"
             },
             "teardown": {
                 "duration": "8) ;P :) ;D ;)",
                 "outcome": ";P ;D 8) :) ;)",
-                "longrepr": "longrepr210 ;) :) ;D ;P 8)"
+                "longrepr": "longrepr210 ;) :) ;D ;P 8)",
+                "stderr": "stderr210 ? ?? ???"
             }
         },
         {

@@ -640,6 +640,8 @@ def test__collect_longrepr__compare_contents(collect_longrepr_result:List[str]):
     markers += 'longrepr1100 longrepr1110 longrepr1120'.split()
     markers += 'longrepr1200 longrepr1210 longrepr1220'.split()
 
+    markers += 'stderr200 stderr210'.split()
+
     for s in collect_longrepr_result:
         for marker in markers:
             if marker in s:
