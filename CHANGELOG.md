@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.2.1] - 2025-03-08
 
+### Added
+
+* Add `workflow_dispatch` trigger to the Github Actions workflow.
+
 
 ### Removed
 * Remove `GITHUB_OUTPUT` file writing.
