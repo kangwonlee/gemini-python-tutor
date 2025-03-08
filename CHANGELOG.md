@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Write `feedback` to `$GITHUB_STEP_SUMMARY` if exists.
-    This will show up under the Github Actions job graph.
 
 ### Changed
 
@@ -21,6 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+
+
+## [v0.2.1] - 2025-03-08
+
+
+### Removed
+* Remove `GITHUB_OUTPUT` file writing.
+* Remove raising an additional exception when `n_failed` is non zero.
+
+
+## [v0.2.0] - 2025-03-08
+
+### Added
+
+* Write `feedback` to `$GITHUB_STEP_SUMMARY` if exists.
+    This will show up under the Github Actions job graph.
+
 
 ## [v0.1.10] - 2025-02-26
 
