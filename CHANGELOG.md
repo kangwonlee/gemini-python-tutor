@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Write `feedback` to `$GITHUB_STEP_SUMMARY` if exists.
+    This will show up under the Github Actions job graph.
 
 ### Changed
 
