@@ -1,5 +1,6 @@
 name: build
 
+
 on:
   push:
     branches:
@@ -8,6 +9,8 @@ on:
       - 'feature/**'
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
 
 jobs:
 

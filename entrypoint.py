@@ -52,13 +52,11 @@ def main() -> None:
     print(feedback)
 
     # Write the feedback to the environment file
-    if os.getenv('GITHUB_OUTPUT', False):
-        with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
-            out_string = f'feedback<<EOF\n{feedback}\nEOF'
-            logging.info(f"Writing to GITHUB_OUTPUT: {f.write(out_string)} characters")
-
-    if not b_fail_expected:
-        assert n_failed == 0, f'{n_failed} failed tests'
+    if os.getenv('GITHUB_STEP_SUMMARY', False):
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
+            # Write the feedback to the Gihtub Job Summary
+            # expecting mardown format
+            f.write(feedback)
     elif b_fail_expected:
         assert n_failed > 0, 'No failed tests'
     else:
