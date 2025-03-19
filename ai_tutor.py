@@ -1,3 +1,4 @@
+# begin ai_tutor.py
 import functools
 import json
 import logging
@@ -317,3 +318,4 @@ def load_locale(explain_in:str) -> Dict[str, str]:
     assert locale_file.is_file(), f"Locale file is not a file: {locale_file}"
 
     return json.loads(locale_file.read_text())
+# end ai_tutor.py

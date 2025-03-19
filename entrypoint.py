@@ -1,4 +1,5 @@
 #!/usr/bin/env -S python3 -B
+# begin entrypoint.py
 
 # NOTE: If you are using an alpine docker image
 # such as pyaction-lite, the -S option above won't
@@ -9,6 +10,7 @@
 import logging
 import os
 import pathlib
+
 from typing import Tuple
 
 
@@ -94,3 +96,4 @@ def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
 
 if __name__ == "__main__" :
     main()
+# end entrypoint.py

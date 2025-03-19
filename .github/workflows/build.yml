@@ -1,5 +1,5 @@
+# begin build.yml
 name: build
-
 
 on:
   push:
@@ -56,3 +56,4 @@ jobs:
       run: |
         echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
+# end build.yml
