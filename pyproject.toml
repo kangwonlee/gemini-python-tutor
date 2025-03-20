@@ -1,0 +1,7 @@
+[project]
+name="ai-coding-tutor"
+version="2024.03.20"
+dependencies=[
+    "pytest==8.3.5",
+    "requests==2.32.3",
+]
