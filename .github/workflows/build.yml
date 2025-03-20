@@ -48,6 +48,19 @@ jobs:
         fail-expected: True
       timeout-minutes: 5
 
+    - name: Integration test XAI
+      id: integration-xai
+      uses: ./
+      with:
+        report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
+        student-files: tests/sample_code.py
+        api-key: ${{ secrets.XAI_API_KEY }}
+        readme-path: tests/sample_readme.md
+        model: grok
+        explanation-in: Korean
+        fail-expected: True
+      timeout-minutes: 5
+
     - name: Output the outputs of the integration test of the action
       run: |
         echo "${{ steps.integration.outputs.feedback }}"
