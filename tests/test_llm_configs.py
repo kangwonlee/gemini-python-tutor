@@ -5,110 +5,135 @@ import sys
 from typing import Dict
 
 
-HEADER = Dict[str, str]
-
-
 import pytest
+
+
+# Type hint
+HEADER = Dict[str, str]
 
 
 test_folder = pathlib.Path(__file__).parent.resolve()
 project_folder = test_folder.parent.resolve()
-sys.path.insert(
-    0,
-    str(project_folder)
-)
+sys.path.insert(0, str(project_folder))
 
 
-import llm_configs
+from llm_configs import LLMConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig
 
 
+# Fixtures
 @pytest.fixture
 def sample_api_key() -> str:
-    return 'test_key'
+    return "test_api_key"
 
 
 @pytest.fixture
 def sample_url() -> str:
-    return 'test_url'
+    return "http://example.com"
 
 
 @pytest.fixture
 def sample_model() -> str:
-    return 'test_model'
+    return "test_model"
 
 
 @pytest.fixture
-def sample_header() -> HEADER:
-    return {"Test-Type": "test/test"}
+def sample_headers() -> HEADER:
+    return {"X-Custom": "value"}
 
 
 @pytest.fixture
-def llm_config_instance(
-        sample_api_key:str,
-        sample_url:str,
-        sample_model:str,
-        sample_header:HEADER,
-    ) -> llm_configs.LLMConfig:
-    return llm_configs.LLMConfig(
-        sample_api_key,
-        sample_url,
-        sample_model,
-        sample_header,
-    )
+def sample_question() -> str:
+    return "What is the meaning of life?"
 
 
 @pytest.fixture
-def llm_config__default_header(
-        sample_api_key:str,
-        sample_url:str,
-        sample_model:str,
-    ) -> llm_configs.LLMConfig:
-    return llm_configs.LLMConfig(
-        sample_api_key,
-        sample_url,
-        sample_model,
-    )
+def llm_config(sample_api_key: str, sample_url: str, sample_model: str) -> LLMConfig:
+    return LLMConfig(api_key=sample_api_key, api_url=sample_url, model=sample_model)
 
 
 @pytest.fixture
-def gemini_config(sample_api_key: str) -> llm_configs.GeminiConfig:
-    return llm_configs.GeminiConfig(api_key=sample_api_key)
+def gemini_config(sample_api_key: str, sample_url: str) -> GeminiConfig:
+    return GeminiConfig(api_key=sample_api_key, api_url=sample_url)
 
 
 @pytest.fixture
-def grok_config(sample_api_key: str) -> llm_configs.GrokConfig:
-    return llm_configs.GrokConfig(api_key=sample_api_key)
+def grok_config(sample_api_key: str) -> GrokConfig:
+    return GrokConfig(api_key=sample_api_key)
 
 
 @pytest.fixture
-def nvidia_nim_config(sample_api_key: str) -> llm_configs.NvidiaNIMConfig:
-    return llm_configs.NvidiaNIMConfig(api_key=sample_api_key)
+def nvidia_nim_config(sample_api_key: str) -> NvidiaNIMConfig:
+    return NvidiaNIMConfig(api_key=sample_api_key)
 
 
-def test_config_instance(
-        llm_config_instance:llm_configs.LLMConfig,
-        sample_api_key:str,
-        sample_model:str,
-        sample_url:str,
-        sample_header:HEADER,
-    ):
-    assert llm_config_instance.api_key == sample_api_key
-    assert llm_config_instance.api_url == sample_url
-    assert llm_config_instance.model == sample_model
-    assert llm_config_instance.default_headers == sample_header
+# LLMConfig Tests
+def test_llm_config_init(llm_config: LLMConfig, sample_api_key: str, sample_url: str, sample_model: str):
+    assert llm_config.api_key == sample_api_key
+    assert llm_config.api_url == sample_url
+    assert llm_config.model == sample_model
+    assert llm_config.default_headers == {"Content-Type": "application/json"}
 
 
-def test_config__default_header(
-        llm_config__default_header:llm_configs.LLMConfig,
-        sample_api_key:str,
-        sample_url:str,
-        sample_model:str,):
-    assert llm_config__default_header.api_key == sample_api_key
-    assert llm_config__default_header.api_url == sample_url
-    assert llm_config__default_header.model == sample_model
-    assert isinstance(llm_config__default_header.default_headers, dict)
+def test_llm_config_get_headers(llm_config: LLMConfig, sample_api_key: str):
+    headers = llm_config.get_headers()
+    assert headers["Authorization"] == f"Bearer {sample_api_key}"
+    assert "Authorization" not in llm_config.default_headers  # Original unchanged
 
 
-if '__main__' == __name__:
-    pytest.main(['--verbose', __file__])
+def test_llm_config_format_request_data(llm_config: LLMConfig, sample_question: str, sample_model: str):
+    data = llm_config.format_request_data(sample_question)
+    assert data["model"] == sample_model
+    assert data["messages"][0]["content"] == sample_question
+
+
+def test_llm_config_parse_response_raises(llm_config: LLMConfig):
+    with pytest.raises(NotImplementedError):
+        llm_config.parse_response({})
+
+
+# GeminiConfig Tests
+def test_gemini_config_init(gemini_config: GeminiConfig, sample_api_key: str):
+    assert gemini_config.api_url == f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={sample_api_key}"
+    assert "Authorization" not in gemini_config.get_headers()
+
+
+def test_gemini_config_format_request_data(gemini_config: GeminiConfig, sample_question: str):
+    data = gemini_config.format_request_data(sample_question)
+    assert data["contents"][0]["parts"][0]["text"] == sample_question
+
+
+def test_gemini_config_parse_response(gemini_config: GeminiConfig):
+    response = {"candidates": [{"content": {"parts": [{"text": "Answer"}]}}]}
+    assert gemini_config.parse_response(response) == "Answer"
+
+
+# GrokConfig Tests
+def test_grok_config_init(grok_config: GrokConfig, sample_api_key: str):
+    assert grok_config.api_url == "https://api.x.ai/v1/chat/completions"
+    assert grok_config.model == "grok-2-latest"
+
+
+def test_grok_config_format_request_data(grok_config: GrokConfig, sample_question: str):
+    data = grok_config.format_request_data(sample_question)
+    assert data["messages"][0]["content"] == sample_question
+
+
+def test_grok_config_parse_response(grok_config: GrokConfig):
+    response = {"choices": [{"message": {"content": "Grok answer"}}]}
+    assert grok_config.parse_response(response) == "Grok answer"
+
+
+# NvidiaNIMConfig Tests
+def test_nvidia_nim_config_init(nvidia_nim_config: NvidiaNIMConfig, sample_api_key: str):
+    assert nvidia_nim_config.api_url == "https://integrate.api.nvidia.com/v1/chat/completions"
+    assert nvidia_nim_config.model == "google/gemma-2-9b-it"
+
+
+def test_nvidia_nim_config_parse_response(nvidia_nim_config: NvidiaNIMConfig):
+    response = {"choices": [{"message": {"content": "NIM answer"}}]}
+    assert nvidia_nim_config.parse_response(response) == "NIM answer"
+
+
+if __name__ == "__main__":
+    pytest.main(["--verbose", __file__])
 # end tests/test_llm_configs.py
