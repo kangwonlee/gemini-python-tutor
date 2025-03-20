@@ -7,8 +7,8 @@ from typing import Dict, Any
 class LLMConfig:
     """Base configuration class for LLM APIs."""
     api_key: str
-    model: str
     api_url: str
+    model: str
     default_headers: Dict[str, str] = None
 
     def __post_init__(self):
