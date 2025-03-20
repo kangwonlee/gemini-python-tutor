@@ -39,7 +39,11 @@ class LLMConfig:
 
 @dataclass
 class GeminiConfig(LLMConfig):
-    """Configuration for Google's Gemini API."""
+    """
+    Configuration for Google's Gemini API.
+    References:
+        https://ai.google.dev/gemini-api/docs/quickstart
+    """
     model: str = "gemini-2.0-flash"
 
     def __post_init__(self):
@@ -59,7 +63,11 @@ class GeminiConfig(LLMConfig):
 
 @dataclass
 class GrokConfig(LLMConfig):
-    """Configuration for xAI's Grok API."""
+    """
+    Configuration for xAI's Grok API.
+    References:
+        https://docs.x.ai/docs/api-reference
+    """
     model: str = "grok-2-latest"
     api_url: str = "https://api.x.ai/v1/chat/completions"
 
@@ -77,7 +85,11 @@ class GrokConfig(LLMConfig):
 
 @dataclass
 class NvidiaNIMConfig(LLMConfig):
-    """Configuration for NVIDIA's NIM API."""
+    """
+    Configuration for NVIDIA's NIM API.
+    References:
+        https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html
+    """
     model: str = "google/gemma-2-9b-it"
     api_url: str = "https://integrate.api.nvidia.com/v1/chat/completions"
 
