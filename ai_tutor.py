@@ -170,8 +170,8 @@ def assignment_instruction(
 
 def exclude_common_contents(
     readme_content:str,
-    common_content_start_marker:str,
-    common_content_end_marker:str
+    common_content_start_marker:str = r"``From here is common to all assignments\.``",
+    common_content_end_marker:str = r"``Until here is common to all assignments\.``",
 ) -> str:
     """Removes common content from a string.
 
