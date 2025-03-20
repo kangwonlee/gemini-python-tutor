@@ -125,9 +125,9 @@ def get_instruction_block(readme_file:pathlib.Path, explanation_in:str) -> str:
 def get_student_code_block(student_files:List[pathlib.Path], explanation_in:str) -> str:
     return (
         "\n\n##### Start mutable code block\n"
-        f"## {{load_locale('{explanation_in}')['homework_start']}}\n"
+        f"## {load_locale(explanation_in)['homework_start']}\n"
         f"{assignment_code(student_files)}\n"
-        f"## {{load_locale('{explanation_in}')['homework_end']}}\n"
+        f"## {load_locale(explanation_in)['homework_end']}\n"
         "##### End mutable code block\n"
     )
 
