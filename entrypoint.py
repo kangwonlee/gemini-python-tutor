@@ -59,6 +59,8 @@ def main() -> None:
             f.write(feedback)
     elif b_fail_expected:
         assert n_failed > 0, 'No failed tests'
+    elif n_failed == 0:
+        pass
     else:
         raise NotImplementedError('Unexpected value for INPUT_FAIL-EXPECTED')
 
