@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Docker Hub badges for version and image size in README.md.
+- Explicit `elif n_failed == 0: pass` in entrypoint.py for clarity (no functional change).
 
 ### Changed
 
+- Reorganized `README.md` for better flow (e.g., "Key Features" after intro, streamlined "Troubleshooting").
+- Simplified "Troubleshooting" by removing CI-specific subsection and some error details.
+- Minor phrasing adjustments in README.md for consistency.
 
 ### Deprecated
 
