@@ -3,12 +3,12 @@ import logging
 import pathlib
 import sys
 import time
+from unittest.mock import Mock, patch
 
 from typing import Dict
 
 
 import pytest
-from unittest.mock import Mock, patch
 
 
 # Adjust sys.path to import from project root
@@ -36,9 +36,17 @@ def mock_config() -> LLMConfig:
 
 
 @pytest.fixture
-def client(mock_config: LLMConfig) -> LLMAPIClient:
-    """LLMAPIClient instance with default settings."""
-    return LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=2, timeout_sec=1)
+def mock_logger():
+    """Mock logger for testing logging calls."""
+    return Mock(spec=logging.Logger)
+
+
+@pytest.fixture
+def client(mock_config: LLMConfig, mock_logger: Mock) -> LLMAPIClient:
+    """LLMAPIClient instance with mocked logger."""
+    client = LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=2, timeout_sec=1)
+    client.logger = mock_logger  # Override the real logger with the mock
+    return client
 
 
 @pytest.fixture
@@ -47,13 +55,13 @@ def sample_question() -> str:
 
 
 # Tests
-def test_init(client: LLMAPIClient, mock_config: LLMConfig):
+def test_init(client: LLMAPIClient, mock_config: LLMConfig, mock_logger: Mock):
     """Test client initialization."""
     assert client.config == mock_config
     assert client.retry_delay_sec == 0.1
     assert client.max_retry_attempt == 2
     assert client.timeout_sec == 1
-    assert isinstance(client.logger, logging.Logger)
+    assert client.logger == mock_logger
 
 
 @patch("llm_client.requests.post")
@@ -84,11 +92,13 @@ def test_call_api_rate_limit_success(mock_post: Mock, client: LLMAPIClient, samp
     result = client.call_api(sample_question)
     assert result == "4"
     assert mock_post.call_count == 2  # Retried once
-    client.logger.warning.assert_called_once()  # Rate limit warning logged
+    client.logger.warning.assert_called_once_with(
+        f"Rate limit hit. Retrying in 0.1s (Attempt 1/{client.max_retry_attempt})"
+    )
 
 
 @patch("llm_client.requests.post")
-@patch("llm_client.time.sleep")  # Mock sleep to avoid delays
+@patch("llm_client.time.sleep")
 def test_call_api_rate_limit_exhausted(mock_sleep: Mock, mock_post: Mock, client: LLMAPIClient, sample_question: str):
     """Test exceeding max retries on rate limit."""
     mock_response = Mock(status_code=429)
@@ -104,7 +114,6 @@ def test_call_api_rate_limit_exhausted(mock_sleep: Mock, mock_post: Mock, client
 @patch("llm_client.requests.post")
 def test_call_api_timeout(mock_post: Mock, client: LLMAPIClient, sample_question: str):
     """Test timeout exceeded."""
-    # Simulate a long delay by mocking time.monotonic
     with patch("llm_client.time.monotonic") as mock_time:
         mock_time.side_effect = [0, 0, 2]  # Start at 0, exceed timeout (1s) on second call
         mock_response = Mock(status_code=200)
@@ -113,7 +122,7 @@ def test_call_api_timeout(mock_post: Mock, client: LLMAPIClient, sample_question
 
         result = client.call_api(sample_question)
         assert result is None
-        mock_post.assert_called_once()  # Only one attempt before timeout
+        mock_post.assert_called_once()
         client.logger.error.assert_called_once_with(f"Timeout exceeded for question: {sample_question}")
 
 
@@ -127,7 +136,7 @@ def test_call_api_parse_error(mock_post: Mock, client: LLMAPIClient, sample_ques
 
     result = client.call_api(sample_question)
     assert result is None
-    client.logger.exception.assert_called_once()
+    client.logger.exception.assert_called_once_with("Error parsing response: Invalid response format")
     mock_post.assert_called_once()
 
 
