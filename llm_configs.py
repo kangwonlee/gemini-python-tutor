@@ -3,19 +3,24 @@ from dataclasses import dataclass
 from typing import Dict, Any
 
 
+# Type hint
+HEADER = Dict[str, str]
+
+
 @dataclass
 class LLMConfig:
     """Base configuration class for LLM APIs."""
+
     api_key: str
     api_url: str
     model: str
-    default_headers: Dict[str, str] = None
+    default_headers: HEADER = None
 
     def __post_init__(self):
         if self.default_headers is None:
             self.default_headers = {"Content-Type": "application/json"}
 
-    def get_headers(self) -> Dict[str, str]:
+    def get_headers(self) -> HEADER:
         """Returns headers with Authorization token by default."""
         headers = self.default_headers.copy()
         headers["Authorization"] = f"Bearer {self.api_key}"
@@ -44,13 +49,14 @@ class GeminiConfig(LLMConfig):
     References:
         https://ai.google.dev/gemini-api/docs/quickstart
     """
+
     model: str = "gemini-2.0-flash"
 
     def __post_init__(self):
         super().__post_init__()
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
-    def get_headers(self) -> Dict[str, str]:
+    def get_headers(self) -> HEADER:
         """Gemini uses API key in URL, not headers."""
         return self.default_headers.copy()  # No Authorization header
 
@@ -68,6 +74,7 @@ class GrokConfig(LLMConfig):
     References:
         https://docs.x.ai/docs/api-reference
     """
+
     model: str = "grok-2-latest"
     api_url: str = "https://api.x.ai/v1/chat/completions"
 
@@ -89,10 +96,13 @@ class NvidiaNIMConfig(LLMConfig):
     Configuration for NVIDIA's NIM API.
     References:
         https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html
+        https://docs.nvidia.com/nim/large-language-models/latest/models.html
     """
-    model: str = "google/gemma-2-9b-it"
+
+    model: str = "google/gemma-2-9b-it" # or 'meta/llama-3.1-8b-instruct
     api_url: str = "https://integrate.api.nvidia.com/v1/chat/completions"
 
     def parse_response(self, response_json: Dict) -> str:
         return response_json["choices"][0]["message"]["content"]
+
 # end llm_configs.py
