@@ -15,7 +15,7 @@ FROM cicirello/pyaction:4
 
 COPY entrypoint.py /entrypoint.py
 COPY requirements.txt /requirements.txt
-COPY ai_tutor.py /ai_tutor.py
+COPY prompt.py /prompt.py
 COPY locale/ /locale/
 
 RUN python3 -m pip install --upgrade pip
