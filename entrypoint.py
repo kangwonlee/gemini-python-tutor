@@ -95,10 +95,14 @@ def get_path_tuple(paths_str: str) -> Tuple[pathlib.Path]:
     """
     Converts a comma-separated string of file paths to a tuple of pathlib.Path objects.
     """
-    gen = map(pathlib.Path, paths_str.split(','))
-    result_list = [path for path in gen if path.exists()]
+    result_list = []
+    for path in map(pathlib.Path, paths_str.split(',')):
+        if path.exists():
+            result_list.append(path)
+        else:
+            logging.warning(f"{path} does not exist")
+
     if not result_list:
-        logging.warning(f"No valid paths found in: {paths_str}")
         raise ValueError("No valid paths provided")
     return tuple(result_list)
 
