@@ -15,7 +15,7 @@ sys.path.insert(
 import entrypoint
 
 
-@unittest.mock.patch('ai_tutor.get_prompt')
+@unittest.mock.patch('prompt.get_prompt')
 def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) -> None:
     # Setup
 
