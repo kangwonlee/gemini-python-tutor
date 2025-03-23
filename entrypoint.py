@@ -35,7 +35,7 @@ def main() -> None:
         'grok': os.environ.get('INPUT_GROK-API-KEY', '').strip(),
         'nvidia_nim': os.environ.get('INPUT_NVIDIA-API-KEY', '').strip()
     }
-    
+
     # Select API key based on LLM type
     api_key = api_keys.get(llm_type)
     assert api_key, f"No API key provided for {llm_type}. Check INPUT_{llm_type.upper()}-API-KEY"
