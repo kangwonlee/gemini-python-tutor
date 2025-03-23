@@ -29,7 +29,7 @@ def main() -> None:
     readme_file = pathlib.Path(readme_file_str)
     assert readme_file.exists(), 'No README file found'
 
-    llm_type = os.environ['INPUT_LLM'].lower()
+    llm_type = os.environ['INPUT_MODEL'].lower()
     api_keys = {
         'gemini': os.environ.get('INPUT_GEMINI-API-KEY', '').strip(),
         'grok': os.environ.get('INPUT_GROK-API-KEY', '').strip(),
@@ -55,7 +55,7 @@ def main() -> None:
     config_class = config_map.get(llm_type)
     if not config_class:
         raise ValueError(f"Unsupported LLM type: {llm_type}. Use 'gemini', 'grok', or 'nvidia_nim'")
-    
+
     config_args = {'api_key': api_key}
     if model:
         config_args['model'] = model
@@ -68,9 +68,9 @@ def main() -> None:
     logging.info(f"Student files: {student_files}")
     logging.info(f"Readme file: {readme_file}")
     logging.info(f"Using LLM: {llm_type} for repository: {github_repo}")
-    
+
     n_failed, question = prompt.engineering(report_files, student_files, readme_file, explanation_in)
-    
+
     # Get feedback from LLM
     feedback = client.call_api(question)
     if not feedback:
