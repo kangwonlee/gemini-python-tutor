@@ -101,7 +101,7 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Swedish': ('Läxa',),
         'Thai': ('การบ้าน',),
         'Vietnamese': ('Bài tập',),
-    }    
+    }
     return tuple(
         map(
             lambda x: x.lower(),
