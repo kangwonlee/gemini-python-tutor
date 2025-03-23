@@ -31,9 +31,9 @@ def main() -> None:
 
     llm_type = os.environ['INPUT_MODEL'].lower()
     api_keys = {
-        'gemini': os.environ.get('INPUT_GEMINI-API-KEY', '').strip(),
-        'grok': os.environ.get('INPUT_GROK-API-KEY', '').strip(),
-        'nvidia_nim': os.environ.get('INPUT_NVIDIA-API-KEY', '').strip()
+        'gemini': os.getenv('INPUT_GEMINI-API-KEY', '').strip(),
+        'grok': os.getenv('INPUT_GROK-API-KEY', '').strip(),
+        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', '').strip()
     }
 
     # Select API key based on LLM type
