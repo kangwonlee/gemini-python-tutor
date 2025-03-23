@@ -7,7 +7,7 @@ import sys
 
 from typing import List
 
-import ai_tutor
+import prompt
 from llm_client import LLMAPIClient
 from llm_configs import GeminiConfig, GrokConfig, NvidiaNIMConfig
 
@@ -60,7 +60,7 @@ def main(argv:List[str]):
     readme_file = pathlib.Path(args.readme)
 
     # Generate prompt
-    n_failed, question = ai_tutor.generate_feedback(report_paths, student_files, readme_file, args.lang)
+    n_failed, question = prompt.engineering(report_paths, student_files, readme_file, args.lang)
 
     # Call API and get response
     answer = client.call_api(question)

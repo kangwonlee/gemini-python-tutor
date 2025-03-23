@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple
 logging.basicConfig(level=logging.INFO)
 
 
-def generate_feedback(
+def engineering(
     report_paths:List[pathlib.Path],
     student_files:List[pathlib.Path],
     readme_file:pathlib.Path,

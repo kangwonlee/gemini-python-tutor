@@ -11,7 +11,7 @@ from typing import Tuple
 from llm_client import LLMAPIClient
 from llm_configs import GeminiConfig, GrokConfig, NvidiaNIMConfig
 
-import ai_tutor  # Assuming ai_tutor.py was renamed to prompt.py as discussed
+import prompt
 
 
 logging.basicConfig(level=logging.INFO)
