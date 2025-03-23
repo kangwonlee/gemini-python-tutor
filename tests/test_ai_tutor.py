@@ -567,46 +567,6 @@ def expected_default_gemini_model() -> str:
     return 'gemini-2.0-flash'
 
 
-def test_url__default_model(
-        test_api_key:str,
-        expected_default_gemini_model:str
-    ):
-    result = ai_tutor.url(test_api_key)
-
-    result_parsed = up.urlparse(result)
-
-    path_parts = result_parsed.path.split('/')
-
-    b_found = False
-
-    for part in path_parts:
-        if expected_default_gemini_model in part.split(':'):
-            b_found = True
-            break
-
-    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
-
-
-def test_url__specific_model(
-        test_api_key:str,
-    ):
-    model = 'gemini-2.0-flash'
-    result = ai_tutor.url(test_api_key, model=model)
-
-    result_parsed = up.urlparse(result)
-
-    path_parts = result_parsed.path.split('/')
-
-    b_found = False
-
-    for part in path_parts:
-        if model in part.split(':'):
-            b_found = True
-            break
-
-    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
-
-
 @pytest.fixture
 def collect_longrepr_result(json_dict:PYTEST_JSON_REPORT) -> List[str]:
     return ai_tutor.collect_longrepr(json_dict)

@@ -50,11 +50,13 @@ class GeminiConfig(LLMConfig):
         https://ai.google.dev/gemini-api/docs/quickstart
     """
 
+    api_url: str = None
     model: str = "gemini-2.0-flash"
 
     def __post_init__(self):
         super().__post_init__()
-        self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        if self.api_url is None:
+            self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
     def get_headers(self) -> HEADER:
         """Gemini uses API key in URL, not headers."""
@@ -104,5 +106,33 @@ class NvidiaNIMConfig(LLMConfig):
 
     def parse_response(self, response_json: Dict) -> str:
         return response_json["choices"][0]["message"]["content"]
+
+
+@dataclass
+class ClaudeConfig(LLMConfig):
+    """
+    Configuration for Claude API.
+    References:
+        https://docs.anthropic.com/en/docs/
+    """
+
+    api_url: str = "https://api.anthropic.com/v1/messages"
+    model: str = "claude-3-7-sonnet-20250219"
+    default_headers: HEADER = None
+
+    def __post_init__(self):
+        result = super().__post_init__()
+        if self.default_headers is None:
+            self.default_headers = {
+                "x-api-key": self.api_key,
+                "anthropic-version": "2023-06-01",
+                "Content-Type": "application/json",
+            }
+        if self.default_headers["x-api-key"] is None:
+            raise ValueError("API key is required for Claude API")
+        return result
+
+    def parse_response(self, response_json: Dict) -> str:
+        return response_json["content"][0]["text"]
 
 # end llm_configs.py
