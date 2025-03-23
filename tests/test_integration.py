@@ -16,12 +16,12 @@ import entrypoint
 
 
 @unittest.mock.patch('prompt.get_prompt')
-def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) -> None:
+def test_main_argument_passing__all_exists(mock_get_prompt, caplog, tmp_path) -> None:
     # Setup
 
     test_key = 'test-key'
     test_explain_in = 'explain-in'
-    test_model = 'test-model'
+    test_model = 'gemini'
 
     test_gemini_key = 'test-gemini-key'
     test_grok_key = 'test-grok-key'
@@ -63,17 +63,15 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
     os.environ['INPUT_README-PATH'] = str(expected_readme_path)
 
     # mock return value
-    mock_gemini_qna.return_value = (0, "This is the feedback message.")
+    mock_get_prompt.return_value = (0, "This is the feedback message.")
 
-    entrypoint.main()
+    entrypoint.main(b_ask=False)
 
-    mock_gemini_qna.assert_called_once_with(
+    mock_get_prompt.assert_called_once_with(
         expected_input_file_paths,
         expected_student_file_paths,
         expected_readme_path,
-        test_key,
         test_explain_in,
-        model=test_model,
     )
 
     assert 'does not exist' not in caplog.text
