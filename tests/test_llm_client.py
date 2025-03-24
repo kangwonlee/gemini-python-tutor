@@ -2,18 +2,15 @@
 import logging
 import pathlib
 import sys
-import time
 from unittest.mock import Mock, patch
 
-from typing import Dict
-
-
 import pytest
-
+import requests
 
 # Adjust sys.path to import from project root
 test_folder = pathlib.Path(__file__).parent.resolve()
 project_folder = test_folder.parent.resolve()
+
 sys.path.insert(0, str(project_folder))
 
 
@@ -43,9 +40,9 @@ def mock_logger():
 
 @pytest.fixture
 def client(mock_config: LLMConfig, mock_logger: Mock) -> LLMAPIClient:
-    """LLMAPIClient instance with mocked logger."""
+    """LLMAPIClient instance with mocked logger and default settings."""
     client = LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=2, timeout_sec=1)
-    client.logger = mock_logger  # Override the real logger with the mock
+    client.logger = mock_logger  # Override real logger with mock
     return client
 
 
@@ -56,7 +53,7 @@ def sample_question() -> str:
 
 # Tests
 def test_init(client: LLMAPIClient, mock_config: LLMConfig, mock_logger: Mock):
-    """Test client initialization."""
+    """Test client initialization with valid parameters."""
     assert client.config == mock_config
     assert client.retry_delay_sec == 0.1
     assert client.max_retry_attempt == 2
@@ -64,11 +61,20 @@ def test_init(client: LLMAPIClient, mock_config: LLMConfig, mock_logger: Mock):
     assert client.logger == mock_logger
 
 
+def test_init_invalid_params(mock_config: LLMConfig, mock_logger: Mock):
+    """Test that invalid initialization parameters raise appropriate exceptions."""
+    with pytest.raises(ValueError, match="retry_delay_sec must be positive"):
+        LLMAPIClient(mock_config, retry_delay_sec=-1, max_retry_attempt=2, timeout_sec=1)
+    with pytest.raises(ValueError, match="max_retry_attempt must be non-negative"):
+        LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=-1, timeout_sec=1)
+    with pytest.raises(ValueError, match="timeout_sec must be positive"):
+        LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=2, timeout_sec=0)
+
+
 @patch("llm_client.requests.post")
 def test_call_api_success(mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test successful API call."""
-    mock_response = Mock()
-    mock_response.status_code = 200
+    """Test successful API call returns the expected answer."""
+    mock_response = Mock(status_code=200)
     mock_response.json.return_value = {"answer": "4"}
     mock_post.return_value = mock_response
 
@@ -77,13 +83,14 @@ def test_call_api_success(mock_post: Mock, client: LLMAPIClient, sample_question
     mock_post.assert_called_once_with(
         client.config.api_url,
         headers=client.config.get_headers(),
-        json={"question": sample_question}
+        json={"question": sample_question},
+        timeout=client.timeout_sec
     )
 
 
 @patch("llm_client.requests.post")
 def test_call_api_rate_limit_success(mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test rate limit retry leading to success."""
+    """Test that a rate limit (429) retry succeeds on the second attempt."""
     mock_response_429 = Mock(status_code=429)
     mock_response_200 = Mock(status_code=200)
     mock_response_200.json.return_value = {"answer": "4"}
@@ -91,44 +98,55 @@ def test_call_api_rate_limit_success(mock_post: Mock, client: LLMAPIClient, samp
 
     result = client.call_api(sample_question)
     assert result == "4"
-    assert mock_post.call_count == 2  # Retried once
+    assert mock_post.call_count == 2  # Initial + 1 retry
     client.logger.warning.assert_called_once_with(
-        f"Rate limit hit. Retrying in 0.1s (Attempt 1/{client.max_retry_attempt})"
+        "Rate limit hit. Retrying in 0.1s (attempt 1/2)"
     )
 
 
-@patch("llm_client.requests.post")
 @patch("llm_client.time.sleep")
-def test_call_api_rate_limit_exhausted(mock_sleep: Mock, mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test exceeding max retries on rate limit."""
+@patch("llm_client.requests.post")
+def test_call_api_rate_limit_exhausted(mock_post: Mock, mock_sleep: Mock, client: LLMAPIClient, sample_question: str):
+    """Test that max retries are exhausted on 429 status, with exponential backoff.
+    Verifies the client gives up after max_retry_attempt (2), logging the failure.
+    """
     mock_response = Mock(status_code=429)
     mock_post.return_value = mock_response
 
     result = client.call_api(sample_question)
     assert result is None
-    assert mock_post.call_count == 3  # 2 retries + 1 initial
+    assert mock_post.call_count == 3  # Initial + 2 retries
     assert mock_sleep.call_args_list == [((0.1,),), ((0.2,),)]  # Exponential backoff
     client.logger.error.assert_called_once_with(f"Max retries exceeded for rate limit. Question: {sample_question}")
 
 
 @patch("llm_client.requests.post")
 def test_call_api_timeout(mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test timeout exceeded."""
-    with patch("llm_client.time.monotonic") as mock_time:
-        mock_time.side_effect = [0, 0, 2]  # Start at 0, exceed timeout (1s) on second call
-        mock_response = Mock(status_code=200)
-        mock_response.json.return_value = {"answer": "4"}
-        mock_post.return_value = mock_response
+    """Test that a request timeout returns None and logs an error.
+    Ensures the client aborts on slow or unresponsive APIs.
+    """
+    mock_post.side_effect = requests.Timeout("Request timed out")
 
-        result = client.call_api(sample_question)
-        assert result is None
-        mock_post.assert_called_once()
-        client.logger.error.assert_called_once_with(f"Timeout exceeded for question: {sample_question}")
+    result = client.call_api(sample_question)
+    assert result is None
+    mock_post.assert_called_once()
+    client.logger.error.assert_called_once_with(f"Timeout exceeded for question: {sample_question}")
+
+
+@patch("llm_client.requests.post")
+def test_call_api_network_error(mock_post: Mock, client: LLMAPIClient, sample_question: str):
+    """Test that a network error (e.g., connection failure) returns None and logs an error."""
+    mock_post.side_effect = requests.ConnectionError("Network unreachable")
+
+    result = client.call_api(sample_question)
+    assert result is None
+    mock_post.assert_called_once()
+    client.logger.error.assert_called_once_with(f"Network error for question: {sample_question}: Network unreachable")
 
 
 @patch("llm_client.requests.post")
 def test_call_api_parse_error(mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test handling of parsing errors."""
+    """Test that a parsing error in the response returns None and logs the exception."""
     mock_response = Mock(status_code=200)
     mock_response.json.return_value = {"invalid": "data"}
     mock_post.return_value = mock_response
@@ -136,22 +154,51 @@ def test_call_api_parse_error(mock_post: Mock, client: LLMAPIClient, sample_ques
 
     result = client.call_api(sample_question)
     assert result is None
-    client.logger.exception.assert_called_once_with("Error parsing response: Invalid response format")
+    client.logger.exception.assert_called_once_with("Error parsing response: 'Invalid response format'")
     mock_post.assert_called_once()
 
 
 @patch("llm_client.requests.post")
 def test_call_api_unexpected_status(mock_post: Mock, client: LLMAPIClient, sample_question: str):
-    """Test handling of unexpected status codes."""
+    """Test that an unexpected status code (e.g., 500) returns None without retries."""
     mock_response = Mock(status_code=500)
     mock_response.text = "Server error"
     mock_post.return_value = mock_response
 
     result = client.call_api(sample_question)
     assert result is None
+    mock_post.assert_called_once()  # No retries for non-429 status
     client.logger.error.assert_called_once_with("API failed with status 500: Server error")
+
+
+@patch("llm_client.requests.post")
+def test_call_api_invalid_json(mock_post: Mock, client: LLMAPIClient, sample_question: str):
+    """Test that invalid JSON in a 200 response returns None and logs an error."""
+    mock_response = Mock(status_code=200)
+    mock_response.json.side_effect = ValueError("Invalid JSON")
+    mock_post.return_value = mock_response
+
+    result = client.call_api(sample_question)
+    assert result is None
+    client.logger.exception.assert_called_once_with("Error parsing response: Invalid JSON")
     mock_post.assert_called_once()
 
+
+@patch("llm_client.requests.post")
+def test_call_api_empty_question(mock_post: Mock, client: LLMAPIClient):
+    """Test that an empty question still triggers a request and handles the response."""
+    mock_response = Mock(status_code=200)
+    mock_response.json.return_value = {"answer": "No question provided"}
+    mock_post.return_value = mock_response
+
+    result = client.call_api("")
+    assert result == "No question provided"
+    mock_post.assert_called_once_with(
+        client.config.api_url,
+        headers=client.config.get_headers(),
+        json={"question": ""},
+        timeout=client.timeout_sec
+    )
 
 if __name__ == "__main__":
     pytest.main(["--verbose", __file__])
