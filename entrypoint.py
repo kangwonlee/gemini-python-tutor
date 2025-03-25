@@ -111,7 +111,7 @@ def get_model_key_from_env() -> Tuple[str, str]:
     if not api_key:
         raise ValueError(
             (
-                f"No API key provided for {model}.\n"
+                f"No API key provided for {model.split('-')[0]}.\n"
                 f"Keys available for models : {', '.join(api_key_dict.keys())}\n"
             )
         )
