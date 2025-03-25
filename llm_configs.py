@@ -264,16 +264,16 @@ class ClaudeConfig(LLMConfig):
         Raises:
             ValueError: If API key is not provided in headers
         """
-        result = super().__post_init__()
+
         if self.default_headers is None:
             self.default_headers = {
                 "x-api-key": self.api_key.strip(),
                 "anthropic-version": "2023-06-01",
                 "Content-Type": "application/json",
             }
+
         if self.default_headers["x-api-key"] is None:
             raise ValueError("API key is required for Claude API")
-        return result
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse Claude API response to extract text.
