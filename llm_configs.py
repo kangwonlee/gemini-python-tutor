@@ -10,10 +10,10 @@ HEADER = Dict[str, str]
 @dataclass
 class LLMConfig:
     """Base configuration class for LLM APIs.
-   
+
     This class provides a foundation for configuring API connections to various
     Large Language Model services with common attributes and methods.
-   
+
     Attributes:
         api_key (str): Authentication key for the API
         api_url (str): Base URL endpoint for the API
@@ -28,7 +28,7 @@ class LLMConfig:
 
     def __post_init__(self):
         """Initialize default headers if not provided.
-       
+
         Sets up default headers with JSON content type if none were specified
         during instantiation.
         """
@@ -40,9 +40,9 @@ class LLMConfig:
 
     def get_headers(self) -> HEADER:
         """Returns headers with Authorization token by default.
-       
+
         Creates a copy of default headers and adds Bearer token authorization.
-       
+
         Returns:
             HEADER: Dictionary containing HTTP headers with authorization
         """
@@ -52,12 +52,12 @@ class LLMConfig:
 
     def format_request_data(self, question: str) -> Dict[str, Any]:
         """Default request payload formatting, suitable for OpenAI-like APIs.
-       
+
         Creates a standardized request payload compatible with many LLM APIs.
-       
+
         Args:
             question (str): The input prompt or question to send to the API
-           
+
         Returns:
             Dict[str, Any]: Formatted request payload
         """
@@ -72,13 +72,13 @@ class LLMConfig:
 
     def parse_response(self, response_json: Dict) -> str:
         """Parses the API response to extract the answer.
-       
+
         Args:
             response_json (Dict): Raw JSON response from API
-           
+
         Returns:
             str: Extracted response text
-           
+
         Raises:
             NotImplementedError: Must be implemented by subclasses
         """
@@ -89,13 +89,13 @@ class LLMConfig:
 class GeminiConfig(LLMConfig):
     """
     Configuration for Google's Gemini API.
-   
+
     Specialized configuration for interacting with Google's Gemini API,
     inheriting from LLMConfig with Gemini-specific defaults and formatting.
-   
+
     References:
         https://ai.google.dev/gemini-api/docs/quickstart
-   
+
     Attributes:
         api_url (str, optional): API endpoint URL. Defaults to None.
         model (str): Default Gemini model version. Defaults to "gemini-2.0-flash".
@@ -106,7 +106,7 @@ class GeminiConfig(LLMConfig):
 
     def __post_init__(self):
         """Initialize Gemini-specific URL with API key.
-       
+
         Sets up the complete API URL including the model and API key if not
         provided during instantiation.
         """
@@ -116,10 +116,10 @@ class GeminiConfig(LLMConfig):
 
     def get_headers(self) -> HEADER:
         """Gemini uses API key in URL, not headers.
-       
+
         Returns just the default headers without Authorization token since
         Gemini handles authentication via URL parameter.
-       
+
         Returns:
             HEADER: Basic HTTP headers without auth token
         """
@@ -127,12 +127,12 @@ class GeminiConfig(LLMConfig):
 
     def format_request_data(self, question: str) -> Dict[str, Any]:
         """Format request payload for Gemini API.
-       
+
         Creates Gemini-specific request structure different from OpenAI-style.
-       
+
         Args:
             question (str): Input prompt or question
-           
+
         Returns:
             Dict[str, Any]: Gemini-formatted request payload
         """
@@ -140,12 +140,12 @@ class GeminiConfig(LLMConfig):
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse Gemini API response to extract text.
-       
+
         Extracts and joins text parts from Gemini's response structure.
-       
+
         Args:
             response_json (Dict): Raw JSON response from Gemini API
-           
+
         Returns:
             str: Concatenated response text
         """
@@ -156,12 +156,12 @@ class GeminiConfig(LLMConfig):
 class GrokConfig(LLMConfig):
     """
     Configuration for xAI's Grok API.
-   
+
     Specialized configuration for xAI's Grok API with specific defaults.
-   
+
     References:
         https://docs.x.ai/docs/api-reference
-   
+
     Attributes:
         model (str): Default Grok model. Defaults to "grok-2-1212".
         api_url (str): Grok API endpoint. Defaults to chat completions URL.
@@ -172,12 +172,12 @@ class GrokConfig(LLMConfig):
 
     def format_request_data(self, question: str) -> Dict[str, Any]:
         """Format request payload for Grok API.
-       
+
         Creates a payload compatible with xAI's Grok API specifications.
-       
+
         Args:
             question (str): Input prompt or question
-           
+
         Returns:
             Dict[str, Any]: Grok-formatted request payload
         """
@@ -190,12 +190,12 @@ class GrokConfig(LLMConfig):
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse Grok API response to extract text.
-       
+
         Extracts response content from Grok's response structure.
-       
+
         Args:
             response_json (Dict): Raw JSON response from Grok API
-           
+
         Returns:
             str: Response text
         """
@@ -206,13 +206,13 @@ class GrokConfig(LLMConfig):
 class NvidiaNIMConfig(LLMConfig):
     """
     Configuration for NVIDIA's NIM API.
-   
+
     Configuration for NVIDIA's NIM API with specific model and endpoint defaults.
-   
+
     References:
         https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html
         https://docs.nvidia.com/nim/large-language-models/latest/models.html
-   
+
     Attributes:
         model (str): Default NIM model. Defaults to "google/gemma-2-9b-it".
         api_url (str): NIM API endpoint URL.
@@ -223,12 +223,12 @@ class NvidiaNIMConfig(LLMConfig):
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse NVIDIA NIM API response to extract text.
-       
+
         Extracts response content from NIM's response structure.
-       
+
         Args:
             response_json (Dict): Raw JSON response from NIM API
-           
+
         Returns:
             str: Response text
         """
@@ -239,12 +239,12 @@ class NvidiaNIMConfig(LLMConfig):
 class ClaudeConfig(LLMConfig):
     """
     Configuration for Claude API.
-   
+
     Specialized configuration for Anthropic's Claude API with custom headers.
-   
+
     References:
         https://docs.anthropic.com/en/docs/
-   
+
     Attributes:
         api_url (str): Claude API endpoint URL
         model (str): Default Claude model version
@@ -257,10 +257,10 @@ class ClaudeConfig(LLMConfig):
 
     def __post_init__(self):
         """Initialize Claude-specific headers.
-       
+
         Sets up Claude-specific headers including API key and version,
         with validation.
-       
+
         Raises:
             ValueError: If API key is not provided in headers
         """
@@ -277,12 +277,12 @@ class ClaudeConfig(LLMConfig):
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse Claude API response to extract text.
-       
+
         Extracts response content from Claude's response structure.
-       
+
         Args:
             response_json (Dict): Raw JSON response from Claude API
-           
+
         Returns:
             str: Response text
         """
