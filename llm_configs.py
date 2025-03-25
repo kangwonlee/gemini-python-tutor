@@ -243,7 +243,7 @@ class ClaudeConfig(LLMConfig):
     Specialized configuration for Anthropic's Claude API with custom headers.
 
     References:
-        https://docs.anthropic.com/en/docs/
+        https://docs.anthropic.com/en/api/getting-started
 
     Attributes:
         api_url (str): Claude API endpoint URL
