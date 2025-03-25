@@ -288,4 +288,57 @@ class ClaudeConfig(LLMConfig):
         """
         return response_json["content"][0]["text"]
 
+
+@dataclass
+class PerplexityConfig(LLMConfig):
+    """
+    Configuration for Perplexity API.
+
+    Specialized configuration for Anthropic's Perplexity API with custom headers.
+
+    References:
+        https://docs.perplexity.ai/api-reference/chat-completions
+
+    Attributes:
+        api_url (str): Perplexity API endpoint URL
+        model (str): Default Perplexity model version
+        default_headers (HEADER, optional): Custom headers for Perplexity
+    """
+
+    api_url: str = "https://api.perplexity.ai/chat/completions"
+    model: str = "sonar"
+    default_headers: HEADER = None
+
+    def __post_init__(self):
+        """Initialize Perplexity-specific headers.
+
+        Sets up Perplexity-specific headers including API key and version,
+        with validation.
+
+        Raises:
+            ValueError: If API key is not provided in headers
+        """
+
+        if self.default_headers is None:
+            self.default_headers = {
+                "Authorization": f"Bearer {self.api_key.strip()}",
+                "Content-Type": "application/json"
+            }
+
+        if self.default_headers["Authorization"].split()[1] is None:
+            raise ValueError("API key is required for Perplexity API")
+
+    def parse_response(self, response_json: Dict) -> str:
+        """Parse Perplexity API response to extract text.
+
+        Extracts response content from Perplexity's response structure.
+
+        Args:
+            response_json (Dict): Raw JSON response from Perplexity API
+
+        Returns:
+            str: Response text
+        """
+        return response_json["content"][0]["text"]
+
 # end llm_configs.py
