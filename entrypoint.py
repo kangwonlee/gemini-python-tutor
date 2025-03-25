@@ -17,7 +17,7 @@ import prompt
 logging.basicConfig(level=logging.INFO)
 
 
-def main(b_ask:bool) -> None:
+def main(b_ask:bool=True) -> None:
     # Input parsing from environment variables
     report_files_str = os.environ['INPUT_REPORT-FILES']
     report_files = get_path_tuple(report_files_str)
