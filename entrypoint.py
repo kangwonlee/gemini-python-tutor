@@ -84,6 +84,7 @@ def get_startwith(key:Any, dictionary:dict) -> Any:
 
     for k, v in dictionary.items():
         if key.startswith(k):
+            logging.info(k)
             result = v
             break
 
@@ -101,7 +102,9 @@ def get_model_key_from_env() -> Tuple[str, str]:
         'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', '').strip()
     }
 
+    logging.info('== model key selection ==')
     api_key = get_startwith(model, api_key_dict)
+    logging.info('== model key selection done ==')
 
     if not api_key:
         raise ValueError(
@@ -124,7 +127,9 @@ def get_config_class(model: str) -> type:
         'nvidia_nim': NvidiaNIMConfig
     }
 
+    logging.info('== model selection ==')
     config_class = get_startwith(model, config_map)
+    logging.info('== model selection done ==')
 
     if not config_class:
         raise ValueError(f"Unsupported LLM type: {model}. Use 'gemini', 'grok', or 'nvidia_nim'")
