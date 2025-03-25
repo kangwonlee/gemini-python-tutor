@@ -66,7 +66,7 @@ class LLMConfig:
             "messages": [{"role": "user", "content": question}],
             "temperature": 0.2, # Controls randomness, lower is more deterministic
             "top_p": 0.7,       # Nucleus sampling parameter
-            "max_tokens": 1024, # Maximum response length
+            "max_tokens": 128, # Maximum response length
             "stream": False     # Disable streaming response
         }
 
