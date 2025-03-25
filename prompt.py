@@ -47,7 +47,7 @@ def get_prompt(
         if questions:
             return (
                 get_directive(language) + '\n' +
-                'Please generate comments mutually exclusive and collectively exhaustive for the following failed test cases.'
+                'Please explain mutually exclusively and collectively exhaustively the following failed test cases.'
             )
         return f'In {language}, please comment on the student code given the assignment instruction.'
 
