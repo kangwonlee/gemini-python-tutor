@@ -9,7 +9,7 @@ import sys
 from typing import Any, Tuple
 
 from llm_client import LLMAPIClient
-from llm_configs import GeminiConfig, GrokConfig, NvidiaNIMConfig
+from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig
 
 import prompt
 
@@ -97,9 +97,11 @@ def get_model_key_from_env() -> Tuple[str, str]:
     """
     model = os.environ['INPUT_MODEL'].lower()
     api_key_dict = {
+        'claude': os.getenv('INPUT_CLAUDE_API_KEY', '').strip(),
         'gemini': os.getenv('INPUT_GEMINI-API-KEY', '').strip(),
         'grok': os.getenv('INPUT_GROK-API-KEY', '').strip(),
-        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', '').strip()
+        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', '').strip(),
+        'perplexity': os.getenv('INPUT_PERPLEXITY-API-KEY', '').strip(),
     }
 
     logging.info('== model key selection ==')
@@ -122,6 +124,7 @@ def get_config_class(model: str) -> type:
 
     # Configure LLM client
     config_map = {
+        'claude': ClaudeConfig,
         'gemini': GeminiConfig,
         'grok': GrokConfig,
         'nvidia_nim': NvidiaNIMConfig
