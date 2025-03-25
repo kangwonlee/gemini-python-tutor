@@ -288,6 +288,14 @@ class ClaudeConfig(LLMConfig):
         """
         return response_json["content"][0]["text"]
 
+    def format_request_data(self, question: str) -> Dict[str, Any]:
+        '''
+        Probably 5 tokens of Claude would be equivalent to 1 token of others
+        '''
+        result = super().format_request_data(question)
+        result['max_tokens'] = 256
+        return result
+
 
 @dataclass
 class PerplexityConfig(LLMConfig):
