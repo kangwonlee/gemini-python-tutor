@@ -290,10 +290,10 @@ class ClaudeConfig(LLMConfig):
 
     def format_request_data(self, question: str) -> Dict[str, Any]:
         '''
-        Probably 5 tokens of Claude would be equivalent to 1 token of others
+        Probably multiple tokens of Claude would be equivalent to 1 token of others
         '''
         result = super().format_request_data(question)
-        result['max_tokens'] = 256
+        result['max_tokens'] = 384
         result['messages'][0]['content'] = f'''tokens < {result['max_tokens']}\n''' + result['messages'][0]['content']
         return result
 
