@@ -97,15 +97,15 @@ def get_model_key_from_env() -> Tuple[str, str]:
     """
     model = os.environ['INPUT_MODEL'].lower()
     api_key_dict = {
-        'claude': os.getenv('INPUT_CLAUDE_API_KEY', '').strip(),
-        'gemini': os.getenv('INPUT_GEMINI-API-KEY', '').strip(),
-        'grok': os.getenv('INPUT_GROK-API-KEY', '').strip(),
-        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', '').strip(),
-        'perplexity': os.getenv('INPUT_PERPLEXITY-API-KEY', '').strip(),
+        'claude': os.environ['INPUT_CLAUDE_API_KEY'],
+        'gemini': os.environ['INPUT_GEMINI-API-KEY'],
+        'grok': os.environ['INPUT_GROK-API-KEY'],
+        'nvidia_nim': os.environ['INPUT_NVIDIA-API-KEY'],
+        'perplexity': os.environ['INPUT_PERPLEXITY-API-KEY'],
     }
 
     logging.info('== model key selection ==')
-    api_key = get_startwith(model, api_key_dict)
+    api_key = get_startwith(model, api_key_dict).strip()
     logging.info('== model key selection done ==')
 
     if not api_key:
