@@ -63,11 +63,11 @@ def test_init(client: LLMAPIClient, mock_config: LLMConfig, mock_logger: Mock):
 
 def test_init_invalid_params(mock_config: LLMConfig, mock_logger: Mock):
     """Test that invalid initialization parameters raise appropriate exceptions."""
-    with pytest.raises(ValueError, match="retry_delay_sec must be positive"):
+    with pytest.raises(ValueError, match="retry_delay_sec must be a positive number"):
         LLMAPIClient(mock_config, retry_delay_sec=-1, max_retry_attempt=2, timeout_sec=1)
-    with pytest.raises(ValueError, match="max_retry_attempt must be non-negative"):
+    with pytest.raises(ValueError, match="max_retry_attempt must be a non-negative integer"):
         LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=-1, timeout_sec=1)
-    with pytest.raises(ValueError, match="timeout_sec must be positive"):
+    with pytest.raises(ValueError, match="timeout_sec must be a positive integer"):
         LLMAPIClient(mock_config, retry_delay_sec=0.1, max_retry_attempt=2, timeout_sec=0)
 
 
