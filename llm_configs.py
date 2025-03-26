@@ -328,6 +328,17 @@ class PerplexityConfig(LLMConfig):
             ValueError: If API key is not provided in headers
         """
 
+        available = (
+            'sonar-deep-research',
+            'sonar-reasoning-pro',
+            'sonar-reasoning',
+            'sonar-pro',
+            'sonar',
+        )
+
+        if self.model not in available:
+            self.model = available[-1]
+
         if self.default_headers is None:
             self.default_headers = {
                 "Authorization": f"Bearer {self.api_key.strip()}",
