@@ -299,7 +299,7 @@ class ClaudeConfig(LLMConfig):
         '''
         result = super().format_request_data(question)
         result['max_tokens'] = 384
-        result['messages'][0]['content'] = f'''tokens < {result['max_tokens']}\n''' + result['messages'][0]['content']
+        result['messages'][0]['content'] =  f'''Please answer within {result['max_tokens']} tokens\n''' + result['messages'][0]['content']
         return result
 
 
@@ -352,6 +352,15 @@ class PerplexityConfig(LLMConfig):
 
         if self.default_headers["Authorization"].split()[1] is None:
             raise ValueError("API key is required for Perplexity API")
+
+    def format_request_data(self, question: str) -> Dict[str, Any]:
+        '''
+        Probably multiple tokens of Claude would be equivalent to 1 token of others
+        '''
+        result = super().format_request_data(question)
+        result['max_tokens'] = 384
+        result['messages'][0]['content'] = f'''Please answer within {result['max_tokens']} tokens\n''' + result['messages'][0]['content']
+        return result
 
     def parse_response(self, response_json: Dict) -> str:
         """Parse Perplexity API response to extract text.
