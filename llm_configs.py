@@ -1,10 +1,15 @@
 # begin llm_configs.py
+import logging
+
 from dataclasses import dataclass
 from typing import Dict, Any
 
 
 # Type alias for headers dictionary to improve code readability and type hinting
 HEADER = Dict[str, str]
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
@@ -359,7 +364,11 @@ class PerplexityConfig(LLMConfig):
         Returns:
             str: Response text
         """
-        assert 'content' in response_json, response_json
-        return response_json["content"][0]["text"]
+        try:
+            result = response_json['choices'][0]['message']['content']
+        except KeyError as e:
+            logging.error(str(response_json))
+            raise e
+        return result
 
 # end llm_configs.py
