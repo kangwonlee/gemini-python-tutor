@@ -122,7 +122,7 @@ class LLMAPIClient:
                 # Log unexpected status codes with response details
                 self.logger.error(
                     f"API request failed with status {response.status_code} "
-                    f"for question '{question}': {response.text}"
+                    f"{response.text}"
                 )
                 return None
 
