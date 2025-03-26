@@ -252,7 +252,7 @@ class ClaudeConfig(LLMConfig):
     """
 
     api_url: str = "https://api.anthropic.com/v1/messages"
-    model: str = "claude-3-7-sonnet-20250219"
+    model: str = "claude-3-haiku-20240307"
     default_headers: HEADER = None
 
     def __post_init__(self):
