@@ -359,6 +359,7 @@ class PerplexityConfig(LLMConfig):
         Returns:
             str: Response text
         """
+        assert 'content' in response_json, response_json
         return response_json["content"][0]["text"]
 
 # end llm_configs.py
