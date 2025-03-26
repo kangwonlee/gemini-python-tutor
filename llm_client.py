@@ -87,11 +87,11 @@ class LLMAPIClient:
                 )
             except requests.Timeout:
                 # Log timeout errors and fail immediately
-                self.logger.error(f"Request timed out after {self.timeout_sec}s for question: {question}")
+                self.logger.error(f"Request timed out after {self.timeout_sec}s for question: {question if len(question) < 100 else question[:10]}")
                 return None
             except requests.RequestException as e:
                 # Log general network errors (connection issues, etc.) and fail
-                self.logger.error(f"Network error occurred for question '{question}': {str(e)}")
+                self.logger.error(f"Network error occurred for question '{question if len(question) < 100 else question[:10]}': {str(e)}")
                 return None
 
             # Handle successful response
@@ -102,7 +102,7 @@ class LLMAPIClient:
                     return self.config.parse_response(result)
                 except (ValueError, KeyError) as e:
                     # Log parsing errors (invalid JSON or unexpected structure)
-                    self.logger.exception(f"Failed to parse API response for question '{question}': {str(e)}")
+                    self.logger.exception(f"Failed to parse API response for question '{question if len(question) < 100 else question[:10]}': {str(e)}")
                     return None
             elif response.status_code == 429:  # Rate limit exceeded
                 if attempt < self.max_retry_attempt:
@@ -116,7 +116,7 @@ class LLMAPIClient:
                     continue  # Retry the request
                 else:
                     # Log final failure after exhausting retries
-                    self.logger.error(f"Max retries ({self.max_retry_attempt}) exceeded for rate limit on question: {question}")
+                    self.logger.error(f"Max retries ({self.max_retry_attempt}) exceeded for rate limit on question: {question if len(question) < 100 else question[:10]}")
                     return None
             else:
                 # Log unexpected status codes with response details
