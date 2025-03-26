@@ -9,7 +9,7 @@ import sys
 from typing import Any, Tuple
 
 from llm_client import LLMAPIClient
-from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig
+from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig
 
 import prompt
 
@@ -123,13 +123,14 @@ def get_config_class(model: str) -> type:
         'claude': ClaudeConfig,
         'gemini': GeminiConfig,
         'grok': GrokConfig,
-        'nvidia_nim': NvidiaNIMConfig
+        'nvidia_nim': NvidiaNIMConfig,
+        'perplexity': PerplexityConfig,
     }
 
     config_class = get_startwith(model, config_map)
 
     if not config_class:
-        raise ValueError(f"Unsupported LLM type: {model}. Use 'gemini', 'grok', or 'nvidia_nim'")
+        raise ValueError(f"Unsupported LLM type: {model}. Use {', '.join(config_map.keys())}")
 
     return config_class
 
