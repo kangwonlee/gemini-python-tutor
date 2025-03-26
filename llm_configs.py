@@ -359,7 +359,11 @@ class PerplexityConfig(LLMConfig):
         '''
         result = super().format_request_data(question)
         result['max_tokens'] = 384
-        result['messages'][0]['content'] = f'''Please answer within {result['max_tokens']} tokens\n''' + result['messages'][0]['content']
+        result['messages'][0]['content'] = (
+            f'''Please answer within {result['max_tokens']//2} tokens.'''
+            + '''Do not include code.\n'''
+            + result['messages'][0]['content']
+        )
         return result
 
     def parse_response(self, response_json: Dict) -> str:
