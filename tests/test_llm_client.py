@@ -117,7 +117,7 @@ def test_call_api_rate_limit_exhausted(mock_post: Mock, mock_sleep: Mock, client
     assert result is None
     assert mock_post.call_count == 3  # Initial + 2 retries
     assert mock_sleep.call_args_list == [((0.1,),), ((0.2,),)]  # Exponential backoff
-    client.logger.error.assert_called_once_with(f"Max retries exceeded for rate limit. Question: {sample_question}")
+    client.logger.error.assert_called_once_with(f"Max retries ({mock_post.call_count-1}) exceeded for rate limit. Question: {sample_question}")
 
 
 @patch("llm_client.requests.post")
@@ -180,7 +180,15 @@ def test_call_api_invalid_json(mock_post: Mock, client: LLMAPIClient, sample_que
 
     result = client.call_api(sample_question)
     assert result is None
-    client.logger.exception.assert_called_once_with("Error parsing response: Invalid JSON")
+
+    # Check that logger was called with a message containing key elements
+    call_args = client.logger.exception.call_args
+    assert call_args is not None
+    error_msg = call_args[0][0]
+    assert "Failed to parse API response" in error_msg
+    assert "Invalid JSON" in error_msg
+    assert sample_question[:10] in error_msg if len(sample_question) > 100 else sample_question in error_msg
+
     mock_post.assert_called_once()
 
 

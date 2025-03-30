@@ -10,11 +10,11 @@ from llm_configs import LLMConfig
 
 class LLMAPIClient:
     """Generic client for interacting with LLM APIs using a configuration.
- 
+
     This class provides a robust interface for making API calls to various
     Large Language Model services, handling retries, timeouts, and errors
     in a standardized way.
- 
+
     Attributes:
         config (LLMConfig): Configuration object containing API-specific details
         retry_delay_sec (float): Base delay between retry attempts in seconds
