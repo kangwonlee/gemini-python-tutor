@@ -1,0 +1,144 @@
+{
+    "created": 0.00001,
+    "duration": 0.00001,
+    "exitcode": 0,
+    "root": "/tests",
+    "environment": {},
+    "summary": {
+        "passed": 4,
+        "total": 4,
+        "collected": 4
+    },
+    "collectors": [
+        {
+            "nodeid": "",
+            "outcome": "passed",
+            "result": [
+                {
+                    "nodeid": "test_file.py",
+                    "type": "Module"
+                }
+            ]
+        },
+        {
+            "nodeid": "test_file.py",
+            "outcome": "passed",
+            "result": [
+                {
+                    "nodeid": "test_file.py::test_func_00",
+                    "type": "Function",
+                    "lineno": 23
+                },
+                {
+                    "nodeid": "test_file.py::test_func_10",
+                    "type": "Function",
+                    "lineno": 32
+                },
+                {
+                    "nodeid": "test_file.py::test_func_20",
+                    "type": "Function",
+                    "lineno": 56
+                },
+                {
+                    "nodeid": "test_file.py::test_func_30",
+                    "type": "Function",
+                    "lineno": 96
+                }
+            ]
+        }
+    ],
+    "tests": [
+        {
+            "nodeid": "test_file.py::test_func_00",
+            "lineno": 23,
+            "outcome": "passed",
+            "keywords": [
+                "test_func_00",
+                "test_file.py",
+                "tests",
+                ""
+            ],
+            "setup": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "call": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "teardown": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            }
+        },
+        {
+            "nodeid": "test_file.py::test_func_10",
+            "lineno": 32,
+            "outcome": "passed",
+            "keywords": [
+                "test_func_10",
+                "test_file.py",
+                "tests",
+                ""
+            ],
+            "setup": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "call": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "teardown": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            }
+        },
+        {
+            "nodeid": "test_file.py::test_func_20",
+            "lineno": 56,
+            "outcome": "passed",
+            "keywords": [
+                "test_func_20",
+                "test_file.py",
+                "tests",
+                ""
+            ],
+            "setup": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "call": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "teardown": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            }
+        },
+        {
+            "nodeid": "test_file.py::test_func_30",
+            "lineno": 96,
+            "outcome": "passed",
+            "keywords": [
+                "test_func_30",
+                "test_file.py",
+                "tests",
+                ""
+            ],
+            "setup": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "call": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            },
+            "teardown": {
+                "duration": 0.00001,
+                "outcome": "passed"
+            }
+        }
+    ]
+}

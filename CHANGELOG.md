@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GitHub Workflows**: Modified `build.yml` to use `uv` package manager and Python 3.11.
 - **Testing Updates**: Renamed `test_ai_tutor.py` to `test_prompt.py` and updated tests for `prompt.py`. Adjusted `test_entrypoint.py` and `test_integration.py`.
 - Reorganized `README.md` for better structure and streamlined "Troubleshooting".
+- do not collect `longrepr` from skipped tests
+
 ### Deprecated
 
 
