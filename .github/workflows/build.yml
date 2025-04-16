@@ -1,5 +1,5 @@
+# begin build.yml
 name: build
-
 
 on:
   push:
@@ -21,17 +21,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - name: Install uv package manager
+      uses: astral-sh/setup-uv@v5
       with:
-        python-version: '3.10'
-        cache: 'pip' # caching pip dependencies
+        version: "latest"
+        pyproject-file: "pyproject.toml"
+        python-version: 3.11
+        enable-cache: true
 
-    - name: Install dependencies  
-      run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+    - run: uv sync
 
     - name: Run tests
-      run: python3 -u -m pytest tests/
+      run: |
+        . .venv/bin/activate
+        uv pip list
+        python3 -u -m pytest tests/
 
     - name: Verify that the Docker image for the action builds
       run: docker build . --file Dockerfile
@@ -48,6 +52,19 @@ jobs:
         fail-expected: True
       timeout-minutes: 5
 
+    - name: Integration test XAI
+      id: integration-xai
+      uses: ./
+      with:
+        report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
+        student-files: tests/sample_code.py
+        api-key: ${{ secrets.XAI_API_KEY }}
+        readme-path: tests/sample_readme.md
+        model: grok
+        explanation-in: Korean
+        fail-expected: True
+      timeout-minutes: 5
+
     - name: Output the outputs of the integration test of the action
       run: |
         echo "${{ steps.integration.outputs.feedback }}"
@@ -56,3 +73,4 @@ jobs:
       run: |
         echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
+# end build.yml

@@ -1,24 +1,24 @@
-#!/usr/bin/env -S python3 -B
-
-# NOTE: If you are using an alpine docker image
-# such as pyaction-lite, the -S option above won't
-# work. The above line works fine on other linux distributions
-# such as debian, etc, so the above line will work fine
-# if you use pyaction:4.0.0 or higher as your base docker image.
+#!/usr/bin/env python3
+# begin entrypoint.py
 
 import logging
 import os
 import pathlib
-from typing import Tuple
+import sys
 
+from typing import Any, Tuple
 
-import ai_tutor
+from llm_client import LLMAPIClient
+from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig
+
+import prompt
 
 
 logging.basicConfig(level=logging.INFO)
 
 
-def main() -> None:
+def main(b_ask:bool=True) -> None:
+    # Input parsing from environment variables
     report_files_str = os.environ['INPUT_REPORT-FILES']
     report_files = get_path_tuple(report_files_str)
 
@@ -27,72 +27,130 @@ def main() -> None:
 
     readme_file_str = os.environ['INPUT_README-PATH']
     readme_file = pathlib.Path(readme_file_str)
-    assert readme_file.exists(), 'No README file'
+    assert readme_file.exists(), 'No README file found'
 
-    api_key = os.environ['INPUT_API-KEY'].strip()
-    assert api_key, "Please check API-KEY"
+    model, api_key = get_model_key_from_env()
 
-    model = os.getenv(
-        'INPUT_MODEL',              # Get model from environment
-        'gemini-2.0-flash'   # use default if not provided
-    )
-    explanation_in = os.environ['INPUT_EXPLANATION-IN']
+    explanation_in = os.environ.get('INPUT_EXPLANATION-IN', 'English')
+    github_repo = os.environ.get('GITHUB_REPOSITORY', 'unknown/repository')
 
     b_fail_expected = ('true' == os.getenv('INPUT_FAIL-EXPECTED', 'false').lower())
 
-    n_failed, feedback = ai_tutor.gemini_qna(
-        report_files,
-        student_files,
-        readme_file,
-        api_key,
-        explanation_in,
-        model=model,
-    )
+    config_class = get_config_class(model)
 
-    print(feedback)
+    config_args = {'api_key': api_key}
+    if model:
+        config_args['model'] = model
+    config = config_class(**config_args)
+    client = LLMAPIClient(config)
 
-    # Write the feedback to the environment file
-    if os.getenv('GITHUB_STEP_SUMMARY', False):
-        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
-            # Write the feedback to the Gihtub Job Summary
-            # expecting mardown format
-            f.write(feedback)
-    elif b_fail_expected:
-        assert n_failed > 0, 'No failed tests'
-    elif n_failed == 0:
-        pass
+    # Generate prompt
+    logging.info("Starting feedback generation process...")
+    logging.info(f"Report paths: {report_files}")
+    logging.info(f"Student files: {student_files}")
+    logging.info(f"Readme file: {readme_file}")
+
+    n_failed, question = prompt.engineering(report_files, student_files, readme_file, explanation_in)
+
+    if b_ask:
+        logging.info(f"Calling {model} API for feedback...")
+        # Get feedback from LLM
+        feedback = client.call_api(question)
+        if not feedback:
+            logging.error("Failed to get feedback from LLM")
+            sys.exit(1)
+        else:
+            logging.info("Feedback received successfully")
     else:
-        raise NotImplementedError('Unexpected value for INPUT_FAIL-EXPECTED')
+        feedback = "Feedback not requested"
+
+    # Enhance feedback with repository context
+    feedback_with_context = f"Feedback for {github_repo}:\n\n{feedback}"
+    print(feedback_with_context)
+
+    # Write to GITHUB_STEP_SUMMARY if available (GitHub Action context)
+    if os.getenv('GITHUB_STEP_SUMMARY'):
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
+            f.write(feedback_with_context)
+    elif b_fail_expected:
+        assert n_failed > 0, 'No failed tests detected when failure was expected'
+    else:
+        assert n_failed == 0, 'Unexpected test failures detected'
 
 
-def get_path_tuple(report_files_str:str) -> Tuple[pathlib.Path]:
+def get_startwith(key:Any, dictionary:dict) -> Any:
+    result = None
+
+    for k, v in dictionary.items():
+        if key.startswith(k):
+            result = v
+            break
+
+    return result
+
+
+def get_model_key_from_env() -> Tuple[str, str]:
+    """
+    Extracts the LLM model and API key from environment variables.
+    """
+    model = os.environ['INPUT_MODEL'].lower()
+    api_key_dict = {
+        'claude': os.environ['INPUT_CLAUDE_API_KEY'],
+        'gemini': os.environ['INPUT_GEMINI-API-KEY'],
+        'grok': os.environ['INPUT_GROK-API-KEY'],
+        'nvidia_nim': os.environ['INPUT_NVIDIA-API-KEY'],
+        'perplexity': os.environ['INPUT_PERPLEXITY-API-KEY'],
+    }
+
+    api_key = get_startwith(model, api_key_dict).strip()
+
+    if not api_key:
+        raise ValueError(
+            (
+                f"No API key provided for {model.split('-')[0]}.\n"
+                f"Keys available for models : {', '.join(api_key_dict.keys())}\n"
+            )
+        )
+
+    assert api_key, f"No API key provided for {model}. Check INPUT_{model.upper()}-API-KEY"
+    return model, api_key
+
+
+def get_config_class(model: str) -> type:
+
+    # Configure LLM client
+    config_map = {
+        'claude': ClaudeConfig,
+        'gemini': GeminiConfig,
+        'grok': GrokConfig,
+        'nvidia_nim': NvidiaNIMConfig,
+        'perplexity': PerplexityConfig,
+    }
+
+    config_class = get_startwith(model, config_map)
+
+    if not config_class:
+        raise ValueError(f"Unsupported LLM type: {model}. Use {', '.join(config_map.keys())}")
+
+    return config_class
+
+
+def get_path_tuple(paths_str: str) -> Tuple[pathlib.Path]:
     """
     Converts a comma-separated string of file paths to a tuple of pathlib.Path objects.
-
-    Args:
-        paths_str: Comma-separated string of file paths.
-
-    Returns:
-        A tuple of pathlib.Path objects.
     """
-
-    gen = map(
-        pathlib.Path,
-        report_files_str.split(',')
-    )
-
     result_list = []
-
-    for path in gen:
+    for path in map(pathlib.Path, paths_str.split(',')):
         if path.exists():
             result_list.append(path)
         else:
-            logging.warning(f'{path} does not exist')
+            logging.warning(f"{path} does not exist")
 
-    assert result_list, 'No valid paths found'
-
+    if not result_list:
+        raise ValueError("No valid paths provided")
     return tuple(result_list)
 
 
-if __name__ == "__main__" :
+if __name__ == "__main__":
     main()
+# end entrypoint.py

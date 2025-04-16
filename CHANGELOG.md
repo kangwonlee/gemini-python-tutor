@@ -4,27 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - YYYY-MM-DD
+## [Unreleased] - 2025-04-16
 
 ### Added
 
-- Docker Hub badges for version and image size in README.md.
-- Explicit `elif n_failed == 0: pass` in entrypoint.py for clarity (no functional change).
+- **Multi-LLM Support**: Added support for Gemini, Grok, Nvidia NIM, Claude, and Perplexity via `llm_client.py` and `llm_configs.py`.
+- **Command-Line Interface**: Introduced `main.py` for standalone feedback generation.
+- **Pyproject.toml**: Added for dependency management with `pytest` and `requests`.
+- **Testing Enhancements**: Included `test_llm_client.py` and `test_llm_configs.py` for unit testing LLM components.
+- **Integration Testing**: Added xAI Grok API integration test in `build.yml`.
+- Docker Hub badges for version and image size in `README.md`.
+- Explicit `elif n_failed == 0: pass` in `entrypoint.py` for clarity.
 
 ### Changed
 
-- Reorganized `README.md` for better flow (e.g., "Key Features" after intro, streamlined "Troubleshooting").
-- Simplified "Troubleshooting" by removing CI-specific subsection and some error details.
-- Minor phrasing adjustments in README.md for consistency.
-
+- **Refactored AI Tutor**: Replaced `ai_tutor.py` with `prompt.py` for modular prompt engineering.
+- **Entrypoint Overhaul**: Updated `entrypoint.py` to support multiple LLMs, improved error handling, and added repository context.
+- **Docker Configuration**: Updated `.dockerignore` and `Dockerfile` to reflect `prompt.py`.
+- **GitHub Workflows**: Modified `build.yml` to use `uv` package manager and Python 3.11.
+- **Testing Updates**: Renamed `test_ai_tutor.py` to `test_prompt.py` and updated tests for `prompt.py`. Adjusted `test_entrypoint.py` and `test_integration.py`.
+- Reorganized `README.md` for better structure and streamlined "Troubleshooting".
 ### Deprecated
 
 
 ### Removed
-
+- **Gemini-Specific Logic**: Removed from `ai_tutor.py`, replaced by generic LLM client.
+- **Deprecated Dependencies**: Eliminated direct `pip` dependency management in favor of `uv` and `pyproject.toml`.
 
 ### Fixed
-
+- **Error Handling**: Enhanced robustness in `entrypoint.py` and `llm_client.py` for file validation, API keys, and network errors.
+- **Test Coverage**: Updated `test_entrypoint.py` to use `ValueError` instead of `AssertionError` for invalid paths.
 
 ## [v0.2.1] - 2025-03-08
 

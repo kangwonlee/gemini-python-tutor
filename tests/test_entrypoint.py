@@ -76,10 +76,10 @@ def test_get_path_tuple__all_missing(path_tuple:PATH_TUPLE_STR, caplog) -> None:
             path.unlink()
 
     # Then
-    with pytest.raises(AssertionError) as e:
+    with pytest.raises(ValueError) as e:
         _ = entrypoint.get_path_tuple(t)
 
-    assert 'No valid paths found' in str(e.value)
+    assert 'No valid paths provided' in str(e.value)
 
 
 if __name__ == '__main__':

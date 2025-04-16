@@ -1,3 +1,4 @@
+# begin docker-publish.yml
 name: Docker Publish
 
 on:
@@ -61,3 +62,4 @@ jobs:
           push: true
           tags: ${{ steps.prep.outputs.tags }}
           labels: org.opencontainers.image.version=${{ steps.prep.outputs.version }}
+# end docker-publish.yml

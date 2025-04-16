@@ -1,3 +1,4 @@
+# begin Dockerfile
 # If you need Python 3 and the GitHub CLI, then use:
 FROM cicirello/pyaction:4
 
@@ -14,10 +15,11 @@ FROM cicirello/pyaction:4
 
 COPY entrypoint.py /entrypoint.py
 COPY requirements.txt /requirements.txt
-COPY ai_tutor.py /ai_tutor.py
+COPY prompt.py /prompt.py
 COPY locale/ /locale/
 
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --no-cache-dir --requirement /requirements.txt
 
 ENTRYPOINT ["/entrypoint.py"]
+# end Dockerfile

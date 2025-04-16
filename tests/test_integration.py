@@ -15,12 +15,24 @@ sys.path.insert(
 import entrypoint
 
 
-@unittest.mock.patch('ai_tutor.gemini_qna')
-def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) -> None:
+@unittest.mock.patch('prompt.get_prompt')
+def test_main_argument_passing__all_exists(mock_get_prompt, caplog, tmp_path) -> None:
     # Setup
-    os.environ['INPUT_API-KEY'] = 'test_key'
-    os.environ['INPUT_EXPLANATION-IN'] = 'Korean'
-    os.environ['INPUT_MODEL'] = 'gemini-2.0-flash-exp'
+
+    test_key = 'test-key'
+    test_explain_in = 'explain-in'
+    test_model = 'gemini'
+
+    test_gemini_key = 'test-gemini-key'
+    test_grok_key = 'test-grok-key'
+    test_nvidia_key = 'test-nvidia-key'
+
+    os.environ['INPUT_GEMINI-API-KEY'] = test_gemini_key
+    os.environ['INPUT_GROK-API-KEY'] = test_grok_key
+    os.environ['INPUT_NVIDIA-API-KEY'] = test_nvidia_key
+
+    os.environ['INPUT_EXPLANATION-IN'] = test_explain_in
+    os.environ['INPUT_MODEL'] = test_model
 
     os.environ['GITHUB_OUTPUT'] = str(tmp_path / 'output.txt')
 
@@ -29,33 +41,37 @@ def test_main_argument_passing__all_exists(mock_gemini_qna, caplog, tmp_path) ->
 
     # create mock files
     paths_input = []
-    for f in map(lambda x: tmp_path / x, names_input):
-        (tmp_path / f).write_text('comment')
-        paths_input.append(str(f))
+    expected_input_file_paths = []
+    for full_path in map(lambda x: tmp_path / x, names_input):
+        full_path.write_text(f'{str(full_path.relative_to(tmp_path))} content\n')
+        expected_input_file_paths.append(full_path)
+        paths_input.append(str(full_path))
     os.environ['INPUT_REPORT-FILES'] = ','.join(paths_input)
+    expected_input_file_paths = tuple(expected_input_file_paths)
 
     paths_student = []
-    for f in map(lambda x: tmp_path / x, names_student):
-        (tmp_path / f).write_text('comment')
-        paths_student.append(str(f))
+    expected_student_file_paths = []
+    for full_path in map(lambda x: tmp_path / x, names_student):
+        full_path.write_text(f'{str(full_path.relative_to(tmp_path))} content\n')
+        expected_student_file_paths.append(full_path)
+        paths_student.append(str(full_path))
     os.environ['INPUT_STUDENT-FILES'] = ','.join(paths_student)
+    expected_student_file_paths = tuple(expected_student_file_paths)
 
-    path_readme = tmp_path / 'readme.txt'
-    path_readme.touch()
-    os.environ['INPUT_README-PATH'] = str(path_readme)
+    expected_readme_path = tmp_path / 'readme.txt'
+    expected_readme_path.touch()
+    os.environ['INPUT_README-PATH'] = str(expected_readme_path)
 
     # mock return value
-    mock_gemini_qna.return_value = (0, "This is the feedback message.")
+    mock_get_prompt.return_value = (0, "This is the feedback message.")
 
-    entrypoint.main()
+    entrypoint.main(b_ask=False)
 
-    mock_gemini_qna.assert_called_once_with(
-        (tmp_path / 'file1.txt', tmp_path / 'file2.txt', tmp_path / 'file3.txt'),
-        (tmp_path / 'file4.txt', tmp_path / 'file5.txt', tmp_path / 'file6.txt'),
-        tmp_path / 'readme.txt',
-        'test_key',
-        'Korean',
-         model='gemini-2.0-flash-exp',
+    mock_get_prompt.assert_called_once_with(
+        expected_input_file_paths,
+        expected_student_file_paths,
+        expected_readme_path,
+        test_explain_in,
     )
 
     assert 'does not exist' not in caplog.text

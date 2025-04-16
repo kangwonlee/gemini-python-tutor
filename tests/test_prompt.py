@@ -22,7 +22,7 @@ sys.path.insert(
 )
 
 
-import ai_tutor
+import prompt
 
 
 
@@ -39,7 +39,7 @@ def json_dict(sample_report_path) -> PYTEST_JSON_REPORT:
 
 
 def test_collect_longrepr__returns_non_empty(json_dict:PYTEST_JSON_REPORT):
-    result = ai_tutor.collect_longrepr(json_dict)
+    result = prompt.collect_longrepr(json_dict)
 
     assert result
 
@@ -57,7 +57,7 @@ def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> PYTEST_J
 
 
 def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except:PYTEST_JSON_REPORT):
-    result = ai_tutor.collect_longrepr(json_dict_div_zero_try_except)
+    result = prompt.collect_longrepr(json_dict_div_zero_try_except)
 
     assert result
 
@@ -71,7 +71,7 @@ def test_collect_longrepr_from_multiple_reports__returns_non_empty(
         sample_report_path,
         div_zero_report_path
     )
-    result = ai_tutor.collect_longrepr_from_multiple_reports(
+    result = prompt.collect_longrepr_from_multiple_reports(
         multiple_reports,
         explanation_in=explanation_in,
     )
@@ -101,7 +101,7 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Swedish': ('Läxa',),
         'Thai': ('การบ้าน',),
         'Vietnamese': ('Bài tập',),
-    }    
+    }
     return tuple(
         map(
             lambda x: x.lower(),
@@ -158,7 +158,7 @@ def instruction(explanation_in:str) -> str:
 
 
 def test_get_directive(explanation_in:str, homework:Tuple[str]):
-    result = ai_tutor.get_directive(explanation_in=explanation_in)
+    result = prompt.get_directive(explanation_in=explanation_in)
 
     assert any(
         map(
@@ -171,7 +171,7 @@ def test_get_directive(explanation_in:str, homework:Tuple[str]):
 
 
 def test_get_instruction(explanation_in:str, homework:Tuple[str],):
-    result = ai_tutor.get_directive(explanation_in=explanation_in).lower()
+    result = prompt.get_directive(explanation_in=explanation_in).lower()
 
     assert any(
         map(
@@ -183,7 +183,7 @@ def test_get_instruction(explanation_in:str, homework:Tuple[str],):
     )
 
 
-@pytest.mark.parametrize("func", (ai_tutor.get_report_header, ai_tutor.get_report_footer))
+@pytest.mark.parametrize("func", (prompt.get_report_header, prompt.get_report_footer))
 def test_get_report__header__footer(explanation_in:str, msg:str, func:Callable):
 
     result = func(explanation_in=explanation_in)
@@ -207,7 +207,7 @@ def test_get_instruction_block(
         instruction:str,
     ):
 
-    result = ai_tutor.get_instruction_block(
+    result = prompt.get_instruction_block(
         readme_file = sample_readme_path,
         explanation_in=explanation_in
     ).lower()
@@ -226,7 +226,7 @@ def test_get_student_code_block(
         homework:Tuple[str],
     ):
 
-    result = ai_tutor.get_student_code_block(
+    result = prompt.get_student_code_block(
         student_files = (sample_student_code_path,),
         explanation_in=explanation_in
     ).lower()
@@ -249,7 +249,7 @@ def test_get_prompt__has__homework__msg__instruction(
         msg:str,
         instruction:str,
     ):
-    result = ai_tutor.get_prompt(
+    result = prompt.get_prompt(
         report_paths=(sample_report_path,div_zero_report_path),
         student_files=(sample_student_code_path,),
         readme_file=sample_readme_path,
@@ -276,7 +276,7 @@ def test_get_prompt__has__homework__msg__instruction(
 
 
 def test_load_locale(explanation_in:str, homework:Tuple[str]):
-    result = ai_tutor.load_locale(explanation_in)
+    result = prompt.load_locale(explanation_in)
 
     assert 'directive' in result
 
@@ -354,7 +354,7 @@ def test__exclude_common_contents__single(
     specific_lines:Tuple[str],
     common_lines:Tuple[str],
 ):
-    result = ai_tutor.exclude_common_contents(
+    result = prompt.exclude_common_contents(
         readme_content=readme_content_single,
         common_content_start_marker=start_marker,
         common_content_end_marker=end_marker,
@@ -383,7 +383,7 @@ def test__exclude_common_contents__single__default_markers(
     specific_lines:Tuple[str],
     common_lines:Tuple[str],
 ):
-    result = ai_tutor.exclude_common_contents(
+    result = prompt.exclude_common_contents(
         readme_content=readme_content_single,
     )
 
@@ -431,7 +431,7 @@ def test__exclude_common_contents__specific_common_specific(
     common_lines:Tuple[str],
     specific_lines_2:Tuple[str],
 ):
-    result = ai_tutor.exclude_common_contents(
+    result = prompt.exclude_common_contents(
         readme_content=readme_content_specific_common_specific,
         common_content_start_marker=start_marker,
         common_content_end_marker=end_marker,
@@ -483,7 +483,7 @@ def test__exclude_common_contents__double(
     common_lines:Tuple[str],
     common_lines_2:Tuple[str],
 ):
-    result = ai_tutor.exclude_common_contents(
+    result = prompt.exclude_common_contents(
         readme_content=readme_content_double,
         common_content_start_marker=start_marker,
         common_content_end_marker=end_marker,
@@ -535,7 +535,7 @@ def test__exclude_common_contents__double_specific(
     common_lines:Tuple[str],
     common_lines_2:Tuple[str],
 ):
-    result = ai_tutor.exclude_common_contents(
+    result = prompt.exclude_common_contents(
         readme_content=readme_content__double_specific,
         common_content_start_marker=start_marker,
         common_content_end_marker=end_marker,
@@ -567,49 +567,9 @@ def expected_default_gemini_model() -> str:
     return 'gemini-2.0-flash'
 
 
-def test_url__default_model(
-        test_api_key:str,
-        expected_default_gemini_model:str
-    ):
-    result = ai_tutor.url(test_api_key)
-
-    result_parsed = up.urlparse(result)
-
-    path_parts = result_parsed.path.split('/')
-
-    b_found = False
-
-    for part in path_parts:
-        if expected_default_gemini_model in part.split(':'):
-            b_found = True
-            break
-
-    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
-
-
-def test_url__specific_model(
-        test_api_key:str,
-    ):
-    model = 'gemini-2.0-flash'
-    result = ai_tutor.url(test_api_key, model=model)
-
-    result_parsed = up.urlparse(result)
-
-    path_parts = result_parsed.path.split('/')
-
-    b_found = False
-
-    for part in path_parts:
-        if model in part.split(':'):
-            b_found = True
-            break
-
-    assert b_found, f"Could not find {expected_default_gemini_model} in {path_parts}."
-
-
 @pytest.fixture
 def collect_longrepr_result(json_dict:PYTEST_JSON_REPORT) -> List[str]:
-    return ai_tutor.collect_longrepr(json_dict)
+    return prompt.collect_longrepr(json_dict)
 
 
 def test__collect_longrepr__is_list(collect_longrepr_result:List[str]):
