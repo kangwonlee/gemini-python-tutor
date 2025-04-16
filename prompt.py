@@ -95,7 +95,7 @@ def collect_longrepr(data: Dict[str, str]) -> List[str]:
     """Extracts longrepr and stderr from failed tests."""
     longrepr_list = []
     for r in data['tests']:
-        if r['outcome'] != 'passed':
+        if r['outcome'] not in ('passed', 'skipped'):
             for k in r:
                 if isinstance(r[k], dict) and 'longrepr' in r[k]:
                     longrepr_list.append(f"{r['outcome']}:{k}: longrepr begin:{r[k]['longrepr']}:longrepr end\n")
