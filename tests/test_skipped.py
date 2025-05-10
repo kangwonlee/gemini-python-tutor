@@ -22,7 +22,7 @@ def test_skipped_do_not_count() -> None:
     """
     Test that skipped tests do not count towards the total number of tests.
     """
-    
+
     os.environ['INPUT_MODEL'] = 'grok'
     os.environ['INPUT_REPORT-FILES'] = ','.join([str(p) for p in skipped_path.glob('*.json')])
     os.environ['INPUT_STUDENT-FILES'] = str(test_path/'sample_code.py')
