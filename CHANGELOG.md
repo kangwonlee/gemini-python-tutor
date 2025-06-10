@@ -17,6 +17,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.3.3] - 2025-06-10
+
+
+### Added
+* Copyright registration info
+
+### Changed
+* bump `astral-sh/setup-uv` to @v6
+* `requests` to 2.32.4
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
 ## [v0.3.1] - 2025-04-16
 
 ### Added
