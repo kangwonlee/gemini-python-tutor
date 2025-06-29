@@ -257,7 +257,7 @@ class ClaudeConfig(LLMConfig):
     """
 
     api_url: str = "https://api.anthropic.com/v1/messages"
-    model: str = "claude-3-haiku-20240307"
+    model: str = "claude-sonnet-4-20250514"
     default_headers: HEADER = None
 
     def __post_init__(self):
@@ -298,7 +298,7 @@ class ClaudeConfig(LLMConfig):
         Probably multiple tokens of Claude would be equivalent to 1 token of others
         '''
         result = super().format_request_data(question)
-        result['max_tokens'] = 384
+        result['max_tokens'] = 1024
         result['messages'][0]['content'] =  f'''Please answer within {result['max_tokens']} tokens\n''' + result['messages'][0]['content']
         return result
 
