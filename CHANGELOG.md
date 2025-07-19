@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-DD
 
-
 ### Added
 
 ### Changed
@@ -16,6 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+## [v0.3.6] - 2025-07-20
+
+
+### Added
+* Added logging info for the explanation language used in the entrypoint.
+
+### Changed
+* Upgraded the default Claude model from `claude-3-haiku-20240307` to `claude-sonnet-4-20250514`.
+* Increased the maximum tokens for Claude API requests from 384 to 1024.
+* Replaced the assertion for unexpected test failures with a `pass` statement (tests now proceed without failing the workflow on unexpected errors unless explicitly expected).
+* Pinned dependencies: `pytest` to version 8.3.5 and `requests` to version 2.32.4
 
 ## [v0.3.3] - 2025-06-10
 
