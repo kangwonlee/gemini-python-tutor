@@ -145,4 +145,4 @@ Copyright (c) 2024 Kangwon Lee
 
 * Built using [python-github-action-template](https://github.com/cicirello/python-github-action-template) by Vincent A. Cicirello (MIT License).
 * Gemini 2.0 Flash and Grok 3 helped with the code and documentation.
-* Registered as #C-2024-034203, #C-2024-035473, and #C-2025-016393 with the Korea Copyright Commission.
+* Registered as #C-2024-034203, #C-2024-035473, #C-2025-016393, and #C-2025-027967 with the Korea Copyright Commission.
