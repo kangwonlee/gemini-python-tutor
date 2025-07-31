@@ -26,14 +26,14 @@ def main(b_ask:bool=True) -> None:
     readme_file = pathlib.Path(os.environ['INPUT_README-PATH'])
     assert readme_file.exists(), 'No README file found'
 
-    model, api_key = get_model_key_from_env()
-
     explanation_in = os.environ.get('INPUT_EXPLANATION-IN', 'English')
     logging.info(f"Using explanation language: {explanation_in}")
 
     github_repo = os.environ.get('GITHUB_REPOSITORY', 'unknown/repository')
 
     b_fail_expected = ('true' == os.getenv('INPUT_FAIL-EXPECTED', 'false').lower())
+
+    model, api_key = get_model_key_from_env()
 
     config_class = get_config_class(model)
 
