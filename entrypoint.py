@@ -19,14 +19,11 @@ logging.basicConfig(level=logging.INFO)
 
 def main(b_ask:bool=True) -> None:
     # Input parsing from environment variables
-    report_files_str = os.environ['INPUT_REPORT-FILES']
-    report_files = get_path_tuple(report_files_str)
+    report_files = get_path_tuple(os.environ['INPUT_REPORT-FILES'])
 
-    student_files_str = os.environ['INPUT_STUDENT-FILES']
-    student_files = get_path_tuple(student_files_str)
+    student_files = get_path_tuple(os.environ['INPUT_STUDENT-FILES'])
 
-    readme_file_str = os.environ['INPUT_README-PATH']
-    readme_file = pathlib.Path(readme_file_str)
+    readme_file = pathlib.Path(os.environ['INPUT_README-PATH'])
     assert readme_file.exists(), 'No README file found'
 
     model, api_key = get_model_key_from_env()
