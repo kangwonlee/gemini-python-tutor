@@ -93,7 +93,6 @@ def get_model_key_from_env() -> Tuple[str, str]:
     """
     Extracts the LLM model and API key from environment variables.
     """
-    model = os.environ['INPUT_MODEL'].lower()
     api_key_dict = {
         'claude': os.getenv('INPUT_CLAUDE_API_KEY'),
         'gemini': os.getenv('INPUT_GEMINI-API-KEY'),
@@ -102,6 +101,7 @@ def get_model_key_from_env() -> Tuple[str, str]:
         'perplexity': os.getenv('INPUT_PERPLEXITY-API-KEY'),
     }
 
+    model = os.environ['INPUT_MODEL'].lower()
     api_key = get_startwith(model, api_key_dict)
 
     assert api_key, (
