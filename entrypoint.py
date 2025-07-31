@@ -95,24 +95,19 @@ def get_model_key_from_env() -> Tuple[str, str]:
     """
     model = os.environ['INPUT_MODEL'].lower()
     api_key_dict = {
-        'claude': os.environ['INPUT_CLAUDE_API_KEY'],
-        'gemini': os.environ['INPUT_GEMINI-API-KEY'],
-        'grok': os.environ['INPUT_GROK-API-KEY'],
-        'nvidia_nim': os.environ['INPUT_NVIDIA-API-KEY'],
-        'perplexity': os.environ['INPUT_PERPLEXITY-API-KEY'],
+        'claude': os.getenv('INPUT_CLAUDE_API_KEY'),
+        'gemini': os.getenv('INPUT_GEMINI-API-KEY'),
+        'grok': os.getenv('INPUT_GROK-API-KEY'),
+        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY'),
+        'perplexity': os.getenv('INPUT_PERPLEXITY-API-KEY'),
     }
 
-    api_key = get_startwith(model, api_key_dict).strip()
+    api_key = get_startwith(model, api_key_dict)
 
-    if not api_key:
-        raise ValueError(
-            (
-                f"No API key provided for {model.split('-')[0]}.\n"
-                f"Keys available for models : {', '.join(api_key_dict.keys())}\n"
-            )
-        )
-
-    assert api_key, f"No API key provided for {model}. Check INPUT_{model.upper()}-API-KEY"
+    assert api_key, (
+        f"No API key provided for {model.split('-')[0]}.\n"
+        f"Keys available for models : {', '.join(api_key_dict.keys())}\n"
+    )
     return model, api_key
 
 
