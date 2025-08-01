@@ -16,6 +16,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.3.7] - 2025-08-01
+
+### Added
+- **Flexible LLM Selection**: Added support for Claude, Grok, Nvidia NIM, and Perplexity alongside Gemini, with automatic fallback to Gemini or a single available API key if the specified model’s key is unavailable (`entrypoint.py`).
+- **C/C++ Support**: Extended feedback capabilities to C/C++ assignments, using `pytest` and `pytest-json-report` to analyze compiled code (e.g., via `ctypes`) in a Docker environment (`README.md`).
+- **Comprehensive Testing**: Added new test cases in `test_entrypoint.py` to cover single-key scenarios, Gemini fallback, empty key handling, and invalid model cases.
+
+### Changed
+- **Updated README**: Renamed to "AI Code Tutor" to reflect C/C++ and Python support. Clarified dependencies (`pytest==8.3.5`, `pytest-json-report==1.5.0`, `pytest-xdist==3.6.1`, `requests==2.32.4`) and API key setup with `INPUT_` prefix (e.g., `INPUT_GOOGLE_API_KEY`). Improved YAML example for GitHub Classroom with Docker-based C/C++ testing.
+- **Enhanced Model Selection Logic**: Refactored `get_model_key_from_env` in `entrypoint.py` to handle missing `INPUT_MODEL`, prioritize specified model, and fall back to Gemini or single available key. Improved error messages for clarity.
+- **Improved Error Handling**: Added `try-except` for writing to `GITHUB_STEP_SUMMARY` in `entrypoint.py` to handle permission issues in GitHub Actions.
+- **Test Refinements**: Removed `mock_env_api_keys` fixture in `test_entrypoint.py` for better isolation, using `monkeypatch` directly. Updated tests to align with new model selection logic and `ValueError` exceptions.
+- **Code Cleanup**: Streamlined `entrypoint.py` by removing redundant comments, improving type hints (e.g., `key: str` in `get_startwith`), and organizing `get_config_class` logic with a separate `get_config_class_dict`.
+
+### Fixed
+- **API Key Handling**: Fixed potential `KeyError` in `entrypoint.py` by using `os.getenv` with defaults, ensuring robust environment variable access.
+- **Test Accuracy**: Corrected `test_get_model_key_from_env__invalid_model_no_gemini` to expect valid fallback to a single available key (e.g., Claude) instead of an error.
+
+### Removed
+- **Docker Badges**: Temporarily removed Docker Hub badges from `README.md` to align with updated deployment instructions (pending re-addition with verified image updates).
+
 ## [v0.3.6] - 2025-07-20
 
 
