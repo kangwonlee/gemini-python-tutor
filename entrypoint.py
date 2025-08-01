@@ -6,38 +6,30 @@ import os
 import pathlib
 import sys
 
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 
 from llm_client import LLMAPIClient
 from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig
 
 import prompt
 
-
 logging.basicConfig(level=logging.INFO)
 
 
 def main(b_ask:bool=True) -> None:
     # Input parsing from environment variables
-    report_files_str = os.environ['INPUT_REPORT-FILES']
-    report_files = get_path_tuple(report_files_str)
-
-    student_files_str = os.environ['INPUT_STUDENT-FILES']
-    student_files = get_path_tuple(student_files_str)
-
-    readme_file_str = os.environ['INPUT_README-PATH']
-    readme_file = pathlib.Path(readme_file_str)
+    report_files = get_path_tuple(os.environ['INPUT_REPORT-FILES'])
+    student_files = get_path_tuple(os.environ['INPUT_STUDENT-FILES'])
+    readme_file = pathlib.Path(os.environ['INPUT_README-PATH'])
     assert readme_file.exists(), 'No README file found'
-
-    model, api_key = get_model_key_from_env()
 
     explanation_in = os.environ.get('INPUT_EXPLANATION-IN', 'English')
     logging.info(f"Using explanation language: {explanation_in}")
 
     github_repo = os.environ.get('GITHUB_REPOSITORY', 'unknown/repository')
-
     b_fail_expected = ('true' == os.getenv('INPUT_FAIL-EXPECTED', 'false').lower())
 
+    model, api_key = get_model_key_from_env()
     config_class = get_config_class(model)
 
     config_args = {'api_key': api_key}
@@ -46,7 +38,6 @@ def main(b_ask:bool=True) -> None:
     config = config_class(**config_args)
     client = LLMAPIClient(config)
 
-    # Generate prompt
     logging.info("Starting feedback generation process...")
     logging.info(f"Report paths: {report_files}")
     logging.info(f"Student files: {student_files}")
@@ -56,7 +47,6 @@ def main(b_ask:bool=True) -> None:
 
     if b_ask:
         logging.info(f"Calling {model} API for feedback...")
-        # Get feedback from LLM
         feedback = client.call_api(question)
         if not feedback:
             logging.error("Failed to get feedback from LLM")
@@ -66,63 +56,99 @@ def main(b_ask:bool=True) -> None:
     else:
         feedback = "Feedback not requested"
 
-    # Enhance feedback with repository context
     feedback_with_context = f"Feedback for {github_repo}:\n\n{feedback}"
     print(feedback_with_context)
 
-    # Write to GITHUB_STEP_SUMMARY if available (GitHub Action context)
+    # Write to GITHUB_STEP_SUMMARY with error handling for permissions
     if os.getenv('GITHUB_STEP_SUMMARY'):
-        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
-            f.write(feedback_with_context)
+        try:
+            with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
+                f.write(feedback_with_context)
+        except PermissionError as e:
+            logging.error(f"Failed to write to GITHUB_STEP_SUMMARY: {e}")
+            sys.exit(1)
+
     elif b_fail_expected:
         assert n_failed > 0, 'No failed tests detected when failure was expected'
-    else:
-        pass
-        # assert n_failed == 0, 'Unexpected test failures detected'
 
 
-def get_startwith(key:Any, dictionary:dict) -> Any:
+def get_startwith(key:str, dictionary:dict) -> Any:
     result = None
-
     for k, v in dictionary.items():
         if key.startswith(k):
             result = v
             break
-
     return result
 
 
 def get_model_key_from_env() -> Tuple[str, str]:
     """
-    Extracts the LLM model and API key from environment variables.
+    Extracts the LLM model and API key from environment variables with flexible selection.
+    - Raises ValueError if no API keys are available.
+    - Uses single available API key if only one is set.
+    - Prefers specified model's API key if available.
+    - Falls back to Gemini if its API key is available.
     """
-    model = os.environ['INPUT_MODEL'].lower()
-    api_key_dict = {
-        'claude': os.environ['INPUT_CLAUDE_API_KEY'],
-        'gemini': os.environ['INPUT_GEMINI-API-KEY'],
-        'grok': os.environ['INPUT_GROK-API-KEY'],
-        'nvidia_nim': os.environ['INPUT_NVIDIA-API-KEY'],
-        'perplexity': os.environ['INPUT_PERPLEXITY-API-KEY'],
-    }
+    api_key_dict = get_api_key_dict_from_env()
+    valid_keys_dict = {k: v for k, v in api_key_dict.items() if v and v.strip()}
 
-    api_key = get_startwith(model, api_key_dict).strip()
-
-    if not api_key:
+    if not valid_keys_dict:
         raise ValueError(
-            (
-                f"No API key provided for {model.split('-')[0]}.\n"
-                f"Keys available for models : {', '.join(api_key_dict.keys())}\n"
-            )
+            "No API keys provided. Set at least one of:\n"
+            "\tINPUT_CLAUDE_API_KEY\n"
+            "\tINPUT_GEMINI-API-KEY\n"
+            "\tINPUT_GROK-API-KEY\n"
+            "\tINPUT_NVIDIA-API-KEY\n"
+            "\tINPUT_PERPLEXITY-API-KEY\n"
         )
 
-    assert api_key, f"No API key provided for {model}. Check INPUT_{model.upper()}-API-KEY"
-    return model, api_key
+    model = os.getenv('INPUT_MODEL', '').lower()
+
+    # Case 1: Only one API key is available
+    if len(valid_keys_dict) == 1:
+        selected_model, api_key = next(iter(valid_keys_dict.items()))
+        logging.info(f"Using single available model: {selected_model}")
+        return selected_model, api_key.strip()
+
+    # Case 2: Multiple API keys available
+    if model:
+        # Check if specified model's API key is available
+        api_key = get_startwith(model, valid_keys_dict)
+        if api_key:
+            logging.info(f"Using specified model: {model}")
+            return model, api_key.strip()
+
+    # Case 3: Fallback to Gemini if available
+    if 'gemini' in valid_keys_dict:
+        logging.info("Falling back to Gemini model")
+        return 'gemini', valid_keys_dict['gemini'].strip()
+
+    # Case 4: Specified model not available, and Gemini not available
+    raise ValueError(
+        f"No API key provided for specified model '{model}' and Gemini not available. "
+        f"Available models: {', '.join(valid_keys_dict.keys())}"
+    )
 
 
-def get_config_class(model: str) -> type:
+def get_api_key_dict_from_env() -> Dict[str, str]:
+    """
+    Retrieves API keys for different models from environment variables.
+    Returns empty strings for unset variables.
+    """
+    return {
+        'claude': os.getenv('INPUT_CLAUDE_API_KEY', ''),
+        'gemini': os.getenv('INPUT_GEMINI-API-KEY', ''),
+        'grok': os.getenv('INPUT_GROK-API-KEY', ''),
+        'nvidia_nim': os.getenv('INPUT_NVIDIA-API-KEY', ''),
+        'perplexity': os.getenv('INPUT_PERPLEXITY-API-KEY', ''),
+    }
 
-    # Configure LLM client
-    config_map = {
+
+def get_config_class_dict() -> Dict[str, type]:
+    """
+    Returns a dictionary mapping model names to their respective configuration classes.
+    """
+    return {
         'claude': ClaudeConfig,
         'gemini': GeminiConfig,
         'grok': GrokConfig,
@@ -130,11 +156,12 @@ def get_config_class(model: str) -> type:
         'perplexity': PerplexityConfig,
     }
 
-    config_class = get_startwith(model, config_map)
 
+def get_config_class(model: str) -> type:
+    config_map = get_config_class_dict()
+    config_class = get_startwith(model, config_map)
     if not config_class:
         raise ValueError(f"Unsupported LLM type: {model}. Use {', '.join(config_map.keys())}")
-
     return config_class
 
 
@@ -148,7 +175,6 @@ def get_path_tuple(paths_str: str) -> Tuple[pathlib.Path]:
             result_list.append(path)
         else:
             logging.warning(f"{path} does not exist")
-
     if not result_list:
         raise ValueError("No valid paths provided")
     return tuple(result_list)
@@ -156,4 +182,5 @@ def get_path_tuple(paths_str: str) -> Tuple[pathlib.Path]:
 
 if __name__ == "__main__":
     main()
+
 # end entrypoint.py
