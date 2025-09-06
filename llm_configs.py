@@ -168,11 +168,11 @@ class GrokConfig(LLMConfig):
         https://docs.x.ai/docs/api-reference
 
     Attributes:
-        model (str): Default Grok model. Defaults to "grok-3".
+        model (str): Default Grok model. Defaults to "grok-code-fast".
         api_url (str): Grok API endpoint. Defaults to chat completions URL.
     """
 
-    model: str = "grok-3"
+    model: str = "grok-code-fast"
     api_url: str = "https://api.x.ai/v1/chat/completions"
 
     def format_request_data(self, question: str) -> Dict[str, Any]:
