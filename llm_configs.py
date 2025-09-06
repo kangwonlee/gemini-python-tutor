@@ -103,11 +103,11 @@ class GeminiConfig(LLMConfig):
 
     Attributes:
         api_url (str, optional): API endpoint URL. Defaults to None.
-        model (str): Default Gemini model version. Defaults to "gemini-2.0-flash".
+        model (str): Default Gemini model version. Defaults to "gemini-2.5-flash".
     """
 
     api_url: str = None
-    model: str = "gemini-2.0-flash"
+    model: str = "gemini-2.5-flash"
 
     def __post_init__(self):
         """Initialize Gemini-specific URL with API key.
