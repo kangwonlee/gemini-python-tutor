@@ -8,10 +8,18 @@ import sys
 
 from typing import Any, Dict, Tuple
 
+
+sys.path.insert(
+    0,
+    str(pathlib.Path(__file__).parent.resolve())
+)
+
+
 from llm_client import LLMAPIClient
 from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig
 
 import prompt
+
 
 logging.basicConfig(level=logging.INFO)
 
