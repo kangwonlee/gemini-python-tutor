@@ -1,4 +1,5 @@
-# begin build.yml
+# begin .github/workflows/build.yml
+
 name: build
 
 on:
@@ -73,4 +74,5 @@ jobs:
       run: |
         echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
-# end build.yml
+
+# end .github/workflows/build.yml
