@@ -1,4 +1,5 @@
-# begin build.yml
+# begin .github/workflows/build.yml
+
 name: build
 
 on:
@@ -25,7 +26,7 @@ jobs:
       uses: astral-sh/setup-uv@v6
       with:
         version: "latest"
-        pyproject-file: "pyproject.toml"
+        version-file: "pyproject.toml"
         python-version: 3.11
         enable-cache: true
 
@@ -40,37 +41,113 @@ jobs:
     - name: Verify that the Docker image for the action builds
       run: docker build . --file Dockerfile
 
-    - name: Integration test
+  integration-tests-action:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - model: gemini-2.5-flash
+            secret: GOOGLE_API_KEY
+          - model: grok-code-fast
+            secret: XAI_API_KEY
+          - model: claude-sonnet-4-20250514
+            secret: CLAUDE_API_KEY
+          - model: google/gemma-2-9b-it
+            secret: NVIDIA_NIM_API_KEY
+          - model: sonar
+            secret: PERPLEXITY_API_KEY
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install uv package manager
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
+        version-file: "pyproject.toml"
+        python-version: 3.11
+        enable-cache: true
+
+    - run: uv sync
+
+    - name: Integration test ${{ matrix.model }}
       id: integration
       uses: ./
       with:
         report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
         student-files: tests/sample_code.py
-        api-key: ${{ secrets.GOOGLE_API_KEY }}
+        api-key: ${{ secrets[matrix.secret] }}
         readme-path: tests/sample_readme.md
+        model: ${{ matrix.model }}
         explanation-in: Korean
         fail-expected: True
       timeout-minutes: 5
-
-    - name: Integration test XAI
-      id: integration-xai
-      uses: ./
-      with:
-        report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
-        student-files: tests/sample_code.py
-        api-key: ${{ secrets.XAI_API_KEY }}
-        readme-path: tests/sample_readme.md
-        model: grok
-        explanation-in: Korean
-        fail-expected: True
-      timeout-minutes: 5
-
-    - name: Output the outputs of the integration test of the action
+    - name: Output and Verify
       run: |
-        echo "${{ steps.integration.outputs.feedback }}"
-
+        echo "${{ matrix.model }} ${{ steps.integration.outputs.feedback }}"
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
     - name: Verify integration test results
       run: |
-        echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        . .venv/bin/activate
+        uv pip list
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
-# end build.yml
+
+  integration-tests-env:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        model: [
+          gemini-2.5-flash,
+          grok-code-fast,
+          claude-sonnet-4-20250514,
+          google/gemma-2-9b-it,
+          sonar
+        ]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install uv package manager
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
+        version-file: "pyproject.toml"
+        python-version: 3.11
+        enable-cache: true
+
+    - run: uv sync
+
+    - name: Integration test ${{ matrix.model }}
+      id: integration
+      env:
+        INPUT_REPORT-FILES: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
+        INPUT_STUDENT-FILES: tests/sample_code.py
+        INPUT_README-PATH: tests/sample_readme.md
+        INPUT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        INPUT_GEMINI-API-KEY: ${{ secrets.GOOGLE_API_KEY }}
+        INPUT_GROK-API-KEY: ${{ secrets.XAI_API_KEY }}
+        INPUT_NVIDIA-API-KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+        INPUT_PERPLEXITY-API-KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        INPUT_MODEL: ${{ matrix.model }}
+        explanation-in: Korean
+        fail-expected: True
+      run: |
+        . .venv/bin/activate
+        uv pip list
+        python3 entrypoint.py
+      timeout-minutes: 5
+    - name: Output and Verify
+      run: |
+        echo "${{ matrix.model }} ${{ steps.integration.outputs.feedback }}"
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+    - name: Verify integration test results
+      run: |
+        . .venv/bin/activate
+        uv pip list
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        python3 -u -m pytest tests/integration.py
+
+# end .github/workflows/build.yml

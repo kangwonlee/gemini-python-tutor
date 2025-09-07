@@ -1,44 +1,31 @@
 # begin action.yml
-# Make sure to change the action name here (must be unique).
-# Update the rest as needed.
-name: 'gemini-python-tutor'
-description: 'Gemini Python Tutor for Github Classroom Assignments'
-branding: # Look at documentation for branding options/requirements. These are my favorites.
-  icon: 'book-open'
-  color: 'green'
+name: 'Gemini Python Tutor'
+description: 'Action to generate feedback using LLMs'
 inputs:
   report-files:
-    description: 'Comma-separeted list of json report file paths'
+    description: 'Comma-separated list of test report file paths'
     required: true
-    default: 'report.json'
-    type: list
-  api-key:
-    description: 'API token for AI'
-    required: true
-    type: string
-  model:  # New input for the model
-    description: 'The Gemini model to use (e.g., gemini-2.0-flash)'
-    required: false
-    default: 'gemini-2.0-flash'
-    type: string
   student-files:
-    description: "Comma-separated list of student's Python file paths or a glob pattern"
+    description: 'Comma-separated list of student code file paths'
+    required: true
+  api-key:
+    description: 'API key for the selected LLM'
+    required: true
+  model:
+    description: 'LLM model to use (e.g., gemini, grok)'
     required: false
-    default: 'exercise.py'
-    type: list
+    default: 'gemini'
   readme-path:
-    description: 'assignment instructions path'
-    required: false
-    default: 'README.md'
-    type: string
+    description: 'Path to the README file with assignment instructions'
+    required: true
   explanation-in:
-    description: 'Generate explanations in the specified language'
+    description: 'Language for explanations (e.g., English, Korean)'
     required: false
     default: 'English'
-    type: string
-outputs:
-  feedback:
-    description: 'Feedback from the tutor'
+  fail-expected:
+    description: 'Whether test failures are expected (true/false)'
+    required: false
+    default: 'false'
 runs:
   using: 'docker'
   image: 'Dockerfile'

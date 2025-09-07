@@ -8,10 +8,18 @@ import sys
 
 from typing import Any, Dict, Tuple
 
+
+sys.path.insert(
+    0,
+    str(pathlib.Path(__file__).parent.resolve())
+)
+
+
 from llm_client import LLMAPIClient
 from llm_configs import ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig
 
 import prompt
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -84,17 +92,37 @@ def get_startwith(key:str, dictionary:dict) -> Any:
 def get_model_key_from_env() -> Tuple[str, str]:
     """
     Extracts the LLM model and API key from environment variables with flexible selection.
+    - Uses INPUT_API-KEY if provided, especially with a specified model.
+    - Falls back to model-specific API keys if INPUT_API-KEY is not set.
     - Raises ValueError if no API keys are available.
-    - Uses single available API key if only one is set.
-    - Prefers specified model's API key if available.
-    - Falls back to Gemini if its API key is available.
+    - Uses model-to-provider mapping for precise model IDs.
     """
     api_key_dict = get_api_key_dict_from_env()
     valid_keys_dict = {k: v for k, v in api_key_dict.items() if v and v.strip()}
 
+    model = os.getenv('INPUT_MODEL', '').lower()
+    general_api_key = os.getenv('INPUT_API-KEY', '').strip()
+
+    # Model-to-provider mapping for precise model IDs
+    model_to_provider = {
+        'google/gemma-2-9b-it': 'nvidia_nim',
+        'sonar': 'perplexity',
+        'gemini-2.5-flash': 'gemini',
+        'grok-code-fast': 'grok',
+        'claude-sonnet-4-20250514': 'claude'
+    }
+
+    # Case 1: Use INPUT_API-KEY if provided
+    if general_api_key:
+        selected_model = model or 'gemini-2.5-flash'  # Default to specific Gemini model
+        logging.info(f"Using INPUT_API-KEY for model: {selected_model}")
+        return selected_model, general_api_key
+
+    # Case 2: No INPUT_API-KEY, check model-specific keys
     if not valid_keys_dict:
         raise ValueError(
             "No API keys provided. Set at least one of:\n"
+            "\tINPUT_API-KEY\n"
             "\tINPUT_CLAUDE_API_KEY\n"
             "\tINPUT_GEMINI-API-KEY\n"
             "\tINPUT_GROK-API-KEY\n"
@@ -102,28 +130,31 @@ def get_model_key_from_env() -> Tuple[str, str]:
             "\tINPUT_PERPLEXITY-API-KEY\n"
         )
 
-    model = os.getenv('INPUT_MODEL', '').lower()
-
-    # Case 1: Only one API key is available
+    # Case 3: Only one API key available
     if len(valid_keys_dict) == 1:
         selected_model, api_key = next(iter(valid_keys_dict.items()))
         logging.info(f"Using single available model: {selected_model}")
         return selected_model, api_key.strip()
 
-    # Case 2: Multiple API keys available
+    # Case 4: Use model-to-provider mapping for specified model
+    provider = model_to_provider.get(model, None)
+    if model and provider and provider in valid_keys_dict:
+        logging.info(f"Using mapped model: {model} with provider: {provider}")
+        return model, valid_keys_dict[provider].strip()
+
+    # Case 5: Fallback to provider-based matching
     if model:
-        # Check if specified model's API key is available
         api_key = get_startwith(model, valid_keys_dict)
         if api_key:
-            logging.info(f"Using specified model: {model}")
+            logging.info(f"Using specified model with provider matching: {model}")
             return model, api_key.strip()
 
-    # Case 3: Fallback to Gemini if available
+    # Case 6: Fallback to Gemini if available
     if 'gemini' in valid_keys_dict:
         logging.info("Falling back to Gemini model")
-        return 'gemini', valid_keys_dict['gemini'].strip()
+        return 'gemini-2.5-flash', valid_keys_dict['gemini'].strip()
 
-    # Case 4: Specified model not available, and Gemini not available
+    # Case 7: No matching model or Gemini
     raise ValueError(
         f"No API key provided for specified model '{model}' and Gemini not available. "
         f"Available models: {', '.join(valid_keys_dict.keys())}"
@@ -150,10 +181,15 @@ def get_config_class_dict() -> Dict[str, type]:
     """
     return {
         'claude': ClaudeConfig,
+        'claude-sonnet-4-20250514': ClaudeConfig,  # Add specific model
         'gemini': GeminiConfig,
+        'gemini-2.5-flash': GeminiConfig,
         'grok': GrokConfig,
+        'grok-code-fast': GrokConfig,
         'nvidia_nim': NvidiaNIMConfig,
+        'google/gemma-2-9b-it': NvidiaNIMConfig,  # Add specific model
         'perplexity': PerplexityConfig,
+        'sonar': PerplexityConfig  # Add specific model
     }
 
 

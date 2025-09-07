@@ -32,6 +32,7 @@ def test_skipped_do_not_count() -> None:
     os.environ['INPUT_GROK-API-KEY'] = 'test-key'
     os.environ['INPUT_NVIDIA-API-KEY'] = 'test-key'
     os.environ['INPUT_PERPLEXITY-API-KEY'] = 'test-key'
+    os.environ['INPUT_EXPLANATION-IN'] = 'English'
 
     entrypoint.main(b_ask=False)
 

@@ -16,6 +16,8 @@ FROM cicirello/pyaction:4
 COPY entrypoint.py /entrypoint.py
 COPY requirements.txt /requirements.txt
 COPY prompt.py /prompt.py
+COPY llm_client.py /llm_client.py
+COPY llm_configs.py /llm_configs.py
 COPY locale/ /locale/
 
 RUN python3 -m pip install --upgrade pip

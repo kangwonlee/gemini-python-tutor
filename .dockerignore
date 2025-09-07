@@ -1,6 +1,8 @@
 *
 !Dockerfile
 !entrypoint.py
-!requirements.txt
-!prompt.py
+!llm_client.py
+!llm_configs.py
 !locale/*.json
+!prompt.py
+!requirements.txt

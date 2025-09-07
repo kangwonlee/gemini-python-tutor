@@ -103,11 +103,11 @@ class GeminiConfig(LLMConfig):
 
     Attributes:
         api_url (str, optional): API endpoint URL. Defaults to None.
-        model (str): Default Gemini model version. Defaults to "gemini-2.0-flash".
+        model (str): Default Gemini model version. Defaults to "gemini-2.5-flash".
     """
 
     api_url: str = None
-    model: str = "gemini-2.0-flash"
+    model: str = "gemini-2.5-flash"
 
     def __post_init__(self):
         """Initialize Gemini-specific URL with API key.
@@ -168,11 +168,11 @@ class GrokConfig(LLMConfig):
         https://docs.x.ai/docs/api-reference
 
     Attributes:
-        model (str): Default Grok model. Defaults to "grok-2-1212".
+        model (str): Default Grok model. Defaults to "grok-code-fast".
         api_url (str): Grok API endpoint. Defaults to chat completions URL.
     """
 
-    model: str = "grok-2-1212"
+    model: str = "grok-code-fast"
     api_url: str = "https://api.x.ai/v1/chat/completions"
 
     def format_request_data(self, question: str) -> Dict[str, Any]:

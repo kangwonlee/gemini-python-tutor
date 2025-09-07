@@ -1,3 +1,5 @@
+# begin tests/test_prompt.py
+
 import json
 import pathlib
 import sys
@@ -612,3 +614,5 @@ def test__collect_longrepr__compare_contents(collect_longrepr_result:List[str]):
 
 if '__main__' == __name__:
     pytest.main([__file__])
+
+# end tests/test_prompt.py

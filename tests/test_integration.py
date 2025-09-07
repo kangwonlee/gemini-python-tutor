@@ -1,3 +1,5 @@
+# begin tests/test_integration.py
+
 import os
 import pathlib
 import sys
@@ -80,3 +82,5 @@ def test_main_argument_passing__all_exists(mock_get_prompt, caplog, tmp_path) ->
 
 if "__main__" == __name__:
     pytest.main([__file__])
+
+# end tests/test_integration.py
