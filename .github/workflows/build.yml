@@ -100,10 +100,10 @@ jobs:
     strategy:
       matrix:
         model: [
-          gemini-2.5-flash,
-          grok-code-fast,
           claude-sonnet-4-20250514,
+          gemini-2.5-flash,
           google/gemma-2-9b-it,
+          grok-code-fast,
           sonar
         ]
       fail-fast: false
@@ -137,6 +137,7 @@ jobs:
       run: |
         . .venv/bin/activate
         uv pip list
+        sleep 1
         python3 entrypoint.py
       timeout-minutes: 5
     - name: Output and Verify
