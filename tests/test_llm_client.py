@@ -99,9 +99,13 @@ def test_call_api_rate_limit_success(mock_post: Mock, client: LLMAPIClient, samp
     result = client.call_api(sample_question)
     assert result == "4"
     assert mock_post.call_count == 2  # Initial + 1 retry
-    client.logger.warning.assert_called_once_with(
-        "Rate limit hit. Retrying in 0.1s (attempt 1/2)"
-    )
+
+    # Robust check: ensure called once, then verify key parts
+    client.logger.warning.assert_called_once()
+    log_msg = client.logger.warning.call_args[0][0]
+    assert "Rate limit (429) hit" in log_msg
+    assert "Retrying in 0.1s" in log_msg  # Delay is dynamic but fixed in this test (attempt 0 -> 0.1s)
+    assert "(attempt 1/2)" in log_msg
 
 
 @patch("llm_client.time.sleep")
