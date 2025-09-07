@@ -166,10 +166,15 @@ def get_config_class_dict() -> Dict[str, type]:
     """
     return {
         'claude': ClaudeConfig,
+        'claude-sonnet-4-20250514': ClaudeConfig,  # Add specific model
         'gemini': GeminiConfig,
+        'gemini-2.5-flash': GeminiConfig,
         'grok': GrokConfig,
+        'grok-code-fast': GrokConfig,
         'nvidia_nim': NvidiaNIMConfig,
+        'google/gemma-2-9b-it': NvidiaNIMConfig,  # Add specific model
         'perplexity': PerplexityConfig,
+        'sonar': PerplexityConfig  # Add specific model
     }
 
 
