@@ -16,6 +16,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v0.3.12] - 2025-09-07
+
+### Added
+- Support for multiple LLM providers (Claude, Gemini, Grok, NVIDIA NIM, Perplexity) with dedicated configuration classes in `llm_configs.py`.
+- `llm_client.py` for robust API interaction with retry, timeout, and error handling.
+- Comprehensive integration tests in `build.yml` for multiple models (`gemini-2.5-flash`, `grok-code-fast`, `claude-sonnet-4-20250514`, `google/gemma-2-9b-it`, `sonar`) using both action and environment variable inputs.
+- Model-to-provider mapping in `get_model_key_from_env()` to handle precise model IDs.
+
+### Changed
+- Updated `entrypoint.py` to support flexible model selection with fallback to `gemini-2.5-flash`.
+- Modified `.dockerignore` and `Dockerfile` to include `llm_client.py` and `llm_configs.py`.
+- Updated `action.yml` inputs: `report-files`, `student-files`, `readme-path` now required; `model` defaults to `gemini`; added `fail-expected`.
+- Updated `GeminiConfig` default model to `gemini-2.5-flash` from `gemini-2.0-flash`.
+- Updated `GrokConfig` default model to `grok-code-fast` from `grok-2-1212`.
+- Enhanced `tests/test_entrypoint.py` to align with new fallback model (`gemini-2.5-flash`) and added test for `INPUT_API-KEY`.
+- Improved logging checks in `tests/test_llm_client.py` for robustness.
+- Added file markers in `tests/test_integration.py` and `tests/test_prompt.py`.
+
+### Fixed
+- Resolved 404 errors in integration tests for `google/gemma-2-9b-it` and `sonar` by adding model-to-provider mapping in `get_model_key_from_env()`.
+- Fixed test failures in `test_get_model_key_from_env__fallback_gemini` and `test_get_model_key_from_env__no_model_fallback_gemini` by updating expected model to `gemini-2.5-flash`.
+
 ## [v0.3.7] - 2025-08-01
 
 ### Added
