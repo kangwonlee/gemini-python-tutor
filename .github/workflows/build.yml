@@ -49,13 +49,13 @@ jobs:
         include:
           - model: gemini-2.5-flash
             secret: GOOGLE_API_KEY
-          - model: grok
+          - model: grok-code-fast
             secret: XAI_API_KEY
-          - model: claude
+          - model: claude-sonnet-4-20250514
             secret: CLAUDE_API_KEY
-          - model: nvidia_nim
+          - model: google/gemma-2-9b-it
             secret: NVIDIA_NIM_API_KEY
-          - model: perplexity
+          - model: sonar
             secret: PERPLEXITY_API_KEY
       fail-fast: false
     steps:
