@@ -108,7 +108,7 @@ def test_get_model_key_from_env__fallback_gemini(monkeypatch):
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
     monkeypatch.setenv("INPUT_GROK-API-KEY", "grok_key")  # Multiple, but fallback to Gemini
     result_model, result_key = entrypoint.get_model_key_from_env()
-    assert result_model == "gemini"
+    assert result_model == "gemini-2.5-flash"
     assert result_key == "gemini_key"
 
 
@@ -117,7 +117,7 @@ def test_get_model_key_from_env__no_model_fallback_gemini(monkeypatch):
     monkeypatch.setenv("INPUT_CLAUDE_API_KEY", "claude_key")
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
     result_model, result_key = entrypoint.get_model_key_from_env()
-    assert result_model == "gemini"
+    assert result_model == "gemini-2.5-flash"
     assert result_key == "gemini_key"
 
 
