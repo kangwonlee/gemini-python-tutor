@@ -41,7 +41,7 @@ jobs:
     - name: Verify that the Docker image for the action builds
       run: docker build . --file Dockerfile
 
-  integration-tests:
+  integration-tests-action:
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -90,7 +90,63 @@ jobs:
     - name: Verify integration test results
       run: |
         . .venv/bin/activate
-          uv pip list
+        uv pip list
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        python3 -u -m pytest tests/integration.py
+
+  integration-tests-env:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        model: [
+          gemini-2.5-flash,
+          grok-code-fast,
+          claude-sonnet-4-20250514,
+          google/gemma-2-9b-it,
+          sonar
+        ]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install uv package manager
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
+        version-file: "pyproject.toml"
+        python-version: 3.11
+        enable-cache: true
+
+    - run: uv sync
+
+    - name: Integration test ${{ matrix.model }}
+      id: integration
+      env:
+        INPUT_REPORT-FILES: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
+        INPUT_STUDENT-FILES: tests/sample_code.py
+        INPUT_README-PATH: tests/sample_readme.md
+        INPUT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        INPUT_GEMINI-API-KEY: ${{ secrets.GOOGLE_API_KEY }}
+        INPUT_GROK-API-KEY: ${{ secrets.XAI_API_KEY }}
+        INPUT_NVIDIA-API-KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+        INPUT_PERPLEXITY-API-KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        INPUT_MODEL: ${{ matrix.model }}
+        explanation-in: Korean
+        fail-expected: True
+      run: |
+        . .venv/bin/activate
+        uv pip list
+        python3 entrypoint.py
+      timeout-minutes: 5
+    - name: Output and Verify
+      run: |
+        echo "${{ matrix.model }} ${{ steps.integration.outputs.feedback }}"
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+    - name: Verify integration test results
+      run: |
+        . .venv/bin/activate
+        uv pip list
         echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
 
