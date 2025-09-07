@@ -40,10 +40,10 @@ def json_dict(sample_report_path) -> PYTEST_JSON_REPORT:
     return result
 
 
-def test_collect_longrepr__returns_non_empty(json_dict:PYTEST_JSON_REPORT):
+def test_collect_longrepr__returns_non_empty(json_dict: PYTEST_JSON_REPORT):
     result = prompt.collect_longrepr(json_dict)
 
-    assert result
+    assert result, "Expected non-empty result from collect_longrepr"
 
 
 @pytest.fixture
@@ -52,23 +52,23 @@ def div_zero_report_path() -> pathlib.Path:
 
 
 @pytest.fixture
-def json_dict_div_zero_try_except(div_zero_report_path:pathlib.Path) -> PYTEST_JSON_REPORT:
+def json_dict_div_zero_try_except(div_zero_report_path: pathlib.Path) -> PYTEST_JSON_REPORT:
     with div_zero_report_path.open('rt') as f:
         result = json.load(f)
     return result
 
 
-def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except:PYTEST_JSON_REPORT):
+def test_collect_longrepr_div_zero_dict__returns_non_empty(json_dict_div_zero_try_except: PYTEST_JSON_REPORT):
     result = prompt.collect_longrepr(json_dict_div_zero_try_except)
 
-    assert result
+    assert result, "Expected non-empty result from collect_longrepr with div zero report"
 
 
 def test_collect_longrepr_from_multiple_reports__returns_non_empty(
-        sample_report_path:pathlib.Path,
-        div_zero_report_path:pathlib.Path,
-        explanation_in:str
-    ):
+    sample_report_path: pathlib.Path,
+    div_zero_report_path: pathlib.Path,
+    explanation_in: str
+):
     multiple_reports = (
         sample_report_path,
         div_zero_report_path
@@ -78,7 +78,7 @@ def test_collect_longrepr_from_multiple_reports__returns_non_empty(
         explanation_in=explanation_in,
     )
 
-    assert result
+    assert result, "Expected non-empty result from collect_longrepr_from_multiple_reports"
 
 
 @pytest.fixture(params=tuple(path.stem for path in pathlib.Path('locale').glob('*.json')))
@@ -87,7 +87,7 @@ def explanation_in(request) -> str:
 
 
 @pytest.fixture
-def homework(explanation_in:str) -> Tuple[str]:
+def homework(explanation_in: str) -> Tuple[str]:
     d = {
         'Korean': ('숙제',),
         'English': ('Homework',),
@@ -104,16 +104,11 @@ def homework(explanation_in:str) -> Tuple[str]:
         'Thai': ('การบ้าน',),
         'Vietnamese': ('Bài tập',),
     }
-    return tuple(
-        map(
-            lambda x: x.lower(),
-            d[explanation_in]
-        )
-    )
+    return tuple(map(lambda x: x.lower(), d[explanation_in]))
 
 
 @pytest.fixture
-def msg(explanation_in:str) -> str:
+def msg(explanation_in: str) -> str:
     d = {
         'Korean': '메시지',
         'English': 'Message',
@@ -123,18 +118,18 @@ def msg(explanation_in:str) -> str:
         'German': 'Fehlermeldung',
         'Italian': 'Messaggio',
         'Japanese': 'メッセ',
-        'Nederlands': 'Foutmelding', # error message
+        'Nederlands': 'Foutmelding',
         'Norwegian': 'Melding',
         'Spanish': 'Mensaje',
         'Swedish': 'Meddelande',
         'Thai': 'ข้อความ',
-        'Vietnamese': 'thông báo', # notification
+        'Vietnamese': 'thông báo',
     }
     return d[explanation_in].lower()
 
 
 @pytest.fixture
-def instruction(explanation_in:str) -> str:
+def instruction(explanation_in: str) -> str:
     d = {
         'Korean': ('지침',),
         'English': ('Instruction',),
@@ -151,46 +146,31 @@ def instruction(explanation_in:str) -> str:
         'Thai': ('แนะนำ',),
         'Vietnamese': ('hướng dẫn',),
     }
-    return tuple(
-        map(
-            lambda x: x.lower(),
-            d[explanation_in]
-        )
-    )
+    return tuple(map(lambda x: x.lower(), d[explanation_in]))
 
 
-def test_get_directive(explanation_in:str, homework:Tuple[str]):
-    result = prompt.get_directive(explanation_in=explanation_in)
-
-    assert any(
-        map(
-            lambda x: x in result.lower(),
-            homework
-        )
-    ), (
-        f"Could not find homework: {homework} in result: {result}."
-    )
-
-
-def test_get_instruction(explanation_in:str, homework:Tuple[str],):
+def test_get_directive(explanation_in: str, homework: Tuple[str]):
     result = prompt.get_directive(explanation_in=explanation_in).lower()
 
-    assert any(
-        map(
-            lambda x: x in result,
-            homework
-        )
-    ), (
-        f"Could not find homework: {homework} in result: {result}."
-    )
+    assert any(map(lambda x: x in result, homework)), \
+        f"Could not find homework terms {homework} in directive: {result}"
+
+
+def test_get_instruction(explanation_in: str, instruction: Tuple[str]):
+    result = prompt.get_instruction_block(
+        readme_file=test_folder / 'sample_readme.md',
+        explanation_in=explanation_in
+    ).lower()
+
+    assert any(map(lambda x: x in result, instruction)), \
+        f"Could not find instruction terms {instruction} in result: {result}"
 
 
 @pytest.mark.parametrize("func", (prompt.get_report_header, prompt.get_report_footer))
-def test_get_report__header__footer(explanation_in:str, msg:str, func:Callable):
+def test_get_report__header__footer(explanation_in: str, msg: str, func: Callable):
+    result = func(explanation_in=explanation_in).lower()
 
-    result = func(explanation_in=explanation_in)
-
-    assert msg in result.lower(), f"Could not find msg: {msg} in result: {result}."
+    assert msg in result, f"Expected message term '{msg}' in result: {result}"
 
 
 @pytest.fixture
@@ -204,90 +184,66 @@ def sample_readme_path() -> pathlib.Path:
 
 
 def test_get_instruction_block(
-        sample_readme_path:pathlib.Path,
-        explanation_in:str,
-        instruction:str,
-    ):
-
+    sample_readme_path: pathlib.Path,
+    explanation_in: str,
+    instruction: Tuple[str]
+):
     result = prompt.get_instruction_block(
-        readme_file = sample_readme_path,
+        readme_file=sample_readme_path,
         explanation_in=explanation_in
     ).lower()
 
-    assert any(
-        map(
-            lambda x: x in result,
-            instruction
-        )
-    ), f"Could not find instruction: {instruction} in result: {result}."
+    assert any(map(lambda x: x in result, instruction)), \
+        f"Could not find instruction terms {instruction} in result: {result}"
 
 
 def test_get_student_code_block(
-        sample_student_code_path:pathlib.Path,
-        explanation_in:str,
-        homework:Tuple[str],
-    ):
-
+    sample_student_code_path: pathlib.Path,
+    explanation_in: str,
+    homework: Tuple[str]
+):
     result = prompt.get_student_code_block(
-        student_files = (sample_student_code_path,),
+        student_files=(sample_student_code_path,),
         explanation_in=explanation_in
     ).lower()
 
-    assert any(
-        map(
-            lambda x: x in result,
-            homework
-        )
-    )
+    assert any(map(lambda x: x in result, homework)), \
+        f"Could not find homework terms {homework} in result: {result}"
 
 
 def test_get_prompt__has__homework__msg__instruction(
-        sample_report_path:pathlib.Path,
-        div_zero_report_path:pathlib.Path,
-        sample_student_code_path:pathlib.Path,
-        sample_readme_path:pathlib.Path,
-        explanation_in:str,
-        homework:Tuple[str],
-        msg:str,
-        instruction:str,
-    ):
+    sample_report_path: pathlib.Path,
+    div_zero_report_path: pathlib.Path,
+    sample_student_code_path: pathlib.Path,
+    sample_readme_path: pathlib.Path,
+    explanation_in: str,
+    homework: Tuple[str],
+    msg: str,
+    instruction: Tuple[str]
+):
     result = prompt.get_prompt(
-        report_paths=(sample_report_path,div_zero_report_path),
+        report_paths=(sample_report_path, div_zero_report_path),
         student_files=(sample_student_code_path,),
         readme_file=sample_readme_path,
         explanation_in=explanation_in,
     )
 
-    n_failed = result[0]
-    prompe_text = result[1].lower()
+    n_failed, prompt_text = result
+    prompt_text = prompt_text.lower()
 
-    assert any(
-        map(
-            lambda x: x in prompe_text,
-            homework
-        )
-    )
-    assert msg in prompe_text
-
-    assert any(
-        map(
-            lambda x: x in prompe_text,
-            instruction
-        )
-    ), f"Could not find instruction: {instruction} in result: {prompe_text}."
+    assert any(map(lambda x: x in prompt_text, homework)), \
+        f"Could not find homework terms {homework} in prompt: {prompt_text}"
+    assert msg in prompt_text, f"Could not find message term '{msg}' in prompt: {prompt_text}"
+    assert any(map(lambda x: x in prompt_text, instruction)), \
+        f"Could not find instruction terms {instruction} in prompt: {prompt_text}"
 
 
-def test_load_locale(explanation_in:str, homework:Tuple[str]):
+def test_load_locale(explanation_in: str, homework: Tuple[str]):
     result = prompt.load_locale(explanation_in)
 
-    assert 'directive' in result
-
-    assert any(
-        map(
-            lambda x: x in result['directive'].lower(),
-            homework
-        )
-    )
+    assert 'directive' in result, "Expected 'directive' key in locale dictionary"
+    assert any(map(lambda x: x in result['directive'].lower(), homework)), \
+        f"Could not find homework terms {homework} in locale directive: {result['directive']}"
 
 
 @pytest.fixture
@@ -319,42 +275,35 @@ def specific_lines() -> Tuple[str]:
 
 @pytest.fixture
 def common_content_single(
-    start_marker:str,
-    common_lines:Tuple[str],
-    end_marker:str
+    start_marker: str,
+    common_lines: Tuple[str],
+    end_marker: str
 ) -> str:
     return create_common_block(start_marker, common_lines, end_marker)
 
 
 def create_common_block(
-        start_marker:str,
-        common_lines:Tuple[str],
-        end_marker:str
+    start_marker: str,
+    common_lines: Tuple[str],
+    end_marker: str
 ) -> str:
-    return (
-        '\n'.join((start_marker,) + common_lines + (end_marker,))
-        + '\n'
-    )
+    return '\n'.join((start_marker,) + common_lines + (end_marker,)) + '\n'
 
 
 @pytest.fixture
 def readme_content_single(
-    specific_lines:Tuple[str],
-    common_content_single:str
+    specific_lines: Tuple[str],
+    common_content_single: str
 ) -> str:
-    return (
-        '\n'.join(specific_lines)
-        + '\n'
-        + common_content_single
-    )
+    return '\n'.join(specific_lines) + '\n' + common_content_single
 
 
-def test__exclude_common_contents__single(
-    readme_content_single:str,
-    start_marker:str,
-    end_marker:str,
-    specific_lines:Tuple[str],
-    common_lines:Tuple[str],
+def test_exclude_common_contents__single(
+    readme_content_single: str,
+    start_marker: str,
+    end_marker: str,
+    specific_lines: Tuple[str],
+    common_lines: Tuple[str]
 ):
     result = prompt.exclude_common_contents(
         readme_content=readme_content_single,
@@ -363,51 +312,36 @@ def test__exclude_common_contents__single(
     )
 
     for line in specific_lines:
-        assert line.strip() in result, ("\n"
-            f"Could not find line: {line}\n"
-            f"in result: {result}."
-        )
-
+        assert line.strip() in result, \
+            f"Could not find specific line '{line}' in result: {result}"
     for line in common_lines:
-        assert line.strip() not in result, ("\n"
-            f"Found line: {line}\n"
-            f"in result: {result}."
-        )
+        assert line.strip() not in result, \
+            f"Found common line '{line}' in result: {result}"
+    assert start_marker.strip() not in result, \
+        f"Found start marker '{start_marker}' in result: {result}"
+    assert end_marker.strip() not in result, \
+        f"Found end marker '{end_marker}' in result: {result}"
 
-    assert start_marker.strip() not in result
-    assert end_marker.strip() not in result
 
-
-def test__exclude_common_contents__single__default_markers(
-    readme_content_single:str,
-    start_marker:str,
-    end_marker:str,
-    specific_lines:Tuple[str],
-    common_lines:Tuple[str],
+def test_exclude_common_contents__single__default_markers(
+    readme_content_single: str,
+    specific_lines: Tuple[str],
+    common_lines: Tuple[str]
 ):
     result = prompt.exclude_common_contents(
         readme_content=readme_content_single,
     )
 
     for line in specific_lines:
-        assert line.strip() in result, ("\n"
-            f"Could not find line: {line}\n"
-            f"in result: {result}."
-        )
-
+        assert line.strip() in result, \
+            f"Could not find specific line '{line}' in result: {result}"
     for line in common_lines:
-        assert line.strip() not in result, ("\n"
-            f"Found line: {line}\n"
-            f"in result: {result}."
-        )
-
-    assert start_marker.strip() not in result
-    assert end_marker.strip() not in result
+        assert line.strip() not in result, \
+            f"Found common line '{line}' in result: {result}"
 
 
 @pytest.fixture
 def specific_lines_2() -> Tuple[str]:
-    """Provides a tuple of specific lines to be inserted between common content blocks."""
     return (
         "// This is specific content between the common blocks.",
         "// It should be preserved in the output."
@@ -416,22 +350,19 @@ def specific_lines_2() -> Tuple[str]:
 
 @pytest.fixture
 def readme_content_specific_common_specific(
-    readme_content_single:str,
-    specific_lines_2:Tuple[str],
+    readme_content_single: str,
+    specific_lines_2: Tuple[str]
 ) -> str:
-    return (
-        readme_content_single
-        + '\n'.join(specific_lines_2) + '\n'
-    )
+    return readme_content_single + '\n'.join(specific_lines_2) + '\n'
 
 
-def test__exclude_common_contents__specific_common_specific(
-    readme_content_specific_common_specific:str,
-    start_marker:str,
-    end_marker:str,
-    specific_lines:Tuple[str],
-    common_lines:Tuple[str],
-    specific_lines_2:Tuple[str],
+def test_exclude_common_contents__specific_common_specific(
+    readme_content_specific_common_specific: str,
+    start_marker: str,
+    end_marker: str,
+    specific_lines: Tuple[str],
+    specific_lines_2: Tuple[str],
+    common_lines: Tuple[str]
 ):
     result = prompt.exclude_common_contents(
         readme_content=readme_content_specific_common_specific,
@@ -439,20 +370,16 @@ def test__exclude_common_contents__specific_common_specific(
         common_content_end_marker=end_marker,
     )
 
-    for line in (specific_lines + specific_lines_2):
-        assert line.strip() in result, ("\n"
-            f"Could not find line: {line}\n"
-            f"in result: {result}."
-        )
-
+    for line in specific_lines + specific_lines_2:
+        assert line.strip() in result, \
+            f"Could not find specific line '{line}' in result: {result}"
     for line in common_lines:
-        assert line.strip() not in result, ("\n"
-            f"Found line: {line}\n"
-            f"in result: {result}."
-        )
-
-    assert start_marker.strip() not in result
-    assert end_marker.strip() not in result
+        assert line.strip() not in result, \
+            f"Found common line '{line}' in result: {result}"
+    assert start_marker.strip() not in result, \
+        f"Found start marker '{start_marker}' in result: {result}"
+    assert end_marker.strip() not in result, \
+        f"Found end marker '{end_marker}' in result: {result}"
 
 
 @pytest.fixture
@@ -465,10 +392,10 @@ def common_lines_2() -> Tuple[str]:
 
 @pytest.fixture
 def readme_content_double(
-    readme_content_specific_common_specific:str,
-    start_marker:str,
-    common_lines_2:Tuple[str],
-    end_marker:str
+    readme_content_specific_common_specific: str,
+    start_marker: str,
+    common_lines_2: Tuple[str],
+    end_marker: str
 ) -> str:
     return (
         readme_content_specific_common_specific
@@ -476,14 +403,14 @@ def readme_content_double(
     )
 
 
-def test__exclude_common_contents__double(
-    readme_content_double:str,
-    start_marker:str,
-    end_marker:str,
-    specific_lines:Tuple[str],
-    specific_lines_2:Tuple[str],
-    common_lines:Tuple[str],
-    common_lines_2:Tuple[str],
+def test_exclude_common_contents__double(
+    readme_content_double: str,
+    start_marker: str,
+    end_marker: str,
+    specific_lines: Tuple[str],
+    specific_lines_2: Tuple[str],
+    common_lines: Tuple[str],
+    common_lines_2: Tuple[str]
 ):
     result = prompt.exclude_common_contents(
         readme_content=readme_content_double,
@@ -491,25 +418,20 @@ def test__exclude_common_contents__double(
         common_content_end_marker=end_marker,
     )
 
-    for line in (tuple(specific_lines) + tuple(specific_lines_2)):
-        assert line.strip() in result, ("\n"
-            f"Could not find line: {line}\n"
-            f"in result: {result}."
-        )
-
-    for line in (tuple(common_lines) + tuple(common_lines_2)):
-        assert line.strip() not in result, ("\n"
-            f"Found line: {line}\n"
-            f"in result: {result}."
-        )
-
-    assert start_marker.strip() not in result
-    assert end_marker.strip() not in result
+    for line in specific_lines + specific_lines_2:
+        assert line.strip() in result, \
+            f"Could not find specific line '{line}' in result: {result}"
+    for line in common_lines + common_lines_2:
+        assert line.strip() not in result, \
+            f"Found common line '{line}' in result: {result}"
+    assert start_marker.strip() not in result, \
+        f"Found start marker '{start_marker}' in result: {result}"
+    assert end_marker.strip() not in result, \
+        f"Found end marker '{end_marker}' in result: {result}"
 
 
 @pytest.fixture
 def specific_lines_3() -> Tuple[str]:
-    """Provides a tuple of specific lines to be inserted after two common content blocks."""
     return (
         "# This is also specific content, after two common blocks.",
         "# It should be preserved in the output, too."
@@ -518,24 +440,21 @@ def specific_lines_3() -> Tuple[str]:
 
 @pytest.fixture
 def readme_content__double_specific(
-    readme_content_double:str,
-    specific_lines_3:Tuple[str],
+    readme_content_double: str,
+    specific_lines_3: Tuple[str]
 ) -> str:
-    return (
-        readme_content_double
-        + '\n'.join(specific_lines_3) + '\n'
-    )
+    return readme_content_double + '\n'.join(specific_lines_3) + '\n'
 
 
-def test__exclude_common_contents__double_specific(
-    readme_content__double_specific:str,
-    start_marker:str,
-    end_marker:str,
-    specific_lines:Tuple[str],
-    specific_lines_2:Tuple[str],
-    specific_lines_3:Tuple[str],
-    common_lines:Tuple[str],
-    common_lines_2:Tuple[str],
+def test_exclude_common_contents__double_specific(
+    readme_content__double_specific: str,
+    start_marker: str,
+    end_marker: str,
+    specific_lines: Tuple[str],
+    specific_lines_2: Tuple[str],
+    specific_lines_3: Tuple[str],
+    common_lines: Tuple[str],
+    common_lines_2: Tuple[str]
 ):
     result = prompt.exclude_common_contents(
         readme_content=readme_content__double_specific,
@@ -543,20 +462,16 @@ def test__exclude_common_contents__double_specific(
         common_content_end_marker=end_marker,
     )
 
-    for line in (specific_lines + specific_lines_2 + specific_lines_3):
-        assert line.strip() in result, ("\n"
-            f"Could not find line: {line}\n"
-            f"in result: {result}."
-        )
-
-    for line in (common_lines + common_lines_2):
-        assert line.strip() not in result, ("\n"
-            f"Found line: {line}\n"
-            f"in result: {result}."
-        )
-
-    assert start_marker.strip() not in result
-    assert end_marker.strip() not in result
+    for line in specific_lines + specific_lines_2 + specific_lines_3:
+        assert line.strip() in result, \
+            f"Could not find specific line '{line}' in result: {result}"
+    for line in common_lines + common_lines_2:
+        assert line.strip() not in result, \
+            f"Found common line '{line}' in result: {result}"
+    assert start_marker.strip() not in result, \
+        f"Found start marker '{start_marker}' in result: {result}"
+    assert end_marker.strip() not in result, \
+        f"Found end marker '{end_marker}' in result: {result}"
 
 
 @pytest.fixture
@@ -566,53 +481,50 @@ def test_api_key() -> str:
 
 @pytest.fixture
 def expected_default_gemini_model() -> str:
-    return 'gemini-2.0-flash'
+    return 'gemini-2.5-flash'
 
 
 @pytest.fixture
-def collect_longrepr_result(json_dict:PYTEST_JSON_REPORT) -> List[str]:
+def collect_longrepr_result(json_dict: PYTEST_JSON_REPORT) -> List[str]:
     return prompt.collect_longrepr(json_dict)
 
 
-def test__collect_longrepr__is_list(collect_longrepr_result:List[str]):
-    assert isinstance(collect_longrepr_result, list), f"Expected list, got {type(collect_longrepr_result)}."
+def test_collect_longrepr__is_list(collect_longrepr_result: List[str]):
+    assert isinstance(collect_longrepr_result, list), \
+        f"Expected list, got {type(collect_longrepr_result)}"
 
 
-def test__collect_longrepr__has_list_items(collect_longrepr_result:List[str]):
-    assert collect_longrepr_result, "Expected non-empty list, got empty list."
+def test_collect_longrepr__has_list_items(collect_longrepr_result: List[str]):
+    assert collect_longrepr_result, "Expected non-empty list"
 
 
-def test__collect_longrepr__has_list_items_len(collect_longrepr_result:List[str]):
+def test_collect_longrepr__has_list_items_len(collect_longrepr_result: List[str]):
     for s in collect_longrepr_result:
-        assert isinstance(s, str), f"Expected string, has {s} which is {type(s)}."
-        assert s, "Expected non-empty string, got empty string."
+        assert isinstance(s, str), f"Expected string, got {type(s)}: {s}"
+        assert s, "Expected non-empty string"
 
 
-def test__collect_longrepr__compare_contents(collect_longrepr_result:List[str]):
-    markers = 'longrepr100 longrepr110'.split()
-    markers += 'longrepr200 longrepr210'.split()
-    markers += 'longrepr300 longrepr310'.split()
-    markers += 'longrepr400 longrepr410'.split()
-    markers += 'longrepr500 longrepr510 longrepr520'.split()
-    markers += 'longrepr600 longrepr610 longrepr620'.split()
-    markers += 'longrepr700 longrepr710 longrepr720'.split()
-    markers += 'longrepr800 longrepr810 longrepr820'.split()
-    markers += 'longrepr900 longrepr910 longrepr920'.split()
-    markers += 'longrepr1000 longrepr1010 longrepr1020'.split()
-    markers += 'longrepr1100 longrepr1110 longrepr1120'.split()
-    markers += 'longrepr1200 longrepr1210 longrepr1220'.split()
+def test_collect_longrepr__compare_contents(collect_longrepr_result: List[str]):
+    markers = (
+        'longrepr100 longrepr110 longrepr200 longrepr210 longrepr300 longrepr310 '
+        'longrepr400 longrepr410 longrepr500 longrepr510 longrepr520 '
+        'longrepr600 longrepr610 longrepr620 longrepr700 longrepr710 longrepr720 '
+        'longrepr800 longrepr810 longrepr820 longrepr900 longrepr910 longrepr920 '
+        'longrepr1000 longrepr1010 longrepr1020 longrepr1100 longrepr1110 longrepr1120 '
+        'longrepr1200 longrepr1210 longrepr1220 stderr200 stderr210'
+    ).split()
 
-    markers += 'stderr200 stderr210'.split()
-
+    found_markers = []
     for s in collect_longrepr_result:
         for marker in markers:
             if marker in s:
-                markers.remove(marker)
+                found_markers.append(marker)
 
-    assert not markers, f"Expected all markers to be found, but missing: {markers}."
+    missing_markers = [m for m in markers if m not in found_markers]
+    assert not missing_markers, f"Missing markers: {missing_markers}"
 
 
-if '__main__' == __name__:
+if __name__ == '__main__':
     pytest.main([__file__])
 
 # end tests/test_prompt.py
