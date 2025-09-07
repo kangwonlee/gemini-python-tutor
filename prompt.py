@@ -4,6 +4,7 @@ import json
 import logging
 import pathlib
 import re
+import uuid
 
 from typing import Dict, List, Tuple
 
@@ -46,6 +47,16 @@ def sanitize_input(text: str) -> str:
         sanitized = sanitized[:max_length]
 
     return sanitized
+
+
+def generate_random_delimiters() -> Tuple[str, str]:
+    """Generates a pair of unique random strings for wrapping content.
+
+    Returns:
+        Tuple[str, str]: Start and end delimiters.
+    """
+    unique_id = str(uuid.uuid4()).replace("-", "")
+    return f"START_{unique_id}_DELIMITER", f"END_{unique_id}_DELIMITER"
 
 
 def engineering(
@@ -96,6 +107,7 @@ def get_prompt(
             f"In {language}, please comment on the student code given the assignment instruction."
         )
 
+
     prompt_list = (
         [
             get_initial_instruction(pytest_longrepr_list, explanation_in),
@@ -114,12 +126,13 @@ def collect_longrepr_from_multiple_reports(
 ) -> List[str]:
     """Collects test failure details from multiple pytest JSON reports."""
     questions = []
+    start_delimiter, end_delimiter = generate_random_delimiters()
 
     for pytest_json_report_path in pytest_json_report_paths:
         logging.info(f"Processing report file: {pytest_json_report_path}")
         data = json.loads(pytest_json_report_path.read_text())
 
-        longrepr_list = collect_longrepr(data)
+        longrepr_list = collect_longrepr(data, start_delimiter, end_delimiter)
 
         questions += longrepr_list
 
@@ -135,16 +148,16 @@ def get_directive(explanation_in: str) -> str:
     return f"{load_locale(explanation_in)['directive']}\n"
 
 
-def collect_longrepr(data: Dict[str, str]) -> List[str]:
-    """Extracts longrepr and stderr from failed tests."""
+def collect_longrepr(data: Dict[str, str], start_delimiter: str, end_delimiter: str) -> List[str]:
+    """Extracts longrepr and stderr from failed tests, wrapping with random delimiters."""
     longrepr_list = []
     for r in data['tests']:
         if r['outcome'] not in ('passed', 'skipped'):
             for k in r:
                 if isinstance(r[k], dict) and 'longrepr' in r[k]:
-                    longrepr_list.append(f"{r['outcome']}:{k}: longrepr begin:{sanitize_input(r[k]['longrepr'])}:longrepr end\n")
+                    longrepr_list.append(f"{r['outcome']}:{k}: longrepr begin:{start_delimiter}{sanitize_input(r[k]['longrepr'])}{end_delimiter}:longrepr end\n")
                 if isinstance(r[k], dict) and 'stderr' in r[k]:
-                    longrepr_list.append(f"{r['outcome']}:{k}: stderr begin:{sanitize_input(r[k]['stderr'])}:stderr end\n")
+                    longrepr_list.append(f"{r['outcome']}:{k}: stderr begin:{start_delimiter}{sanitize_input(r[k]['stderr'])}{end_delimiter}:stderr end\n")
     return longrepr_list
 
 
@@ -159,18 +172,20 @@ def get_report_footer(explanation_in: str) -> str:
 
 
 def get_instruction_block(readme_file: pathlib.Path, explanation_in: str) -> str:
+    start_delimiter, end_delimiter = generate_random_delimiters()
     return (
         f"## {load_locale(explanation_in)['instruction_start']}\n"
-        f"{assignment_instruction(readme_file)}\n"
+        f"{start_delimiter}\n{assignment_instruction(readme_file)}\n{end_delimiter}\n"
         f"## {load_locale(explanation_in)['instruction_end']}\n"
     )
 
 
 def get_student_code_block(student_files: List[pathlib.Path], explanation_in: str) -> str:
+    start_delimiter, end_delimiter = generate_random_delimiters()
     return (
         "\n\n##### Start mutable code block\n"
         f"## {load_locale(explanation_in)['homework_start']}\n"
-        f"{assignment_code(student_files)}\n"
+        f"{start_delimiter}\n{assignment_code(student_files)}\n{end_delimiter}\n"
         f"## {load_locale(explanation_in)['homework_end']}\n"
         "##### End mutable code block\n"
     )
@@ -178,9 +193,10 @@ def get_student_code_block(student_files: List[pathlib.Path], explanation_in: st
 
 @functools.lru_cache
 def assignment_code(student_files: List[pathlib.Path]) -> str:
+    start_delimiter, end_delimiter = generate_random_delimiters()
     return '\n\n'.join(
         [
-            f"# begin: {f.name} ======\n{sanitize_input(f.read_text())}\n# end: {f.name} ======" for f in student_files
+            f"# begin: {f.name} ======\n{start_delimiter}\n{sanitize_input(f.read_text())}\n{end_delimiter}\n# end: {f.name} =====" for f in student_files
         ]
     )
 
