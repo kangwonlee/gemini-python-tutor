@@ -157,6 +157,15 @@ def test_get_config_class_invalid_model():
         entrypoint.get_config_class("invalid_model")
 
 
+def test_get_model_key_from_env_with_api_key(monkeypatch):
+    """Test that INPUT_API-KEY is used when provided with a model."""
+    monkeypatch.setenv("INPUT_API-KEY", "test-api-key")
+    monkeypatch.setenv("INPUT_MODEL", "gemini")
+    model, api_key = entrypoint.get_model_key_from_env()
+    assert model == "gemini"
+    assert api_key == "test-api-key"
+
+
 if __name__ == '__main__':
     pytest.main([__file__])
 

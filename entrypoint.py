@@ -92,17 +92,28 @@ def get_startwith(key:str, dictionary:dict) -> Any:
 def get_model_key_from_env() -> Tuple[str, str]:
     """
     Extracts the LLM model and API key from environment variables with flexible selection.
+    - Uses INPUT_API-KEY if provided, especially with a specified model.
+    - Falls back to model-specific API keys if INPUT_API-KEY is not set.
     - Raises ValueError if no API keys are available.
-    - Uses single available API key if only one is set.
-    - Prefers specified model's API key if available.
-    - Falls back to Gemini if its API key is available.
+    - Prefers Gemini as default if no model is specified.
     """
     api_key_dict = get_api_key_dict_from_env()
     valid_keys_dict = {k: v for k, v in api_key_dict.items() if v and v.strip()}
 
+    model = os.getenv('INPUT_MODEL', '').lower()
+    general_api_key = os.getenv('INPUT_API-KEY', '').strip()
+
+    # Case 1: Use INPUT_API-KEY if provided
+    if general_api_key:
+        selected_model = model or 'gemini'  # Default to Gemini if no model specified
+        logging.info(f"Using INPUT_API-KEY for model: {selected_model}")
+        return selected_model, general_api_key
+
+    # Case 2: No INPUT_API-KEY, check model-specific keys
     if not valid_keys_dict:
         raise ValueError(
             "No API keys provided. Set at least one of:\n"
+            "\tINPUT_API-KEY\n"
             "\tINPUT_CLAUDE_API_KEY\n"
             "\tINPUT_GEMINI-API-KEY\n"
             "\tINPUT_GROK-API-KEY\n"
@@ -110,28 +121,25 @@ def get_model_key_from_env() -> Tuple[str, str]:
             "\tINPUT_PERPLEXITY-API-KEY\n"
         )
 
-    model = os.getenv('INPUT_MODEL', '').lower()
-
-    # Case 1: Only one API key is available
+    # Case 3: Only one API key available
     if len(valid_keys_dict) == 1:
         selected_model, api_key = next(iter(valid_keys_dict.items()))
         logging.info(f"Using single available model: {selected_model}")
         return selected_model, api_key.strip()
 
-    # Case 2: Multiple API keys available
+    # Case 4: Multiple API keys available, prefer specified model
     if model:
-        # Check if specified model's API key is available
         api_key = get_startwith(model, valid_keys_dict)
         if api_key:
             logging.info(f"Using specified model: {model}")
             return model, api_key.strip()
 
-    # Case 3: Fallback to Gemini if available
+    # Case 5: Fallback to Gemini if available
     if 'gemini' in valid_keys_dict:
         logging.info("Falling back to Gemini model")
         return 'gemini', valid_keys_dict['gemini'].strip()
 
-    # Case 4: Specified model not available, and Gemini not available
+    # Case 6: No matching model or Gemini
     raise ValueError(
         f"No API key provided for specified model '{model}' and Gemini not available. "
         f"Available models: {', '.join(valid_keys_dict.keys())}"
