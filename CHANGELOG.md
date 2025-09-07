@@ -16,6 +16,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.13] - 2025-09-07
+
+### Added
+- **Security Enhancements**:
+  - Implemented `sanitize_input` function in `prompt.py` to prevent prompt injection attacks by removing or escaping common injection patterns and sensitive keywords (e.g., "ignore previous instructions", "grading logic").
+  - Added input sanitization for student code, README content, and JSON reports to ensure safe inclusion in LLM prompts.
+  - Introduced random delimiters to wrap content and prevent malicious prompt manipulation.
+  - Added a `sleep 1` command in `build.yml` to stabilize pipeline execution by introducing a brief delay before running `entrypoint.py`.
+  - Added guardrail instructions in `prompt.py` to restrict LLM behavior to providing feedback based solely on provided test results, student code, and assignment instructions.
+
+### Changed
+- **Build Workflow** (`build.yml`):
+  - Reordered the model matrix to prioritize `claude-sonnet-4-20250514` and `google/gemma-2-9b-it`, ensuring consistency in model testing order.
+  - Updated `actions/checkout` from `v4` to `v5` for improved performance and compatibility.
+  - Changed default model from `gemini` to `gemini-2.5-flash` for improved performance and accuracy.
+- **README** (`README.md`):
+  - Updated project description to highlight enhanced security against prompt injection attacks.
+  - Added details about new security features (input sanitization and random delimiters) in the "Key Features" and "Notes" sections.
+  - Changed input parameters (`report-files`, `student-files`, `readme-path`) to have no default values, requiring explicit configuration for clarity.
+  - Updated default model in input table and example workflow to `gemini-2.5-flash`.
+  - Added note about prompt injection mitigation, emphasizing use in controlled environments.
+  - Updated future enhancements to include advanced parsing for stronger prompt injection defenses.
+  - Added troubleshooting guidance for prompt injection anomalies.
+  - Updated acknowledgments to reflect contributions from `Gemini 2.5 Flash` instead of `Gemini 2.0 Flash`.
+- **Prompt Logic** (`prompt.py`):
+  - Applied input sanitization to `longrepr`, `stderr`, student code, README content, and locale files to prevent prompt injection.
+  - Added guardrail instruction in `get_initial_instruction` to enforce strict adherence to feedback tasks.
+  - Improved type hints and function signatures for better code clarity and maintainability.
+  - Optimized string handling by replacing newlines with spaces and limiting input length to 10,000 characters to prevent prompt structure disruption.
+- **Tests** (`test_prompt.py`):
+  - Improved test assertions with descriptive error messages for better debugging.
+  - Simplified test code by removing redundant tuple conversions and map operations.
+  - Updated test fixtures and assertions to align with sanitized input handling.
+  - Renamed test functions to follow a consistent naming convention (e.g., `test__exclude_common_contents__single` to `test_exclude_common_contents__single`).
+  - Updated `expected_default_gemini_model` fixture to reflect the new default model `gemini-2.5-flash`.
+  - Enhanced `test_collect_longrepr__compare_contents` to track found markers and report missing ones explicitly.
+  - Corrected minor typos and formatting in test comments and strings (e.g., standardized language terms like "Foutmelding" for Dutch).
+
+### Fixed
+- Ensured consistent handling of README content by sanitizing inputs in `assignment_instruction` and `exclude_common_contents` to prevent malicious patterns from affecting prompt generation.
+- Fixed potential issues in test suite by adding explicit type checking and non-empty string validation in `test_collect_longrepr__has_list_items_len`.
+- Addressed missing marker detection in `test_collect_longrepr__compare_contents` by tracking found markers instead of modifying the marker list.
+
 ## [v0.3.12] - 2025-09-07
 
 ### Added
