@@ -47,7 +47,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - model: gemini
+          - model: gemini-2.5-flash
             secret: GOOGLE_API_KEY
           - model: grok
             secret: XAI_API_KEY
