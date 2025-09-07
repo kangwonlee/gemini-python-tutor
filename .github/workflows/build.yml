@@ -41,34 +41,41 @@ jobs:
     - name: Verify that the Docker image for the action builds
       run: docker build . --file Dockerfile
 
-    - name: Integration test
+  integration-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - model: gemini
+            secret: GOOGLE_API_KEY
+          - model: grok
+            secret: XAI_API_KEY
+          - model: claude
+            secret: CLAUDE_API_KEY
+          - model: nvidia_nim
+            secret: NVIDIA_NIM_API_KEY
+          - model: perplexity
+            secret: PERPLEXITY_API_KEY
+    steps:
+    - uses: actions.checkout@v5
+    - name: Integration test ${{ matrix.model }}
       id: integration
       uses: ./
       with:
         report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
         student-files: tests/sample_code.py
-        api-key: ${{ secrets.GOOGLE_API_KEY }}
+        api-key: ${{ secrets[matrix.secret] }}
         readme-path: tests/sample_readme.md
+        model: ${{ matrix.model }}
         explanation-in: Korean
         fail-expected: True
       timeout-minutes: 5
-
-    - name: Integration test XAI
-      id: integration-xai
-      uses: ./
-      with:
-        report-files: tests/sample_report.json,tests/json_dict_div_zero_try_except.json
-        student-files: tests/sample_code.py
-        api-key: ${{ secrets.XAI_API_KEY }}
-        readme-path: tests/sample_readme.md
-        model: grok
-        explanation-in: Korean
-        fail-expected: True
-      timeout-minutes: 5
-
-    - name: Output the outputs of the integration test of the action
+    - name: Output and Verify
       run: |
-        echo "${{ steps.integration.outputs.feedback }}"
+        echo "${{ matrix.model }} ${{ steps.integration.outputs.feedback }}"
+        echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        python3 -u -m pytest tests/integration.py
 
     - name: Verify integration test results
       run: |
