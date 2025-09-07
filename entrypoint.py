@@ -95,7 +95,7 @@ def get_model_key_from_env() -> Tuple[str, str]:
     - Uses INPUT_API-KEY if provided, especially with a specified model.
     - Falls back to model-specific API keys if INPUT_API-KEY is not set.
     - Raises ValueError if no API keys are available.
-    - Prefers Gemini as default if no model is specified.
+    - Uses model-to-provider mapping for precise model IDs.
     """
     api_key_dict = get_api_key_dict_from_env()
     valid_keys_dict = {k: v for k, v in api_key_dict.items() if v and v.strip()}
@@ -103,9 +103,18 @@ def get_model_key_from_env() -> Tuple[str, str]:
     model = os.getenv('INPUT_MODEL', '').lower()
     general_api_key = os.getenv('INPUT_API-KEY', '').strip()
 
+    # Model-to-provider mapping for precise model IDs
+    model_to_provider = {
+        'google/gemma-2-9b-it': 'nvidia_nim',
+        'sonar': 'perplexity',
+        'gemini-2.5-flash': 'gemini',
+        'grok-code-fast': 'grok',
+        'claude-sonnet-4-20250514': 'claude'
+    }
+
     # Case 1: Use INPUT_API-KEY if provided
     if general_api_key:
-        selected_model = model or 'gemini'  # Default to Gemini if no model specified
+        selected_model = model or 'gemini-2.5-flash'  # Default to specific Gemini model
         logging.info(f"Using INPUT_API-KEY for model: {selected_model}")
         return selected_model, general_api_key
 
@@ -127,19 +136,25 @@ def get_model_key_from_env() -> Tuple[str, str]:
         logging.info(f"Using single available model: {selected_model}")
         return selected_model, api_key.strip()
 
-    # Case 4: Multiple API keys available, prefer specified model
+    # Case 4: Use model-to-provider mapping for specified model
+    provider = model_to_provider.get(model, None)
+    if model and provider and provider in valid_keys_dict:
+        logging.info(f"Using mapped model: {model} with provider: {provider}")
+        return model, valid_keys_dict[provider].strip()
+
+    # Case 5: Fallback to provider-based matching
     if model:
         api_key = get_startwith(model, valid_keys_dict)
         if api_key:
-            logging.info(f"Using specified model: {model}")
+            logging.info(f"Using specified model with provider matching: {model}")
             return model, api_key.strip()
 
-    # Case 5: Fallback to Gemini if available
+    # Case 6: Fallback to Gemini if available
     if 'gemini' in valid_keys_dict:
         logging.info("Falling back to Gemini model")
-        return 'gemini', valid_keys_dict['gemini'].strip()
+        return 'gemini-2.5-flash', valid_keys_dict['gemini'].strip()
 
-    # Case 6: No matching model or Gemini
+    # Case 7: No matching model or Gemini
     raise ValueError(
         f"No API key provided for specified model '{model}' and Gemini not available. "
         f"Available models: {', '.join(valid_keys_dict.keys())}"
