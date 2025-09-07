@@ -58,7 +58,7 @@ jobs:
           - model: perplexity
             secret: PERPLEXITY_API_KEY
     steps:
-    - uses: actions.checkout@v5
+    - uses: actions/checkout@v5
     - name: Integration test ${{ matrix.model }}
       id: integration
       uses: ./
