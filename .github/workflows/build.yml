@@ -57,6 +57,7 @@ jobs:
             secret: NVIDIA_NIM_API_KEY
           - model: perplexity
             secret: PERPLEXITY_API_KEY
+      fail-fast: false
     steps:
     - uses: actions/checkout@v5
     - name: Integration test ${{ matrix.model }}
@@ -74,12 +75,10 @@ jobs:
     - name: Output and Verify
       run: |
         echo "${{ matrix.model }} ${{ steps.integration.outputs.feedback }}"
-        echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
-        python3 -u -m pytest tests/integration.py
-
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
     - name: Verify integration test results
       run: |
-        echo "feedback=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
+        echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
 
 # end .github/workflows/build.yml
