@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install uv package manager
       uses: astral-sh/setup-uv@v6
@@ -59,7 +59,7 @@ jobs:
             secret: PERPLEXITY_API_KEY
       fail-fast: false
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install uv package manager
       uses: astral-sh/setup-uv@v6
@@ -108,7 +108,7 @@ jobs:
         ]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install uv package manager
       uses: astral-sh/setup-uv@v6
