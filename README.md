@@ -48,7 +48,7 @@ jobs:
       WORKSPACE_OUTPUT: ${{ runner.temp }}/output
       CONTAINER_OUTPUT: /output
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up environment
         run: pip install pytest==8.3.5 pytest-json-report==1.5.0 pytest-xdist==3.6.1 requests==2.32.4
       - name: Create output folder
