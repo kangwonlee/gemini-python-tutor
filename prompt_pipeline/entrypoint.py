@@ -85,11 +85,11 @@ def main() -> None:
         sys.exit(1)
 
     if contains_python_code(student_prompt):
-        logging.error(
-            "Prompt contains Python code constructs. "
+        logging.warning(
+            "Prompt appears to contain Python code constructs. "
+            "This will be penalized by the grader. "
             "Write a natural language description, not code."
         )
-        sys.exit(1)
 
     logging.info("Prompt length: %d chars", len(student_prompt))
 
