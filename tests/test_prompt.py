@@ -524,6 +524,63 @@ def test_collect_longrepr__compare_contents(collect_longrepr_result: List[str]):
     assert not missing_markers, f"Missing markers: {missing_markers}"
 
 
+@pytest.fixture
+def all_passing_report(tmp_path) -> pathlib.Path:
+    """Create a pytest JSON report where all tests pass."""
+    report = {
+        "tests": [
+            {"nodeid": "test_syntax::test_valid", "outcome": "passed",
+             "call": {"longrepr": None}},
+            {"nodeid": "test_results::test_calc_area", "outcome": "passed",
+             "call": {"longrepr": None}},
+        ]
+    }
+    path = tmp_path / "all_pass_report.json"
+    path.write_text(json.dumps(report))
+    return path
+
+
+def test_get_prompt__all_passing__concise_instruction(
+    all_passing_report: pathlib.Path,
+    sample_student_code_path: pathlib.Path,
+    sample_readme_path: pathlib.Path,
+):
+    """When all tests pass, the prompt should instruct concise feedback."""
+    n_failed, prompt_text = prompt.get_prompt(
+        report_paths=(all_passing_report,),
+        student_files=(sample_student_code_path,),
+        readme_file=sample_readme_path,
+        explanation_in="Korean",
+    )
+
+    assert n_failed == 0
+    # Should contain concise instructions
+    assert "3-5 sentences" in prompt_text
+    assert "Do not assign or fabricate scores" in prompt_text
+    # Should NOT contain the verbose "comment on the student code" instruction
+    assert "please comment on the student code" not in prompt_text
+
+
+def test_get_prompt__with_failures__has_directive(
+    sample_report_path: pathlib.Path,
+    sample_student_code_path: pathlib.Path,
+    sample_readme_path: pathlib.Path,
+):
+    """When tests fail, the prompt should contain the error directive."""
+    n_failed, prompt_text = prompt.get_prompt(
+        report_paths=(sample_report_path,),
+        student_files=(sample_student_code_path,),
+        readme_file=sample_readme_path,
+        explanation_in="Korean",
+    )
+
+    assert n_failed > 0
+    # Should contain failure-specific instruction
+    assert "mutually exclusively and collectively exhaustively" in prompt_text
+    # Should NOT contain the concise success instruction
+    assert "3-5 sentences" not in prompt_text
+
+
 if __name__ == '__main__':
     pytest.main([__file__])
 

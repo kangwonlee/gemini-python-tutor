@@ -93,7 +93,11 @@ def get_prompt(
             )
         return (
             f"{guardrail}\n"
-            f"In {language}, please comment on the student code given the assignment instruction."
+            f"All tests passed. In {language}, in 3-5 sentences:\n"
+            "1. Briefly note what the student did well.\n"
+            "2. Suggest one specific improvement if applicable "
+            "(e.g., efficiency, readability, edge cases).\n"
+            "Do not repeat test results. Do not assign or fabricate scores."
         )
 
     prompt_list = (

@@ -50,6 +50,7 @@ class LLMAPIClient:
         self.max_retry_attempt = max_retry_attempt
         self.timeout_sec = timeout_sec
         self.logger = logging.getLogger(__name__)  # Logger for this module
+        self.last_raw_response = None  # Store last API response for token usage extraction
 
     def call_api(self, question: str) -> Optional[str]:
         """Send a question to the LLM API with retry and timeout handling.
@@ -99,6 +100,7 @@ class LLMAPIClient:
                 try:
                     # Parse JSON and extract response using config-specific method
                     result = response.json()
+                    self.last_raw_response = result
                     return self.config.parse_response(result)
                 except (ValueError, KeyError) as e:
                     # Log parsing errors (invalid JSON or unexpected structure)

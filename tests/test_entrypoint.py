@@ -166,6 +166,100 @@ def test_get_model_key_from_env_with_api_key(monkeypatch):
     assert api_key == "test-api-key"
 
 
+class TestExtractTokenUsage:
+    """Tests for extract_token_usage multi-provider support."""
+
+    def test_gemini_format(self):
+        raw = {
+            "usageMetadata": {
+                "promptTokenCount": 150,
+                "candidatesTokenCount": 200,
+                "totalTokenCount": 350,
+            }
+        }
+        result = entrypoint.extract_token_usage(raw)
+        assert result["input_tokens"] == 150
+        assert result["output_tokens"] == 200
+        assert result["total_tokens"] == 350
+
+    def test_claude_format(self):
+        raw = {
+            "usage": {
+                "input_tokens": 100,
+                "output_tokens": 250,
+            }
+        }
+        result = entrypoint.extract_token_usage(raw)
+        assert result["input_tokens"] == 100
+        assert result["output_tokens"] == 250
+        assert result["total_tokens"] == 350  # computed
+
+    def test_openai_format(self):
+        raw = {
+            "usage": {
+                "prompt_tokens": 80,
+                "completion_tokens": 120,
+                "total_tokens": 200,
+            }
+        }
+        result = entrypoint.extract_token_usage(raw)
+        assert result["input_tokens"] == 80
+        assert result["output_tokens"] == 120
+        assert result["total_tokens"] == 200
+
+    def test_none_response(self):
+        result = entrypoint.extract_token_usage(None)
+        assert result["input_tokens"] is None
+        assert result["output_tokens"] is None
+
+    def test_empty_dict(self):
+        result = entrypoint.extract_token_usage({})
+        assert result["input_tokens"] is None
+
+    def test_missing_usage(self):
+        raw = {"id": "123", "choices": []}
+        result = entrypoint.extract_token_usage(raw)
+        assert result["input_tokens"] is None
+
+
+class TestWriteTokenUsage:
+    """Tests for write_token_usage file output."""
+
+    def test_writes_json(self, tmp_path):
+        class MockClient:
+            last_raw_response = {
+                "usageMetadata": {
+                    "promptTokenCount": 50,
+                    "candidatesTokenCount": 100,
+                    "totalTokenCount": 150,
+                }
+            }
+        entrypoint.write_token_usage(MockClient(), "gemini-2.5-flash", tmp_path)
+        usage_file = tmp_path / "token_usage.json"
+        assert usage_file.exists()
+        import json
+        data = json.loads(usage_file.read_text())
+        assert data["model"] == "gemini-2.5-flash"
+        assert data["input_tokens"] == 50
+        assert data["output_tokens"] == 100
+
+    def test_creates_directory(self, tmp_path):
+        nested = tmp_path / "sub" / "dir"
+        class MockClient:
+            last_raw_response = {}
+        entrypoint.write_token_usage(MockClient(), "claude", nested)
+        assert (nested / "token_usage.json").exists()
+
+    def test_handles_none_response(self, tmp_path):
+        class MockClient:
+            last_raw_response = None
+        entrypoint.write_token_usage(MockClient(), "grok", tmp_path)
+        import json
+        data = json.loads((tmp_path / "token_usage.json").read_text())
+        assert data["model"] == "grok"
+        assert data["input_tokens"] is None
+
+
 if __name__ == '__main__':
     pytest.main([__file__])
 
