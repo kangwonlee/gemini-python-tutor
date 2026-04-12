@@ -22,8 +22,13 @@ logging.basicConfig(level=logging.INFO)
 # ai_tutor/ lives one level above prompt_pipeline/ inside the container:
 #   /app/ai_tutor/   ← llm_client.py, llm_configs.py, entrypoint.py
 #   /app/prompt_pipeline/  ← this file
-_ai_tutor = pathlib.Path(__file__).parent.parent / 'ai_tutor'
-sys.path.insert(0, str(_ai_tutor))
+# In CI / local dev, the modules live at the repo root instead.
+_project_root = pathlib.Path(__file__).parent.parent
+_ai_tutor = _project_root / 'ai_tutor'
+if _ai_tutor.is_dir():
+    sys.path.insert(0, str(_ai_tutor))
+else:
+    sys.path.insert(0, str(_project_root))
 
 from llm_client import LLMAPIClient  # noqa: E402
 from llm_configs import GeminiConfig, LLMConfig  # noqa: E402
