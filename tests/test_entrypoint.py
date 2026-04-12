@@ -16,6 +16,7 @@ sys.path.insert(
 
 import entrypoint
 import llm_configs
+import llm_utils
 
 PATH_TUPLE = Tuple[pathlib.Path]
 PATH_TUPLE_STR = Tuple[PATH_TUPLE, str]
@@ -82,7 +83,7 @@ def test_get_model_key_from_env__valid_specified(monkeypatch, model, env_key, ex
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
     monkeypatch.setenv(env_key, expected_key)
     monkeypatch.setenv("INPUT_MODEL", model)
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_model == model
     assert result_key == expected_key
 
@@ -91,7 +92,7 @@ def test_get_model_key_from_env__valid_specified(monkeypatch, model, env_key, ex
 def test_get_model_key_from_env__single_key(monkeypatch, model, env_key, expected_key):
     """Test with only one key available (uses it regardless of INPUT_MODEL)."""
     monkeypatch.setenv(env_key, expected_key)
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_model == model
     assert result_key == expected_key
 
@@ -99,7 +100,7 @@ def test_get_model_key_from_env__single_key(monkeypatch, model, env_key, expecte
 def test_get_model_key_from_env__no_keys(monkeypatch):
     """Test with no API keys available."""
     with pytest.raises(ValueError, match="No API keys provided. Set at least one of"):
-        entrypoint.get_model_key_from_env()
+        llm_utils.get_model_key_from_env()
 
 
 def test_get_model_key_from_env__fallback_gemini(monkeypatch):
@@ -107,7 +108,7 @@ def test_get_model_key_from_env__fallback_gemini(monkeypatch):
     monkeypatch.setenv("INPUT_MODEL", "invalid")
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
     monkeypatch.setenv("INPUT_GROK-API-KEY", "grok_key")  # Multiple, but fallback to Gemini
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_model == "gemini-2.5-flash"
     assert result_key == "gemini_key"
 
@@ -116,7 +117,7 @@ def test_get_model_key_from_env__no_model_fallback_gemini(monkeypatch):
     """Test no INPUT_MODEL set, fallback to Gemini if available."""
     monkeypatch.setenv("INPUT_CLAUDE_API_KEY", "claude_key")
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_model == "gemini-2.5-flash"
     assert result_key == "gemini_key"
 
@@ -125,7 +126,7 @@ def test_get_model_key_from_env__invalid_model_no_gemini(monkeypatch):
     """Test invalid specified model, no Gemini available."""
     monkeypatch.setenv("INPUT_MODEL", "invalid")
     monkeypatch.setenv("INPUT_CLAUDE_API_KEY", "claude_key")
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_key == "claude_key"
     assert result_model == "claude"
 
@@ -134,7 +135,7 @@ def test_get_model_key_from_env__empty_key_ignored(monkeypatch):
     """Test empty/whitespace keys are ignored (treated as unavailable)."""
     monkeypatch.setenv("INPUT_CLAUDE_API_KEY", "   ")  # Empty after strip
     monkeypatch.setenv("INPUT_GEMINI-API-KEY", "gemini_key")
-    result_model, result_key = entrypoint.get_model_key_from_env()
+    result_model, result_key = llm_utils.get_model_key_from_env()
     assert result_model == "gemini"
     assert result_key == "gemini_key"
 
@@ -148,20 +149,20 @@ def test_get_model_key_from_env__empty_key_ignored(monkeypatch):
 ])
 def test_get_config_class(model, expected_class):
     """Test get_config_class returns correct configuration class."""
-    assert entrypoint.get_config_class(model) == expected_class
+    assert llm_utils.get_config_class(model) == expected_class
 
 
 def test_get_config_class_invalid_model():
     """Test get_config_class with invalid model."""
     with pytest.raises(ValueError, match="Unsupported LLM type: invalid_model"):
-        entrypoint.get_config_class("invalid_model")
+        llm_utils.get_config_class("invalid_model")
 
 
 def test_get_model_key_from_env_with_api_key(monkeypatch):
     """Test that INPUT_API-KEY is used when provided with a model."""
     monkeypatch.setenv("INPUT_API-KEY", "test-api-key")
     monkeypatch.setenv("INPUT_MODEL", "gemini")
-    model, api_key = entrypoint.get_model_key_from_env()
+    model, api_key = llm_utils.get_model_key_from_env()
     assert model == "gemini"
     assert api_key == "test-api-key"
 

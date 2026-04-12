@@ -20,13 +20,52 @@ import sys
 logging.basicConfig(level=logging.INFO)
 
 # ai_tutor/ lives one level above prompt_pipeline/ inside the container:
-#   /app/ai_tutor/   ← llm_client.py, llm_configs.py, entrypoint.py
+#   /app/ai_tutor/   ← llm_client.py, llm_configs.py, llm_utils.py
 #   /app/prompt_pipeline/  ← this file
-_ai_tutor = pathlib.Path(__file__).parent.parent / 'ai_tutor'
-sys.path.insert(0, str(_ai_tutor))
+# In CI / local dev, the modules live at the repo root instead.
+_project_root = pathlib.Path(__file__).parent.parent
+_ai_tutor = _project_root / 'ai_tutor'
+if _ai_tutor.is_dir():
+    sys.path.insert(0, str(_ai_tutor))
+else:
+    sys.path.insert(0, str(_project_root))
 
 from llm_client import LLMAPIClient  # noqa: E402
-from entrypoint import get_model_key_from_env, get_config_class  # noqa: E402
+from llm_configs import GeminiConfig, LLMConfig  # noqa: E402
+from llm_utils import get_model_key_from_env, get_config_class  # noqa: E402
+
+
+# Code generation needs higher token limits and deterministic output.
+# Tutoring (entrypoint.py) uses the config defaults (96 tokens, temp 0.2).
+CODEGEN_MAX_TOKENS = 4096
+CODEGEN_TEMPERATURE = 0
+
+
+def patch_config_for_codegen(config: LLMConfig) -> None:
+    """Override generation parameters for code generation.
+
+    Wraps config.format_request_data to set higher max_tokens and
+    temperature=0. Gemini uses ``generationConfig``; OpenAI-compatible
+    providers use top-level ``max_tokens`` / ``temperature``.
+    """
+    original = config.format_request_data
+
+    if isinstance(config, GeminiConfig):
+        def patched(question: str):
+            data = original(question)
+            data['generationConfig'] = {
+                'maxOutputTokens': CODEGEN_MAX_TOKENS,
+                'temperature': CODEGEN_TEMPERATURE,
+            }
+            return data
+    else:
+        def patched(question: str):
+            data = original(question)
+            data['max_tokens'] = CODEGEN_MAX_TOKENS
+            data['temperature'] = CODEGEN_TEMPERATURE
+            return data
+
+    config.format_request_data = patched
 
 
 # Python code detection patterns — prompts containing these are rejected.
@@ -99,6 +138,7 @@ def main() -> None:
     if model:
         config_args['model'] = model
     config = config_class(**config_args)
+    patch_config_for_codegen(config)
     client = LLMAPIClient(config)
 
     question = build_question(student_prompt)

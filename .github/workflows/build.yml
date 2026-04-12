@@ -151,4 +151,59 @@ jobs:
         echo "feedback_${{ matrix.model }}=${{ steps.integration.outputs.feedback }}" >> $GITHUB_OUTPUT
         python3 -u -m pytest tests/integration.py
 
+  integration-tests-codegen:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - model: gemini-2.5-flash
+            secret: GOOGLE_API_KEY
+          - model: grok-code-fast
+            secret: XAI_API_KEY
+          - model: claude-sonnet-4-20250514
+            secret: CLAUDE_API_KEY
+          - model: google/gemma-2-9b-it
+            secret: NVIDIA_NIM_API_KEY
+          - model: sonar
+            secret: PERPLEXITY_API_KEY
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install uv package manager
+      uses: astral-sh/setup-uv@v7
+      with:
+        version: "latest"
+        version-file: "pyproject.toml"
+        python-version: 3.11
+        enable-cache: true
+
+    - run: uv sync
+
+    - name: Generate exercise.py with ${{ matrix.model }}
+      env:
+        INPUT_PROMPT-FILE: tests/sample_prompt.txt
+        CONTAINER_OUTPUT: ${{ runner.temp }}/codegen_output
+        INPUT_CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        INPUT_GEMINI-API-KEY: ${{ secrets.GOOGLE_API_KEY }}
+        INPUT_GROK-API-KEY: ${{ secrets.XAI_API_KEY }}
+        INPUT_NVIDIA-API-KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+        INPUT_PERPLEXITY-API-KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        INPUT_MODEL: ${{ matrix.model }}
+      run: |
+        . .venv/bin/activate
+        python3 prompt_pipeline/entrypoint.py
+      timeout-minutes: 5
+
+    - name: Show generated exercise.py
+      run: cat ${{ runner.temp }}/codegen_output/exercise.py
+
+    - name: Verify generated code
+      env:
+        CONTAINER_OUTPUT: ${{ runner.temp }}/codegen_output
+      run: |
+        . .venv/bin/activate
+        python3 -u -m pytest tests/integration_codegen.py -v
+
 # end .github/workflows/build.yml

@@ -3,6 +3,7 @@
 !entrypoint.py
 !llm_client.py
 !llm_configs.py
+!llm_utils.py
 !locale/*.json
 !prompt.py
 !requirements.txt

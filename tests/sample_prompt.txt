@@ -1,0 +1,2 @@
+Write a Python function called `add(a, b)` that takes two numbers as parameters and returns their sum.
+Also write a function called `multiply(a, b)` that takes two numbers and returns their product.
