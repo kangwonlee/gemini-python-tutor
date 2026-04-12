@@ -10,31 +10,19 @@ import pytest
 test_folder = pathlib.Path(__file__).parent.resolve()
 project_folder = test_folder.parent.resolve()
 sys.path.insert(0, str(project_folder))
+sys.path.insert(0, str(project_folder / "prompt_pipeline"))
 
 from llm_configs import (
     ClaudeConfig, GeminiConfig, GrokConfig, NvidiaNIMConfig, PerplexityConfig,
 )
 
-# prompt_pipeline.entrypoint imports from the tutor entrypoint via sys.path
-# manipulation that only works inside Docker.  Import the constants and
-# function we need by loading the file directly with importlib.
-import importlib.util
+# Now that prompt_pipeline/entrypoint.py imports from llm_utils (not
+# the tutor entrypoint), we can import it as a normal module.
+import prompt_pipeline.entrypoint as pp_entrypoint
 
-_pp_spec = importlib.util.spec_from_file_location(
-    "prompt_pipeline_entrypoint",
-    project_folder / "prompt_pipeline" / "entrypoint.py",
-    submodule_search_locations=[],
-)
-_pp_mod = importlib.util.module_from_spec(_pp_spec)
-
-# Satisfy the "from entrypoint import ..." that prompt_pipeline/entrypoint.py
-# does at import time — point it at the tutor's entrypoint module.
-sys.modules['entrypoint'] = importlib.import_module('entrypoint')
-_pp_spec.loader.exec_module(_pp_mod)
-
-CODEGEN_MAX_TOKENS = _pp_mod.CODEGEN_MAX_TOKENS
-CODEGEN_TEMPERATURE = _pp_mod.CODEGEN_TEMPERATURE
-patch_config_for_codegen = _pp_mod.patch_config_for_codegen
+CODEGEN_MAX_TOKENS = pp_entrypoint.CODEGEN_MAX_TOKENS
+CODEGEN_TEMPERATURE = pp_entrypoint.CODEGEN_TEMPERATURE
+patch_config_for_codegen = pp_entrypoint.patch_config_for_codegen
 
 
 SAMPLE_API_KEY = "test_api_key_for_codegen"
