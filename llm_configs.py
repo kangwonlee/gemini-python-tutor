@@ -257,7 +257,9 @@ class ClaudeConfig(LLMConfig):
     """
 
     api_url: str = "https://api.anthropic.com/v1/messages"
-    model: str = "claude-sonnet-4-20250514"
+    # claude-sonnet-4-20250514 (Sonnet 4) retired 2026-06-15 → 404 not_found.
+    # Track the current Sonnet alias so dated-snapshot retirements don't break the tutor.
+    model: str = "claude-sonnet-4-6"
     default_headers: HEADER = None
 
     def __post_init__(self):
@@ -298,6 +300,10 @@ class ClaudeConfig(LLMConfig):
         Probably multiple tokens of Claude would be equivalent to 1 token of others
         '''
         result = super().format_request_data(question)
+        # Claude 4+ models reject a request that specifies BOTH `temperature`
+        # and `top_p` (400 invalid_request_error). The base payload sets both,
+        # so drop `top_p` here and keep `temperature` for the Claude provider.
+        result.pop('top_p', None)
         result['max_tokens'] = 1024
         result['messages'][0]['content'] =  f'''Please answer within {result['max_tokens']} tokens\n''' + result['messages'][0]['content']
         return result

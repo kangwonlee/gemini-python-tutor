@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.4.2] - 2026-06-16
+
+### Fixed
+- **Claude provider 400 on Claude-4 models.** `ClaudeConfig.format_request_data`
+  inherited the base payload that sets both `temperature` and `top_p`; Claude 4+
+  rejects specifying both (`invalid_request_error`). Now drops `top_p` and keeps
+  `temperature` for the Claude provider.
+
+### Changed
+- Default Claude model `claude-sonnet-4-20250514` → `claude-sonnet-4-6`.
+  Sonnet 4 (`...20250514`) retired 2026-06-15 (404 `not_found_error`); track the
+  current Sonnet alias so dated-snapshot retirements don't break the tutor. Same
+  update applied to the model→config and model→provider maps in `llm_utils.py`.
+
 ## [0.3.13] - 2025-09-07
 
 ### Added

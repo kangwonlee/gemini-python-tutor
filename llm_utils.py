@@ -51,7 +51,7 @@ def get_config_class_dict() -> Dict[str, type]:
     """
     return {
         'claude': ClaudeConfig,
-        'claude-sonnet-4-20250514': ClaudeConfig,  # Add specific model
+        'claude-sonnet-4-6': ClaudeConfig,  # current Sonnet (4-20250514 retired 2026-06-15)
         'gemini': GeminiConfig,
         'gemini-2.5-flash': GeminiConfig,
         'grok': GrokConfig,
@@ -91,7 +91,7 @@ def get_model_key_from_env() -> Tuple[str, str]:
         'sonar': 'perplexity',
         'gemini-2.5-flash': 'gemini',
         'grok-code-fast': 'grok',
-        'claude-sonnet-4-20250514': 'claude'
+        'claude-sonnet-4-6': 'claude'
     }
 
     # Case 1: Use INPUT_API-KEY if provided
